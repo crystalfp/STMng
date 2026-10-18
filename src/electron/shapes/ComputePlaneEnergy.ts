@@ -104,6 +104,7 @@ const determineTransform = (
 		r1    = [mL, 0, -mH];
 		scope = [sorted2(mL), [0, 1], sorted2(mH)];
 	}
+	// eslint-disable-next-line unicorn/no-negated-condition
 	else if(mH !== 0 && mK !== 0 && mL !== 0) {
 		const mRed = reduced([Math.abs(mK*mL), Math.abs(mL*mH), Math.abs(mH*mK)]);
 		shift = [0, 0, -cs(2 * mRed[2], mL)];

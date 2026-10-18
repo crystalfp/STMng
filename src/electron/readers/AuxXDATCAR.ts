@@ -27,6 +27,9 @@ import {createInterface} from "node:readline/promises";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import type {Structure} from "@/types";
 
+const spaces = /\s+/u;
+const numbers = /\d+/u;
+
 /**
  * Line read type
  * @notExported
@@ -119,9 +122,9 @@ export const readAuxXDATCAR = async (filename: string,
 					};
 					structures.push(structure);
 				}
-				const fields = line.trim().split(/\s+/u);
+				const fields = line.trim().split(spaces);
 
-				if(/\d+/u.test(fields[0])) {
+				if(numbers.test(fields[0])) {
 					const position = fractionalToCartesianCoordinates(
 										crystal.basis,
 										Number.parseFloat(fields[0]),

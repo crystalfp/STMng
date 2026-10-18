@@ -496,10 +496,10 @@ export const requestData = (routerPath: string,
 	const initialChannelName = `SYSTEM:INITIAL-DATA:${channel}`;
 	window.electron.ipcRenderer.invoke(initialChannelName)
 		.then((params: CtrlParams) => {
-			setTimeout(() => callback(params), 0);
+			setTimeout(callback, 0, params);
 		})
 		.catch((error: Error) => {
-			setTimeout(() => callback({error: error.message}), 0);
+			setTimeout(callback, 0, {error: error.message});
 		});
 };
 

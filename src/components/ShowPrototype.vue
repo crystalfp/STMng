@@ -73,6 +73,8 @@ const sv = new SimpleViewer(".prototype-viewer", false, (scene) => {
     scene.add(bondsGroup);
 });
 
+const re = /_([^_]+)$/u;
+
 /** Receive the prototype data from the main window */
 requestData(windowPath, (params: CtrlParams) => {
 
@@ -98,13 +100,13 @@ requestData(windowPath, (params: CtrlParams) => {
 
     sv.setSceneModified();
 
-    if(!aflow && !pearson && !strukturbericht) {
-        prototypeName.value = mineral || "";
-    }
-    else {
-        const sb = strukturbericht.replace(/_([^_]+)$/u, "<sub>$1</sub>");
+    if(aflow || pearson || strukturbericht) {
+        const sb = strukturbericht.replace(re, "<sub>$1</sub>");
         prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
                               `strukturbericht: ${sb},&ensp;pearson: ${pearson})`;
+    }
+    else {
+        prototypeName.value = mineral || "";
     }
 });
 

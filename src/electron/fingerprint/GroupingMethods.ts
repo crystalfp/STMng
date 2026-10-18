@@ -250,8 +250,7 @@ abstract class HierarchicalGrouping extends GroupingMethod {
         for(const node of root) {
 
             // Start a new group
-            const group = new Set<number>();
-            for(const ii of node) group.add(ii);
+            const group = new Set<number>(node);
             result.push(group);
         }
         return result;

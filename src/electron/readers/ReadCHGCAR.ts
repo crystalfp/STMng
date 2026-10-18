@@ -30,6 +30,9 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, PositionType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
+const spaces = /\s+/u;
+const numbers = /\d+/u;
+
 /**
  * Line read type
  * @notExported
@@ -96,7 +99,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					lineType = LineType.basis;
 					break;
 				case LineType.basis: {
-					const fields = line.trim().split(/\s+/u);
+					const fields = line.trim().split(spaces);
 					const {basis} = structures[currentStructure].crystal;
 					basis[base]   = Number.parseFloat(fields[0]);
 					basis[base+1] = Number.parseFloat(fields[1]);
@@ -128,8 +131,8 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.counts: {
-					const fields = line.trim().split(/\s+/u);
-					if(/\d+/u.test(fields[0])) {
+					const fields = line.trim().split(spaces);
+					if(numbers.test(fields[0])) {
 						// Line with atoms count. Put them in an array
 						atomsCount.length = 0;
 						for(const field of fields) {
@@ -198,7 +201,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.atoms: {
-					const fields = line.trim().split(/\s+/u);
+					const fields = line.trim().split(spaces);
 					if(fields.length < 3) {
 						lineType = LineType.exit;
 						break;
@@ -239,7 +242,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					lineType = LineType.volumeCount;
 					break;
 				case LineType.volumeCount: {
-					const fields = line.trim().split(/\s+/u);
+					const fields = line.trim().split(spaces);
 					if(fields.length !== 3) break;
 
 					const sides: PositionType = [
@@ -271,7 +274,7 @@ export class ReaderCHGCAR implements ReaderImplementation {
 					break;
 				}
 				case LineType.volumeValues: {
-					const fields = line.trim().split(/\s+/u);
+					const fields = line.trim().split(spaces);
 					for(const field of fields) {
 						volume[volumeIndex++] = Number.parseFloat(field);
 					}

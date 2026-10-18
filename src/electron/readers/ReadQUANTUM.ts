@@ -31,6 +31,10 @@ import {getAtomicNumber} from "../modules/AtomData";
 import {fractionalToCartesianCoordinates} from "../modules/Helpers";
 import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 
+const separators = /[()=]/u;
+const leadingSpace = /^ /u;
+const eol = /\n$/u;
+const digits = /\d+/u;
 
 export class ReaderQUANTUM implements ReaderImplementation {
 
@@ -53,8 +57,8 @@ export class ReaderQUANTUM implements ReaderImplementation {
 						.replaceAll(/\n{2,}/gu, "\n")
 						.replaceAll(/ +/gu, " ")
 						.replaceAll(/ ?\n ?/gu, "\n")
-						.replace(/^ /u, "")
-						.replace(/\n$/u, "")
+						.replace(leadingSpace, "")
+						.replace(eol, "")
 						.replaceAll(/ ?= ?/gu, "=")
 						.split("\n");
 
@@ -83,7 +87,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 			if(inPositions) {
 				const fields = line.split(" ");
 				label.push(fields[0]);
-				let type = fields[0].replace(/\d+/u, "");
+				let type = fields[0].replace(digits, "");
 				let zz = getAtomicNumber(type);
 				if(zz === 0) {
 					if(type.length > 2) {
@@ -128,7 +132,7 @@ export class ReaderQUANTUM implements ReaderImplementation {
 				inputAtoms = Number.parseInt(line.split("=", 2)[1], 10);
 			}
 			else if(line.startsWith("celldm")) {
-				const fields = line.split(/[()=]/u);
+				const fields = line.split(separators);
 				const ncell = Number.parseInt(fields[1], 10);
 				celldm[ncell] = Number.parseFloat(fields[3].replace("D", "E"));
 				hasCelldm = true;

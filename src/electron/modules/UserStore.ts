@@ -26,6 +26,8 @@ import {app} from "electron";
 import path from "node:path";
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from "node:fs";
 
+const separator = /: +/u;
+
 /**
  * Per user storage
  */
@@ -64,7 +66,7 @@ export class Store {
 		this.data.clear();
 		for(const line of lines) {
 
-			const fields = line.split(/: +/u);
+			const fields = line.split(separator);
 			if(fields.length < 2) continue;
 			this.data.set(fields[0], fields[1]);
 		}

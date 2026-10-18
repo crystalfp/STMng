@@ -25,6 +25,9 @@
 import {getAtomicSymbol} from "./AtomData";
 import type {Structure, AtomSelectorModes} from "@/types";
 
+const spaces = /\s+/u;
+const numbers = /^\d+$/u;
+
 /**
  * Select atoms in the structure by the criteria entered in the AtomsChooser widget
  *
@@ -42,7 +45,7 @@ export const selectAtomsByKind = (structure: Structure,
 	if(kind !== "all") {
 		atomsSelector = atomsSelector.trim();
 		if(atomsSelector === "") return [];
-		selectorsList = atomsSelector.toLowerCase().split(/\s+/u);
+		selectorsList = atomsSelector.toLowerCase().split(spaces);
 	}
 
 	// Extract structure parts
@@ -123,7 +126,7 @@ export const checkAtomsSelector = (structure: Structure,
 	if(kind === "all") return "";
 	atomsSelector = atomsSelector.trim();
 	if(atomsSelector === "") return "";
-	const selectorsList = atomsSelector.toLowerCase().split(/\s+/u);
+	const selectorsList = atomsSelector.toLowerCase().split(spaces);
 
 	// Extract structure parts
 	const {atoms} = structure;
@@ -151,7 +154,7 @@ export const checkAtomsSelector = (structure: Structure,
 		}
 		case "index":
 			for(const entry of selectorsList) {
-				if(!/^\d+$/u.test(entry)) {
+				if(!numbers.test(entry)) {
 					return `Invalid index "${entry}"`;
 				}
 				const idx = Number.parseInt(entry, 10);

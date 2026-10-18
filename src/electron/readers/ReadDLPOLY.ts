@@ -28,6 +28,8 @@ import type {Structure, Atom, ReaderImplementation} from "@/types";
 import {EmptyStructure} from "../modules/EmptyStructure";
 import {getAtomicNumberByMass} from "../modules/AtomData";
 
+const spaces = /\s+/u;
+
 /**
  * Line read type
  * @notExported
@@ -72,7 +74,7 @@ export class ReaderDLPOLY implements ReaderImplementation {
 		const reader = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of reader) {
 
-			const fields = line.trim().split(/\s+/u);
+			const fields = line.trim().split(spaces);
 
 			switch(lineType) {
 

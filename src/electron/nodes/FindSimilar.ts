@@ -307,12 +307,8 @@ export class FindSimilar extends NodeCore {
 		let idx = 0;
 		for(const {atomZ} of structure.atoms) {
 			if(duplicates[idx++]) continue;
-			if(species.has(atomZ)) {
-				species.set(atomZ, species.get(atomZ)! + 1);
-			}
-			else {
-				species.set(atomZ, 1);
-			}
+
+			species.set(atomZ, species.has(atomZ) ? species.get(atomZ)! + 1 : 1);
 		}
 		let formula = "";
 		for(const [k, v] of species) {

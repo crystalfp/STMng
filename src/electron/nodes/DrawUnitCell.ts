@@ -122,8 +122,7 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Pass the structure to next node
-		if(structure) this.toNextNode(structure);
-		else this.toNextNode(new EmptyStructure());
+		this.toNextNode(structure ?? new EmptyStructure());
 	}
 
 	/**
@@ -133,20 +132,20 @@ export class DrawUnitCell extends NodeCore {
 
 		const {crystal, atoms, extra, volume} = this.inputStructure!;
 
-		return (this.percentA !== 0 || this.percentB !== 0 || this.percentC !== 0) ?
-			adjustOrigin(this.inputStructure!,
-						 this.percentA/100,
-						 this.percentB/100,
-						 this.percentC/100,
-						 this.shrink)
-			:
+		return (this.percentA === 0 && this.percentB === 0 && this.percentC === 0) ?
 			{
 				crystal,
 				atoms,
 				bonds: [],
 				volume,
 				extra
-			};
+			}
+			:
+			adjustOrigin(this.inputStructure!,
+						 this.percentA/100,
+						 this.percentB/100,
+						 this.percentC/100,
+						 this.shrink);
 	}
 
 	/**
@@ -475,8 +474,7 @@ export class DrawUnitCell extends NodeCore {
 									this.replicateUnitCell(this.inputStructure) : this.inputStructure;
 
 		// Pass the structure to next node
-		if(structure) this.toNextNode(structure);
-		else this.toNextNode(new EmptyStructure());
+		this.toNextNode(structure ?? new EmptyStructure());
 	}
 
 	/**
@@ -512,7 +510,6 @@ export class DrawUnitCell extends NodeCore {
 		}
 
 		// Pass the structure to next node and compute unit and supercell
-		if(structure) this.toNextNode(structure);
-		else this.toNextNode(new EmptyStructure());
+		this.toNextNode(structure ?? new EmptyStructure());
 	}
 }

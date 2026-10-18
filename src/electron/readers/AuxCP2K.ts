@@ -27,6 +27,8 @@ import {createReadStream} from "node:fs";
 import {createInterface} from "node:readline/promises";
 import type {Structure} from "@/types";
 
+const spaces = /\s+/u;
+
 /**
  * Read the CP2K generated energy file
  *
@@ -56,7 +58,7 @@ export const readAuxCP2K = async (filename: string,
 
 		if(lineNumber === 1) {
 
-			const fields = line.toLowerCase().trim().split(/\s+/u);
+			const fields = line.toLowerCase().trim().split(spaces);
 			const n = fields.length;
 			for(let i=0; i < n; ++i) {
 				if(fields[i].startsWith("enthalp")) {
@@ -74,7 +76,7 @@ export const readAuxCP2K = async (filename: string,
 			const ln = line
 							.trim()
 							.replaceAll(/\[[\d ]+\]/gu, "[]")
-							.split(/\s+/u);
+							.split(spaces);
 			energies.push(Number.parseFloat(ln[column]));
 		}
 	}

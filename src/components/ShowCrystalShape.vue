@@ -340,7 +340,6 @@ const centerView = (): void => {
  *
  * @param visible - Toggle position
  */
-// eslint-disable-next-line unicorn/prefer-default-parameters
 const updateVisibility = (visible: boolean | null): void => {
 
     basisVectorGroup.visible = visible ?? false;

@@ -139,8 +139,7 @@ export class DrawPolyhedra extends NodeCore {
 
 		// Sanity checks
 		const natoms = atoms.length;
-		if(natoms < 3) return [];
-		if(bonds.length === 0) return [];
+		if((natoms < 3) || (bonds.length === 0)) return [];
 
 		// Select the polyhedra center atoms
 		const centerIdx = selectAtomsByKind(this.structure!, this.labelKind, this.atomsSelector);

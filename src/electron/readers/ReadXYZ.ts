@@ -29,6 +29,8 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom,
 			 ReaderImplementation, PositionType} from "@/types";
 
+const spaces = /\s+/u;
+
 export class ReaderXYZ implements ReaderImplementation {
 
 	/**
@@ -64,7 +66,7 @@ export class ReaderXYZ implements ReaderImplementation {
 			else {
 				const line = lineRaw.trim();
 				if(line === "") throw Error("Invalid empty line found");
-				const fields = line.split(/\s+/u);
+				const fields = line.split(spaces);
 				if(fields.length < 4) throw Error(`Insufficient number of fields in "${line}"`);
 				const position: PositionType = [
 					Number.parseFloat(fields[1]),

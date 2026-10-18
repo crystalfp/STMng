@@ -731,12 +731,9 @@ export class AnalyzeStructureSets extends NodeCore {
 			for(let j=0; j < atomTypes.length; ++j) {
 
 				const count = atomCounts[j*numberComponents+i]*part;
-				if(formula.has(atomTypes[j])) {
-					formula.set(atomTypes[j], formula.get(atomTypes[j])! + count);
-				}
-				else {
-					formula.set(atomTypes[j], count);
-				}
+				formula.set(atomTypes[j],
+							formula.has(atomTypes[j]) ?
+									formula.get(atomTypes[j])! + count : count);
 			}
 		}
 

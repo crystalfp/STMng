@@ -152,28 +152,20 @@ export class WriterPDB implements WriterImplementation {
 
                     if(nb > 0 || nhb > 0) {
                         writeSync(fd, `CONECT${i.toString().padStart(5, " ")}`);
-                        if(nb > 0) writeSync(fd, ib[i][0].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
-                        if(nb > 1) writeSync(fd, ib[i][1].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
-                        if(nb > 2) writeSync(fd, ib[i][2].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
-                        if(nb > 3) writeSync(fd, ib[i][3].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
+                        writeSync(fd, nb > 0 ? ib[i][0].toString().padStart(5, " ") : " ".repeat(6));
+                        writeSync(fd, nb > 1 ? ib[i][1].toString().padStart(5, " ") : " ".repeat(6));
+                        writeSync(fd, nb > 2 ? ib[i][2].toString().padStart(5, " ") : " ".repeat(6));
+                        writeSync(fd, nb > 3 ? ib[i][3].toString().padStart(5, " ") : " ".repeat(6));
                         if(nhb > 0) writeSync(fd, ihb[i][0].toString().padStart(5, " "));
                         if(nhb > 1) writeSync(fd, ihb[i][1].toString().padStart(5, " "));
                         writeSync(fd, "\n");
                     }
                     if(nb > 4 || nhb > 2) {
                         writeSync(fd, `CONECT${i.toString().padStart(5, " ")}`);
-                        if(nb > 4) writeSync(fd, ib[i][4].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
-                        if(nb > 5) writeSync(fd, ib[i][5].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
-                        if(nb > 6) writeSync(fd, ib[i][6].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
-                        if(nb > 7) writeSync(fd, ib[i][7].toString().padStart(5, " "));
-                        else writeSync(fd, " ".repeat(6));
+                        writeSync(fd, nb > 4 ? ib[i][4].toString().padStart(5, " ") : " ".repeat(6));
+                        writeSync(fd, nb > 5 ? ib[i][5].toString().padStart(5, " ") : " ".repeat(6));
+                        writeSync(fd, nb > 6 ? ib[i][6].toString().padStart(5, " ") : " ".repeat(6));
+                        writeSync(fd, nb > 7 ? ib[i][7].toString().padStart(5, " ") : " ".repeat(6));
                         if(nhb > 2) writeSync(fd, ihb[i][2].toString().padStart(5, " "));
                         if(nhb > 3) writeSync(fd, ihb[i][3].toString().padStart(5, " "));
                         writeSync(fd, "\n");

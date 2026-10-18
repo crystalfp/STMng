@@ -31,6 +31,14 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import {ParseQuotedLine} from "../modules/ParseQuotedLine";
 import type {Structure, Atom, ReaderImplementation, BasisType} from "@/types";
 
+const comment = /#.*/u;
+// eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+const ctrlChar = /[\u{0}-\u{8}\u{E}-\u{1F}]/u;
+const spaces = /\s+/u;
+const quoted = /^["']([^"']+)["']/u;
+const twoD = /\[(\d)\]\[(\d)\]/u;
+const oneD = /\[(\d)\]/u;
+
 /** Collect lines from "loop_" constructs */
 class Table {
 
@@ -159,9 +167,8 @@ export class ReaderCIF implements ReaderImplementation {
 		for await (const line of reader) {
 
 			// Clear line from comments and control characters
-			const lineNC = line.replace(/#.*/u, "").trim();
-			// eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-			if(lineNC === "" || /[\u{0}-\u{8}\u{E}-\u{1F}]/u.test(lineNC)) continue;
+			const lineNC = line.replace(comment, "").trim();
+			if(lineNC === "" || ctrlChar.test(lineNC)) continue;
 
 			// The keys are case insensitive
 			const lineLC = lineNC.toLowerCase();
@@ -220,7 +227,7 @@ export class ReaderCIF implements ReaderImplementation {
 			if(!isInDataBlock) continue;
 
 			// Extract key and value inline
-			const ws = lineLC.split(/\s+/u);
+			const ws = lineLC.split(spaces);
 
 			switch(ws[0]) {
 				case "_symmetry.space_group_name_h-m":
@@ -229,10 +236,10 @@ export class ReaderCIF implements ReaderImplementation {
 				case "_space_group_name_h-m":
 					this.structures[this.step].crystal.spaceGroup =
 						lineNC
-							.split(/\s+/u)
+							.split(spaces)
 							.slice(1)
 							.join(" ")
-							.replace(/^["']([^"']+)["']/u, "$1")
+							.replace(quoted, "$1")
 							.trim();
 					break;
 				case "_cell_length_a":
@@ -278,7 +285,7 @@ export class ReaderCIF implements ReaderImplementation {
 					if(ws[0].startsWith("_atom_sites.fract_transf_matrix")) {
 
 						if(this.alreadyHaveCell) continue;
-						const match = /\[(\d)\]\[(\d)\]/u.exec(ws[0]);
+						const match = twoD.exec(ws[0]);
 						const r = Number.parseInt(match![1], 10)-1;
 						const c = Number.parseInt(match![2], 10)-1;
 						invBasis[r*3+c] = Number.parseFloat(ws[1]);
@@ -289,7 +296,7 @@ export class ReaderCIF implements ReaderImplementation {
 					}
 					else if(ws[0].startsWith("_atom_sites.fract_transf_vector")) {
 
-						const match = /\[(\d)\]/u.exec(ws[0]);
+						const match = oneD.exec(ws[0]);
 						const r = Number.parseInt(match![1], 10)-1;
 						this.structures[this.step].crystal.origin[r] = Number.parseFloat(ws[1]);
 					}

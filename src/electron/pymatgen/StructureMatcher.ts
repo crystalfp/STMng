@@ -121,12 +121,9 @@ const getComposition = (structure: SNL): Map<string, number> => {
     const composition = new Map<string, number>();
     for(const site of structure.sites) {
         for(const species of site.species) {
-            if(composition.has(species.element)) {
-                composition.set(species.element, composition.get(species.element)! + species.occu);
-            }
-            else {
-                composition.set(species.element, species.occu);
-            }
+
+            composition.set(species.element, composition.has(species.element) ?
+                            composition.get(species.element)! + species.occu : species.occu);
         }
     }
     return composition;
@@ -385,7 +382,7 @@ export class StructureMatcher {
 
             // Do quick check that compositions are compatible
             const mappedComp = new Map<string, number>(
-                [...s1Comp].map(([k, v]) => [spMapping.get(k)!, v])
+                Array.from(s1Comp, ([k, v]) => [spMapping.get(k)!, v])
             );
             if(StructureMatcher.getHash(mappedComp) !== StructureMatcher.getHash(s2Comp)) continue;
 

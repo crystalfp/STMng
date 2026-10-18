@@ -76,8 +76,8 @@ export class InterpolateVolume extends NodeCore {
 			countDatasets
 		});
 
-		if(!countDatasets || !this.interpolateVolume) this.toNextNode(this.structure);
-		else this.computeInterpolation();
+		if(countDatasets && this.interpolateVolume) this.computeInterpolation();
+		else this.toNextNode(this.structure);
 	}
 
 	// > Load/save status

@@ -29,6 +29,8 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom, BasisType,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
+const spaces = /\s+/u;
+
 /**
  * Line read type
  * @notExported
@@ -93,7 +95,7 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 
 			const line = lineRaw.trim();
 			if(line === "" || line.startsWith("#")) continue;
-			const fields = line.split(/\s+/u);
+			const fields = line.split(spaces);
 
 			switch(lineType) {
 				case LineType.item:

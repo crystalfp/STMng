@@ -100,9 +100,9 @@ const orderIntersectionPoints = (points: number[][], normal: number[]): number[]
 	centroid[2] /= npoints;
 
 	// Find two vectors perpendicular to the plane normal and to each other
-	const v1 = normal[0] !== 0 || normal[1] !== 0
-					? normalize([-normal[1], normal[0], 0])
-					: normalize([0, -normal[2], normal[1]]);
+	const v1 = normal[0] === 0 && normal[1] === 0
+					? normalize([0, -normal[2], normal[1]])
+					: normalize([-normal[1], normal[0], 0]);
 	const v2 = cross(normal, v1);
 
 	return points.toSorted((a: number[], b: number[]) => {

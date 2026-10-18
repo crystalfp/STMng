@@ -113,12 +113,7 @@ export class TSNE {
 		for(let i=0; i<n; i++) {
 			const xhere: number[] = [];
 			for(let j=0; j<d; j++) {
-				if(uses) {
-					xhere.push(s);
-				}
-				else {
-					xhere.push(this.randn(0.0, 1e-4));
-				}
+				xhere.push(uses ? s : this.randn(0.0, 1e-4));
 			}
 			x.push(xhere);
 		}

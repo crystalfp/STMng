@@ -364,15 +364,15 @@ export class SceneManager {
 				out += `${indent}${child.type} ${child.name}\n`;
 				out += this.dumpSceneWalker(`${indent}   `, child.children);
 			}
-			else if(child.type !== currentType || child.name !== currentName) {
+			else if(child.type === currentType && child.name === currentName) {
+				++currentCount;
+			}
+			else {
 
 				out += SceneManager.dumpItem(currentCount, currentType, currentName, indent);
 				currentType = child.type;
 				currentName = child.name;
 				currentCount = 1;
-			}
-			else {
-				++currentCount;
 			}
 		}
 

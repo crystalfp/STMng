@@ -29,6 +29,8 @@ import {EmptyStructure} from "../modules/EmptyStructure";
 import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
+const spaces = /\s+/u;
+
 export class ReaderLAMMPS implements ReaderImplementation {
 
 	/**
@@ -54,7 +56,7 @@ export class ReaderLAMMPS implements ReaderImplementation {
 			const line = lineRaw.trim();
 			if(line === "" || line.startsWith("#")) continue;
 
-			const fields = line.split(/\s+/u);
+			const fields = line.split(spaces);
 
 			if(lineType === "Atoms") {
 

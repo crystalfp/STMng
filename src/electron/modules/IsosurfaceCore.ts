@@ -281,11 +281,10 @@ export class IsosurfaceCore {
 
 		let sp;	// Next point (s-plus)
     	let sm;	// Previous point (s-minus)
-		let side;
 
 		// x-direction
-		side = (j >= this.dims[1]-1 ? 0 : (j * this.dims[0])) +
-			   (k >= this.dims[2]-1 ? 0 : (k * this.dims0x1));
+		let side = (j >= this.dims[1]-1 ? 0 : (j * this.dims[0])) +
+			       (k >= this.dims[2]-1 ? 0 : (k * this.dims0x1));
 		switch(i) {
 			case 0:
 				sp = this.values[1     + side];

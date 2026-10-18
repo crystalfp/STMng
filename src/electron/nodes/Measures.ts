@@ -228,7 +228,13 @@ export class Measures extends NodeCore {
 
 		const {atoms} = this.structure!;
 
-		if(idx1 !== undefined && idx2 !== undefined) {
+		if(idx1 === undefined || idx2 === undefined) {
+			this.distanceAB = -1;
+			this.distanceBC = -1;
+			this.distanceAC = -1;
+			this.angleABC = -1;
+		}
+		else {
 
 			// Compute distance between A and B atoms
 			const dx1 = atoms[idx1].position[0] - atoms[idx2].position[0];
@@ -257,12 +263,6 @@ export class Measures extends NodeCore {
 				const dotProduct = dx1*dx+dy1*dy+dz1*dz;
 				this.angleABC = Math.acos(dotProduct/(this.distanceAB*this.distanceBC))*RAD2DEG;
 			}
-		}
-		else {
-			this.distanceAB = -1;
-			this.distanceBC = -1;
-			this.distanceAC = -1;
-			this.angleABC = -1;
 		}
 	}
 

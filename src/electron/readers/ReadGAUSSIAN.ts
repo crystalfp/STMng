@@ -30,6 +30,8 @@ import {BOHR_TO_ANGSTROM} from "../../services/SharedConstants";
 import type {Structure, Atom,
 			 ReaderImplementation, ReaderOptions} from "@/types";
 
+const spaces = /\s+/u;
+
 /**
  * Line read type
  * @notExported
@@ -82,7 +84,7 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 		const stream = createInterface(createReadStream(filename, {encoding: "utf8"}));
 		for await (const line of stream) {
 
-			const fields = line.trim().split(/\s+/u);
+			const fields = line.trim().split(spaces);
 
 			switch(lineType) {
 				case LineType.comment1:
