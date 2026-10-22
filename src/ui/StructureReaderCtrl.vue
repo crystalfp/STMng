@@ -675,7 +675,7 @@ const startPrototypeQuery = (idx: number): void => {
             pearson.value = result.pearson as string ?? "";
             resetCamera();
             setFileInTitle("prototype: " +
-                           mineral.value.replaceAll(/<sub>(\w+)<\/sub>/g, "$1"));
+                           mineral.value.replaceAll(/<\/?sub>/gu, ""));
         })
         .catch((error: Error) => {
             showNodeAlert(error.message, "structureReader");
@@ -694,7 +694,7 @@ const startCollectionQuery = (idx: number): void => {
         .then((result) => {
             if(result.error) throw Error(result.error as string);
             setFileInTitle("collection: " +
-                           (result.name as string).replaceAll(/<sub>(\w+)<\/sub>/g, "$1"));
+                           (result.name as string).replaceAll(/<\/?sub>/gu, ""));
         })
         .catch((error: Error) => {
             showNodeAlert(error.message, "structureReader");
