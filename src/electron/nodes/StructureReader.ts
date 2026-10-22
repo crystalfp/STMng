@@ -138,8 +138,6 @@ export class StructureReader extends NodeCore {
 	 */
 	private channelInit(): CtrlParams {
 
-		const db = prototypeLoadList();
-		const collection = collectionLoadList();
 		return {
 			loopSteps: this.loopSteps,
 			stepBackward: this.stepBackward,
@@ -150,8 +148,8 @@ export class StructureReader extends NodeCore {
 			energyPerAtom: this.energyPerAtom,
 			stepIncrement: this.stepIncrement,
 			speed: this.speed,
-			db,
-			collection
+			db: prototypeLoadList(),
+			collection: collectionLoadList()
 		};
 	}
 

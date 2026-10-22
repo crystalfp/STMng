@@ -98,13 +98,13 @@ const appendFile      = ref(false);  // The file will be appended to the list of
 const stepRange       = ref([1, 1]); // Range of steps
 const showPrototypes  = ref(false);  // If the read comes from the prototypes database
 const showCollection  = ref(false);  // If the read comes from the structure collection
-const db              = reactive<DBType[]>([]); // The prototypes db content for query
+const prototypesList  = reactive<DBType[]>([]); // The prototypes db content for query
 const query           = ref("");     // The selected prototype UID
 const mineral         = ref("");     // The selected prototype mineral tag
 const pearson         = ref("");     // The selected prototype pearson tag
 const strukturbericht = ref("");     // The selected prototype strukturbericht tag
 const aflowTag        = ref("");     // The selected prototype aflow tag
-const collection      = ref<CollectionType[]>([]); // The structure collection
+const collectionList  = ref<CollectionType[]>([]); // The structure collection
 const collectionQuery = ref("");     // The selected collection entry ID
 
 // To clear the select atoms labels
@@ -177,26 +177,20 @@ askNode(id, "init")
         speed.value         = params.speed as 0 | 1 | 2 ?? 1;
         energyPerAtom.value = params.energyPerAtom as boolean ?? false;
         const dbString      = params.db as string;
-        db.length = 0;
+        prototypesList.length = 0;
         if(dbString) {
             const dbRaw = JSON.parse(dbString) as DBType[];
-            for(const entry of dbRaw) db.push(entry);
+            for(const entry of dbRaw) prototypesList.push(entry);
         }
-        collection.value.length = 0;
+        collectionList.value.length = 0;
         const collectionString = params.collection as string;
         if(collectionString) {
             const collectionRaw = JSON.parse(collectionString) as CollectionType[];
-            for(const entry of collectionRaw) collection.value.push(entry);
+            for(const entry of collectionRaw) collectionList.value.push(entry);
         }
 
-        if(format.value === "Collection") {
-            showCollection.value = true;
-            showPrototypes.value = false;
-        }
-        else {
-            showCollection.value = false;
-            showPrototypes.value = format.value === "Prototypes";
-        }
+        showCollection.value = format.value === "Collection";
+        showPrototypes.value = format.value === "Prototypes";
 
         return batchRead();
     })
@@ -758,7 +752,7 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
 
   <v-container v-if="showPrototypes" class="pa-0">
     <v-autocomplete v-model="query" label="Prototype query"
-                  :items="db" item-title="title" item-value="aflow"
+                  :items="prototypesList" item-title="title" item-value="aflow"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
                   @update:modelValue="startQuery"
@@ -775,7 +769,7 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
   </v-container>
   <v-container v-else-if="showCollection" class="pa-0">
     <v-autocomplete v-model="collectionQuery" label="Collection query"
-                  :items="collection" item-title="title" item-value="id"
+                  :items="collectionList" item-title="title" item-value="id"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No entry found" spellcheck="false"
                   @update:modelValue="startCollectionQuery"

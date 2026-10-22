@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import type {Atom, Structure} from "@/types";
+import type {Atom, Structure, CollectionsEntryType} from "@/types";
 import {publicDirPath} from "./GetPublicPath";
 import {existsSync, openSync, readSync, closeSync, readFileSync} from "node:fs";
 import {getAtomicSymbol} from "./AtomData";
