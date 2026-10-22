@@ -690,13 +690,13 @@ export class StructureReader extends NodeCore {
 	 */
 	private channelProto(params: CtrlParams): CtrlParams {
 
-		const aflow = params.aflow as string;
-		if(!aflow) {
+		const idx = params.idx as number;
+		if(!idx) {
 			this.toNextNode(new EmptyStructure());
 			return {result: "Empty aflow ID"};
 		}
 
-		const proto = prototypeGetStructure(aflow);
+		const proto = prototypeGetStructure(idx);
 
 		if(proto) {
 
@@ -715,7 +715,7 @@ export class StructureReader extends NodeCore {
 			};
 		}
 
-		return {error: `Prototype "${aflow}" not found`};
+		return {error: `Prototype "${idx}" not found`};
 	}
 
 	/**
@@ -763,16 +763,16 @@ export class StructureReader extends NodeCore {
 	private channelCollection(params: CtrlParams): CtrlParams {
 
 		// Do the query
-		const fileID = params.fileID as string;
-		if(!fileID) {
+		const idx = params.idx as number;
+		if(!idx) {
 			this.toNextNode(new EmptyStructure());
 			return {result: "Empty filename"};
 		}
 
-		const description = collectionGetStructure(fileID);
+		const description = collectionGetStructure(idx);
 		if(description === undefined) {
 			this.toNextNode(new EmptyStructure());
-			const message = `File for ID "${fileID}" not found`;
+			const message = `File for ID "${idx}" not found`;
 			log.error(message);
 			return {error: message};
 		}
@@ -789,7 +789,7 @@ export class StructureReader extends NodeCore {
 		// For some reason the db is corrupted
 		this.toNextNode(new EmptyStructure());
 
-		const message = `File for ID "${fileID}" invalid (${checkMessage})`;
+		const message = `File for ID "${idx}" invalid (${checkMessage})`;
 		log.error(message);
 		return {error: message};
 	}

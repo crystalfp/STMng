@@ -28,7 +28,7 @@ import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
 import {resetCamera} from "@/services/ResetCamera";
-import type {DBType, FileFilter} from "@/types";
+import type {FileFilter, CollectionsEntryType} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
 import SelectFile from "@/widgets/SelectFile.vue";
@@ -68,17 +68,6 @@ const fileFormats = [
     {title: "Collection",       value: "Collection"},
 ];
 
-/**
- * Collection entry for the autocomplete query
- * @notExported
- */
-interface CollectionType {
-    /** Title that appears in the widget (and the one searched over) */
-    title: string;
-    /** Corresponding fileID to load */
-    id: string;
-}
-
 // > UI parameters
 const countSteps      = ref(1);      // Total steps read
 const step            = ref(1);      // Current step
@@ -98,14 +87,14 @@ const appendFile      = ref(false);  // The file will be appended to the list of
 const stepRange       = ref([1, 1]); // Range of steps
 const showPrototypes  = ref(false);  // If the read comes from the prototypes database
 const showCollection  = ref(false);  // If the read comes from the structure collection
-const prototypesList  = reactive<DBType[]>([]); // The prototypes db content for query
-const query           = ref("");     // The selected prototype UID
+const prototypesList  = reactive<CollectionsEntryType[]>([]); // The prototypes db content
+const prototypeQuery  = ref(0);      // The selected prototype index
 const mineral         = ref("");     // The selected prototype mineral tag
 const pearson         = ref("");     // The selected prototype pearson tag
 const strukturbericht = ref("");     // The selected prototype strukturbericht tag
 const aflowTag        = ref("");     // The selected prototype aflow tag
-const collectionList  = ref<CollectionType[]>([]); // The structure collection
-const collectionQuery = ref("");     // The selected collection entry ID
+const collectionList  = reactive<CollectionsEntryType[]>([]); // The structure collection content
+const collectionQuery = ref(0);      // The selected collection entry index
 
 // To clear the select atoms labels
 const label1 = ref("");
@@ -179,14 +168,14 @@ askNode(id, "init")
         const dbString      = params.db as string;
         prototypesList.length = 0;
         if(dbString) {
-            const dbRaw = JSON.parse(dbString) as DBType[];
+            const dbRaw = JSON.parse(dbString) as CollectionsEntryType[];
             for(const entry of dbRaw) prototypesList.push(entry);
         }
-        collectionList.value.length = 0;
+        collectionList.length = 0;
         const collectionString = params.collection as string;
         if(collectionString) {
-            const collectionRaw = JSON.parse(collectionString) as CollectionType[];
-            for(const entry of collectionRaw) collectionList.value.push(entry);
+            const collectionRaw = JSON.parse(collectionString) as CollectionsEntryType[];
+            for(const entry of collectionRaw) collectionList.push(entry);
         }
 
         showCollection.value = format.value === "Collection";
@@ -670,23 +659,23 @@ const resetRange = (): void => {
 /**
  * Load the queried prototype
  *
- * @param aflow - Selected aflow UID to display
+ * @param idx - Index of the selected structure to display
  */
-const startQuery = (aflow: string): void => {
+const startPrototypeQuery = (idx: number): void => {
 
-    if(!aflow) aflow = "";
-    else if(aflow.startsWith("#")) aflow = aflow.slice(3);
+    if(!idx) idx = 0;
 
     // Retrieve prototype
-    askNode(id, "proto", {aflow})
+    askNode(id, "proto", {idx})
         .then((result) => {
             if(result.error) throw Error(result.error as string);
             mineral.value = result.mineral as string ?? "";
-            aflowTag.value = aflow;
+            aflowTag.value = result.aflow as string ?? "";
             strukturbericht.value = result.strukturbericht as string ?? "";
             pearson.value = result.pearson as string ?? "";
             resetCamera();
-            setFileInTitle("prototype: " + mineral.value);
+            setFileInTitle("prototype: " +
+                           mineral.value.replaceAll(/<sub>(\w+)<\/sub>/g, "$1"));
         })
         .catch((error: Error) => {
             showNodeAlert(error.message, "structureReader");
@@ -696,15 +685,16 @@ const startQuery = (aflow: string): void => {
 /**
  * Load the queried collection item
  *
- * @param filename - Filename to load
+ * @param idx - Index of the selected structure to show
  */
-const startCollectionQuery = (fileID: string): void => {
+const startCollectionQuery = (idx: number): void => {
 
-    if(!fileID) fileID = "";
-    askNode(id, "collection", {fileID})
+    if(!idx) idx = 0;
+    askNode(id, "collection", {idx})
         .then((result) => {
             if(result.error) throw Error(result.error as string);
-            setFileInTitle("collection: " + (result.name as string));
+            setFileInTitle("collection: " +
+                           (result.name as string).replaceAll(/<sub>(\w+)<\/sub>/g, "$1"));
         })
         .catch((error: Error) => {
             showNodeAlert(error.message, "structureReader");
@@ -751,14 +741,14 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
             @update:model-value="setFormat" />
 
   <v-container v-if="showPrototypes" class="pa-0">
-    <v-autocomplete v-model="query" label="Prototype query"
-                  :items="prototypesList" item-title="title" item-value="aflow"
+    <v-autocomplete v-model="prototypeQuery" label="Prototype query"
+                  :items="prototypesList" item-title="title" item-value="idx"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
-                  @update:modelValue="startQuery"
+                  @update:modelValue="startPrototypeQuery"
                   @click:clear="clearErrors"/>
-    <v-label v-if="query" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
-    <table v-if="query" class="ml-4 text-body-2">
+    <v-label v-if="prototypeQuery" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
+    <table v-if="prototypeQuery" class="ml-4 text-body-2">
       <tbody>
         <tr><td class="c1">aflow:</td><td>{{ aflowTag }}</td></tr>
         <tr><td class="c1">strukturbericht:</td>
@@ -769,7 +759,7 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
   </v-container>
   <v-container v-else-if="showCollection" class="pa-0">
     <v-autocomplete v-model="collectionQuery" label="Collection query"
-                  :items="collectionList" item-title="title" item-value="id"
+                  :items="collectionList" item-title="title" item-value="idx"
                   :auto-select-first="true" :hide-details="true"
                   :clearable="true" no-data-text="No entry found" spellcheck="false"
                   @update:modelValue="startCollectionQuery"

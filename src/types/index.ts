@@ -620,7 +620,7 @@ export interface CollectionsEntryType {
     /** Title that appears in the widget (and the one searched over) */
     title: string;
     /** Corresponding index to load */
-    idx: string;
+    idx: number;
 }
 
 /**

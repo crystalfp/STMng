@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import type {Atom, Structure, CollectionsEntryType} from "@/types";
+import type {Atom, Structure} from "@/types";
 import {publicDirPath} from "./GetPublicPath";
 import {existsSync, openSync, readSync, closeSync, readFileSync} from "node:fs";
 import {getAtomicSymbol} from "./AtomData";
@@ -91,6 +91,8 @@ interface PrototypeStructure {
 interface PrototypeIndex {
 	/** Offset to the structure data in the .dat binary file */
 	positionStructure: number;
+	/** AFLOW identifier (UID) */
+	aflow: string;
 	/** Pearson symbol */
 	pearson: string;
 	/** A detailed crystal structure classification by analogy to another known structure */
@@ -128,22 +130,39 @@ export interface CollectionsIndexEntry {
 	color?: string;
 }
 
+/** Distance queue entry */
 interface QueueEntry {
+	/** Distance value */
 	distance: number;
+	/** Corresponding index */
 	idx: number;
 }
 
+/**
+ * Class to conserve the n min distances
+ */
 class DistancesQueue {
 
 	private readonly entries: QueueEntry[];
 	private readonly size: number;
 
+	/**
+	 * Build the distance queue
+	 *
+	 * @param length - Length of the queue
+	 */
 	constructor(length: number) {
 		this.size = Math.max(length, 1);
 		this.entries = Array<QueueEntry>(this.size);
 		for(const entry of this.entries) entry.distance = Number.POSITIVE_INFINITY;
 	}
 
+	/**
+	 * Add a new distance to the queue (if less of the ones already stored)
+	 *
+	 * @param distance - Distance to add
+	 * @param idx - Corresponding key
+	 */
 	enqueue(distance: number, idx: number): void {
 
 		if(this.size === 1) {
@@ -168,6 +187,11 @@ class DistancesQueue {
 		}
 	}
 
+	/**
+	 * Dump the queue
+	 *
+	 * @returns The valid queue entries
+	 */
 	dump(): QueueEntry[] {
 
 		for(let i=0; i < this.size; ++i) {
@@ -197,7 +221,7 @@ class StructureCollection {
 	private cfp: Float64Array | undefined;
 	private readonly mapCfp = new Map<number, number[]>();
 
-	private readonly prototypeMap = new Map<string, PrototypeIndex>();
+	private readonly prototypeMap = new Map<number, PrototypeIndex>();
 	private readonly collectionMap = new Map<number, CollectionIndex>();
 
 	/**
@@ -250,34 +274,32 @@ class StructureCollection {
 		// Map from fpIdx to corresponding entries
 		for(let i=0; i < this.countEntries; ++i) {
 			const fpIdx = this.entries[i].fpIdx;
-			if(this.mapCfp.has(fpIdx)) {
-				this.mapCfp.get(fpIdx)!.push(i);
-			}
-			else {
-				this.mapCfp.set(fpIdx, [i]);
-			}
+			this.mapCfp.getOrInsert(fpIdx, []).push(i);
 		}
 
 		// Create the indices
-		let id = 0;
+		let idc = 0;
+		let idp = 0;
 		for(const entry of this.entries) {
 
 			if(entry.proto) {
 				const out: PrototypeIndex = {
 					positionStructure: entry.start,
+					aflow: entry.aflow ?? "",
 					pearson: entry.pearson ?? "",
 					strukturbericht: entry.strukturbericht ?? "",
 					mineral: entry.title
 				};
-				this.prototypeMap.set(entry.aflow, out);
+				this.prototypeMap.set(idp, out);
+				++idp;
 			}
 			else {
 				const out: CollectionIndex = {
 					positionStructure: entry.start,
 					mineral: entry.title,
 				};
-				this.collectionMap.set(id, out);
-				++id;
+				this.collectionMap.set(idc, out);
+				++idc;
 			}
 		}
 
@@ -387,26 +409,26 @@ class StructureCollection {
 
 		return this.entries ? JSON.stringify(this.entries
 							.filter((e) => e.proto)
-							.map((e) => ({
+							.map((e, idx) => ({
 								title: e.title.replaceAll(/<\/?sub>/gu, ""),
-								aflow: e.aflow
+								idx
 							}))) : "";
 	}
 
 	/**
-	 * Get prototype for a given UID formatted for reader
+	 * Get prototype at a given index formatted for reader
 	 *
-	 * @param aflow - Aflow UID
+	 * @param idx - prototype index
 	 * @returns Prototype data as ordinary structure (undefined if not found)
 	 */
-	prototypeGetStructure(aflow: string): PrototypeStructure | undefined {
+	prototypeGetStructure(idx: number): PrototypeStructure | undefined {
 
-		const entry = this.prototypeMap.get(aflow);
+		const entry = this.prototypeMap.get(idx);
 		if(entry === undefined) return undefined;
 
 		return {
 			pearson: entry.pearson,
-			aflow,
+			aflow: entry.aflow,
 			strukturbericht: entry.strukturbericht,
 			mineral: entry.mineral,
 			structure: this.data2structure(entry.positionStructure)
@@ -414,20 +436,30 @@ class StructureCollection {
 	}
 
 	// >> Collection
+	/**
+	 * Prepare the list for querying the collection database
+	 *
+	 * @returns JSON encoded list of collection names and indices
+	 */
 	collectionLoadList(): string {
 
 		return this.entries ? JSON.stringify(this.entries
 							.filter((e) => !e.proto)
 							.map((e, idx) => ({
 								title: e.title.replaceAll(/<\/?sub>/gu, ""),
-								id: idx
+								idx
 							}))) : "";
 	}
 
-	collectionGetStructure(id: string): CollectionStructure | undefined {
+	/**
+	 * Get collection entry at a given index formatted for reader
+	 *
+	 * @param idx - Collection structure index
+	 * @returns Collection entry data as ordinary structure (undefined if not found)
+	 */
+	collectionGetStructure(idx: number): CollectionStructure | undefined {
 
-		const idn = Number.parseInt(id, 10);
-		const entry = this.collectionMap.get(idn);
+		const entry = this.collectionMap.get(idx);
 		if(entry === undefined) return undefined;
 
 		return {
@@ -506,41 +538,41 @@ class StructureCollection {
  * @returns List of nearest structures id, title and distance
  */
 export const collectionsGetNearestStructures = (fp: Float64Array,
-											   n=1): CollectionsIndexEntry[] =>
+											    n=1): CollectionsIndexEntry[] =>
 	StructureCollection.getInstance().getNearestStructures(fp, n);
 
 /**
  * Prepare the list of entries for querying the prototype database
  *
- * @returns JSON encoded list of prototypes names and aflow UID
+ * @returns JSON encoded list of prototypes names and corresponding indices
  */
 export const prototypeLoadList = (): string =>
 				StructureCollection.getInstance().prototypeLoadList();
 
 /**
- * Get prototype for a given UID formatted for reader
+ * Get prototype for a given index formatted for reader
  *
- * @param aflow - Aflow UID
+ * @param idx - prototype index
  * @returns Prototype data as ordinary structure (undefined if not found)
  */
-export const prototypeGetStructure = (aflow: string): PrototypeStructure | undefined =>
-				StructureCollection.getInstance().prototypeGetStructure(aflow);
+export const prototypeGetStructure = (idx: number): PrototypeStructure | undefined =>
+				StructureCollection.getInstance().prototypeGetStructure(idx);
 
 /**
  * Load the collection and return the index
  *
- * @returns JSON encoded list of collection entries and the corresponding id
+ * @returns JSON encoded list of collection entries and the corresponding index
  */
 export const collectionLoadList = (): string =>
 				StructureCollection.getInstance().collectionLoadList();
 
 /**
- * Get the collection structure with the given ID
+ * Get the collection structure with the given index
  *
- * @param id - ID of the collection entry to access
+ * @param idx - Index of the collection entry to access
  * @returns The collection structure or undefined if not found
  * @throws Error.
  * "Collection database not loaded"
  */
-export const collectionGetStructure = (id: string): CollectionStructure | undefined =>
-				StructureCollection.getInstance().collectionGetStructure(id);
+export const collectionGetStructure = (idx: number): CollectionStructure | undefined =>
+				StructureCollection.getInstance().collectionGetStructure(idx);
