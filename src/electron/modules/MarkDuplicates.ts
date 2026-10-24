@@ -116,17 +116,32 @@ export const markDuplicates = (atoms: Atom[], crystal: Crystal): boolean[] => {
  */
 const checkCorrespondence = (li: boolean[], lj: boolean[], ld: boolean[]): boolean => {
 
-	// On the corners
-	// eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary, unicorn/prefer-simplified-conditions
-	return ((li[0] && li[1] && li[2] && lj[0] && lj[1] && lj[2]) ||
+	const a0 = li[0] && lj[0];
+	const a1 = li[1] && lj[1];
+	const a2 = li[2] && lj[2];
 
-		// On the edges
-		(li[0] && li[1] && lj[0] && lj[1] && ld[2]) ||
-		(li[0] && li[2] && lj[0] && lj[2] && ld[1]) ||
-		(li[1] && li[2] && lj[1] && lj[2] && ld[0])) ? true :
+	// On the corners or on the edges
+	const onCornersOrEdges =
+		((a0 && (a1 || a2)) || (a1 && a2)) &&
+		(a0 || ld[0]) && (a1 || ld[1]) && (a2 || ld[2]);
 
+	return onCornersOrEdges ||
 		// On the facies
 		((li[0] && lj[0] && ld[1] && ld[2]) ||
 		 (li[1] && lj[1] && ld[0] && ld[2]) ||
 		 (li[2] && lj[2] && ld[0] && ld[1]));
+
+	// The original code is:
+	// On the corners
+	// return ((li[0] && li[1] && li[2] && lj[0] && lj[1] && lj[2]) ||
+
+	// 	// On the edges
+	// 	(li[0] && li[1] && lj[0] && lj[1] && ld[2]) ||
+	// 	(li[0] && li[2] && lj[0] && lj[2] && ld[1]) ||
+	// 	(li[1] && li[2] && lj[1] && lj[2] && ld[0])) ? true :
+
+	// 	// On the facies
+	// 	((li[0] && lj[0] && ld[1] && ld[2]) ||
+	// 	 (li[1] && lj[1] && ld[0] && ld[2]) ||
+	// 	 (li[2] && lj[2] && ld[0] && ld[1]));
 };
