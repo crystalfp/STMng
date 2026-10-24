@@ -201,10 +201,10 @@ export class FindSimilar extends NodeCore {
 	 */
 	private static getBand(distance: number): string {
 
-		// #FF1700		>0.15 - questionable relatives
-		// #FFC200		0.12-0.15 distant relatives
-		// #D5FF00		0.04-0.12 - related structures
-		// #00FF00		up to 0.04 mean identical structures
+		// #FF1700		over 0.15  - questionable relatives
+		// #FFC200		0.12-0.15  - distant relatives
+		// #D5FF00		0.04-0.12  - related structures
+		// #00FF00		up to 0.04 - identical structures
 
 		if(distance <= 0.04) return "#00FF00";
 		if(distance <= 0.12) return "#D5FF00";
