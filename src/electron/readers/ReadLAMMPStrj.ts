@@ -46,12 +46,6 @@ const LineType = {
 } as const;
 
 /**
- * Line read type
- * @notExported
- */
-type Step = (typeof LineType)[keyof typeof LineType];
-
-/**
  * Types of unit cells
  * @notExported
  */
@@ -60,12 +54,6 @@ const BoxType = {
     restrictedTriclinic:   1,
     rectangular:   2,
 } as const;
-
-/**
- * Type of unit cell kind variables
- * @notExported
- */
-type Box = (typeof BoxType)[keyof typeof BoxType];
 
 export class ReaderLAMMPStrj implements ReaderImplementation {
 
@@ -82,11 +70,19 @@ export class ReaderLAMMPStrj implements ReaderImplementation {
 		let currentStructure: Structure;
 
 		let numberAtoms = 0;
+
+		// Line read type
+		type Step = (typeof LineType)[keyof typeof LineType];
+
 		let lineType: Step = LineType.item;
 		let atomIdx = 0;
 		const correspond: number[] = [];
 		let atomZ;
 		let hasErrors = false;
+
+		// Type of unit cell kind variables
+		type Box = (typeof BoxType)[keyof typeof BoxType];
+
 		let boxType: Box = BoxType.unknown;
 		const boxValues: BasisType = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 

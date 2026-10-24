@@ -47,12 +47,6 @@ const LineType = {
 	exit:    6
 } as const;
 
-/**
- * Line read type
- * @notExported
- */
-type Step = (typeof LineType)[keyof typeof LineType];
-
 export class ReaderPOSCAR implements ReaderImplementation {
 
 	/**
@@ -68,6 +62,10 @@ export class ReaderPOSCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
+
+		// Line read type
+		type Step = (typeof LineType)[keyof typeof LineType];
+
 		let lineType: Step = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];

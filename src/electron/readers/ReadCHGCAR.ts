@@ -50,12 +50,6 @@ const LineType = {
 	exit:         9,
 } as const;
 
-/**
- * Line read type
- * @notExported
- */
-type Step = (typeof LineType)[keyof typeof LineType];
-
 export class ReaderCHGCAR implements ReaderImplementation {
 
 	/**
@@ -71,6 +65,10 @@ export class ReaderCHGCAR implements ReaderImplementation {
 
 		const structures: Structure[] = [];
 		let scaleFactor = 1;
+
+		// Line read type
+		type Step = (typeof LineType)[keyof typeof LineType];
+
 		let lineType: Step = LineType.comment;
 		let base = 0;
 		const atomsCount: number[] = [];

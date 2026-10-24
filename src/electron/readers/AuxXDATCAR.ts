@@ -41,12 +41,6 @@ const LineType = {
 } as const;
 
 /**
- * Line read type
- * @notExported
- */
-type Step = (typeof LineType)[keyof typeof LineType];
-
-/**
  * Read the auxiliary file XDATCAR
  *
  * @param filename - Filename to be read as XDATCAR
@@ -67,6 +61,9 @@ export const readAuxXDATCAR = async (filename: string,
 	const {crystal, atoms} = mainStructures[mainLength-1];
 	const natoms = atoms.length;
 	if(natoms === 0) throw Error("Empty main structure");
+
+	// Line read type
+	type Step = (typeof LineType)[keyof typeof LineType];
 
 	let lineType: Step = LineType.header;
 	let headerLines = 5;

@@ -29,8 +29,6 @@ import {hasNoUnitCell, cartesianToFractionalCoordinates, hasUnitCell,
 import {getAtomData, getDataTable} from "../modules/AtomData";
 import type {ChannelDefinition, CtrlParams, PositionType, Structure} from "@/types";
 
-type OpType = "Create" | "Delete" | "Change" | "Reset";
-
 export class EditStructure extends NodeCore {
 
 	private inputStructure: Structure | undefined;
@@ -143,6 +141,8 @@ export class EditStructure extends NodeCore {
 	 * @returns Parameters to initialize the user interface
 	 */
 	private channelOp(params: CtrlParams): CtrlParams {
+
+		type OpType = "Create" | "Delete" | "Change" | "Reset";
 
 		const op = params.action as OpType;
 		if(!op) return {status: "noop"};

@@ -65,10 +65,9 @@ export const setBaseTitle = (baseTitle: string): void => {
  *
  * @param project - Current loaded project or empty string if default project
  */
-export const formatProjectInTitle = (project: string): string => { // eslint-disable-line unicorn/prefer-default-parameters
+export const formatProjectInTitle = (project: string): string => {
 
 	titleParts.project = project || "default project";
-	// titleParts.file = "";
 	return combineParts();
 };
 

@@ -47,12 +47,6 @@ const LineType = {
 	exit:     7,
 } as const;
 
-/**
- * Line read type
- * @notExported
- */
-type Step = (typeof LineType)[keyof typeof LineType];
-
 export class ReaderGAUSSIAN implements ReaderImplementation {
 
 	/**
@@ -66,6 +60,9 @@ export class ReaderGAUSSIAN implements ReaderImplementation {
 	 * "Malformed file (atoms line)"
 	 */
 	async readStructure(filename: string, options?: ReaderOptions): Promise<Structure[]> {
+
+		// Line read type
+		type Step = (typeof LineType)[keyof typeof LineType];
 
 		let lineType: Step = LineType.comment1;
 		let orbitalsPresent = false;

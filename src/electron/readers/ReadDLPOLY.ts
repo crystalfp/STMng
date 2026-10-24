@@ -47,12 +47,6 @@ const LineType = {
     atom4:   8,
 } as const;
 
-/**
- * Line read type
- * @notExported
- */
-type Step = (typeof LineType)[keyof typeof LineType];
-
 export class ReaderDLPOLY implements ReaderImplementation {
 
 	/**
@@ -66,6 +60,10 @@ export class ReaderDLPOLY implements ReaderImplementation {
 		let currentStructure: Structure | undefined;
 		const structures: Structure[] = [];
 		let currentAtom: Atom | undefined;
+
+		// Line read type
+		type Step = (typeof LineType)[keyof typeof LineType];
+
 		let lineType: Step = LineType.header;
 		let natoms = 0;
 		let step = 1;
