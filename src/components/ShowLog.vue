@@ -82,7 +82,7 @@ const copyToClipboard = async (): Promise<void> => {
                   variant="underlined" flat width="100%" class="pl-2" />
   </v-container>
   <v-container class="layout-buttons">
-    <v-btn @click="showConfirm=true">Wipe log</v-btn>
+    <v-btn @click="showConfirm=true">Clear log</v-btn>
     <v-btn :disabled="!copyText" @click="copyToClipboard">Copy to clipboard</v-btn>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
   </v-container>
