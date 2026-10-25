@@ -156,6 +156,33 @@ class ProjectManager {
 	}
 
 	/**
+	 * Read and verify project file
+	 *
+	 * @param filename - Filename to read and verify
+	 * @returns True if the read and verification succeeded
+	 */
+	private readAndVerifyProject(filename: string): boolean {
+
+		try {
+			const rawProject = readFileSync(filename, "utf8");
+			if(!rawProject) throw Error("Empty project file");
+			const tempProject = JSON.parse(rawProject) as Project;
+
+			// Verify the project format is valid
+			if(!tempProject) throw Error("Invalid project loaded");
+			if(!projectIsValid(tempProject)) throw Error("Invalid project file format");
+
+			// Send the needed parts of the project to the client
+			this.project = tempProject;
+		}
+		catch(error) {
+			sendAlertToClient(`Cannot read project file "${filename}". Error: ${(error as Error).message}`);
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	* Read the given project, parse it and send it to client
 	*
 	* @param filename - Project file to be read
@@ -216,9 +243,10 @@ class ProjectManager {
 	 */
 	private parseProject(): void {
 
-		// Verify the project format is valid
-		if(!this.project) throw Error("Invalid project loaded");
-		if(!projectIsValid(this.project)) throw Error("Invalid project file format");
+		if(!this.project) return;
+
+		// Clear a previous loaded project
+		this.activeNodes.clear();
 
 		// Store the nodes
 		for(const entry in this.project.graph) {
@@ -392,19 +420,35 @@ class ProjectManager {
 
 		const fstat = statSync(filename, {throwIfNoEntry: false});
 		if(!fstat?.isFile() || fstat.size === 0) {
-			sendAlertToClient(`Project file "${filename}" does not exist or is invalid. Loading default project`);
+			sendAlertToClient(`Project file "${filename}" does not exist or is empty. Loading default project`);
 
 			removeProjectPath();
 			filename = ProjectManager.getDefaultProject();
 			sendProjectPath();
 			loadedDefaultProject = true;
 		}
-		else {
+
+		if(this.readAndVerifyProject(filename)) {
+
+			try {
+				this.parseProject();
+			}
+			catch(error) {
+				sendAlertToClient(`Project file "${filename}" is invalid. Error: ${(error as Error).message}`);
+				return loadedDefaultProject;
+			}
+
+			this.projectName = loadedDefaultProject ? "" : path.basename(filename);
+
+			// Send the needed parts of the project to the client
+			this.sendProject();
 
 			setProjectPath(filename);
 			sendProjectPath(filename);
 		}
-		this.loadProject(filename, loadedDefaultProject);
+		else {
+			sendAlertToClient(`Project file "${filename}" is invalid`);
+		}
 		return loadedDefaultProject;
 	}
 
