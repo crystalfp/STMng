@@ -88,13 +88,13 @@ const stepRange       = ref([1, 1]); // Range of steps
 const showPrototypes  = ref(false);  // If the read comes from the prototypes database
 const showCollection  = ref(false);  // If the read comes from the structure collection
 const prototypesList  = reactive<CollectionsEntryType[]>([]); // The prototypes db content
-const prototypeQuery  = ref(0);      // The selected prototype index
+const prototypeQuery  = ref();       // The selected prototype index
 const mineral         = ref("");     // The selected prototype mineral tag
 const pearson         = ref("");     // The selected prototype pearson tag
 const strukturbericht = ref("");     // The selected prototype strukturbericht tag
 const aflowTag        = ref("");     // The selected prototype aflow tag
 const collectionList  = reactive<CollectionsEntryType[]>([]); // The structure collection content
-const collectionQuery = ref(0);      // The selected collection entry index
+const collectionQuery = ref();       // The selected collection entry index
 
 // To clear the select atoms labels
 const label1 = ref("");
