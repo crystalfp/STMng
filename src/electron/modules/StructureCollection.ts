@@ -168,6 +168,8 @@ class DistancesQueue {
 	 */
 	enqueue(distance: number, idx: number): void {
 
+		if(distance > this.entries.at(-1)!.distance) return;
+
 		if(this.size === 1) {
 			if(this.entries[0].distance > distance) {
 				this.entries[0].distance = distance;
@@ -180,7 +182,8 @@ class DistancesQueue {
 
 				if(this.entries[i].distance >= distance) {
 					for(let j=this.size-2; j>=i; --j) {
-						this.entries[j+1] = this.entries[j];
+						this.entries[j+1].distance = this.entries[j].distance;
+						this.entries[j+1].idx = this.entries[j].idx;
 					}
 					this.entries[i].distance = distance;
 					this.entries[i].idx = idx;
@@ -235,9 +238,6 @@ class StructureCollection {
 	private readonly cfpFilename: string;
 	private cfp: Float64Array | undefined;
 	private readonly mapCfp = new Map<number, number[]>();
-
-	// private readonly prototypeMap = new Map<number, PrototypeIndex>();
-	// private readonly collectionMap = new Map<number, CollectionIndex>();
 
 	/**
 	 * Initialize the interface to the structure collection
@@ -296,31 +296,15 @@ class StructureCollection {
 			this.mapCfp.getOrInsert(fpIdx, []).push(i);
 		}
 
-		// // Create the indices
-		// let idc = 0;
-		// let idp = 0;
-		// for(const entry of this.entries) {
-
-		// 	if(entry.proto) {
-		// 		const out: PrototypeIndex = {
-		// 			positionStructure: entry.start,
-		// 			aflow: entry.aflow ?? "",
-		// 			pearson: entry.pearson ?? "",
-		// 			strukturbericht: entry.strukturbericht ?? "",
-		// 			mineral: entry.title
-		// 		};
-		// 		this.prototypeMap.set(idp, out);
-		// 		++idp;
-		// 	}
-		// 	else {
-		// 		const out: CollectionIndex = {
-		// 			positionStructure: entry.start,
-		// 			mineral: entry.title,
-		// 		};
-		// 		this.collectionMap.set(idc, out);
-		// 		++idc;
-		// 	}
-		// }
+		// Reorder entries to have the most significative name first
+		for(const ids of this.mapCfp.values()) {
+			ids.sort((a, b) => {
+				const na = this.entries![a].title;
+				if(na.startsWith("Aflow")) return 1;
+				const nb = this.entries![b].title;
+				return nb.startsWith("Aflow") ? -1 : 0;
+			});
+		}
 
 		// Cache the fingerprint file
 		this.cacheFingerprintFile();
@@ -479,7 +463,7 @@ class StructureCollection {
 	collectionGetStructure(idx: number): CollectionStructure | undefined {
 
 		if(idx < 0 || idx >= this.countEntries) return;
-		const entry = this.entries![idx]; console.log(entry);
+		const entry = this.entries![idx];
 		if(entry.proto) return;
 
 		return {

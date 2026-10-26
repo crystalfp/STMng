@@ -101,9 +101,9 @@ requestData(windowPath, (params: CtrlParams) => {
     sv.setSceneModified();
 
     if(aflow || pearson || strukturbericht) {
-        const sb = strukturbericht.replace(re, "<sub>$1</sub>");
-        prototypeName.value = `${mineral}&ensp;(aflow: ${aflow},&ensp;`+
-                              `strukturbericht: ${sb},&ensp;pearson: ${pearson})`;
+        const pe = pearson ? `,&ensp;pearson: ${pearson}` : "";
+        const sb = strukturbericht ? `,&ensp;strukturbericht: ${strukturbericht.replace(re, "<sub>$1</sub>")}` : "";
+        prototypeName.value = `${mineral}&ensp;(aflow: ${aflow}${sb}${pe})`;
     }
     else {
         prototypeName.value = mineral || "";
@@ -333,7 +333,6 @@ const fillCell = (atoms: PrototypeAtomsData, matrix: number[][]): PrototypeAtoms
     for(let i=0; i < nOutAtoms; ++i) {
 
         const k = i*3;
-        // const k = idx[i]*3;
 		const fx = fc[k];
 		const fy = fc[k+1];
 		const fz = fc[k+2];

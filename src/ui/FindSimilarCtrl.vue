@@ -211,8 +211,10 @@ const selectResult = (fileId: number): void => {
                   class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
                   @click="selectResult(entry.idx)">
         <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
-        <v-label v-if="entry.isPrototype" class="bigger-result cursor-pointer">
-                {{ `aflow: ${entry.aflow}` }}</v-label>
+        <v-container v-if="entry.isPrototype" class="pa-0">
+          <v-label class="bigger-result cursor-pointer">
+                   {{ `aflow: ${entry.aflow}` }}</v-label><br>
+        </v-container>
         <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
         <v-label class="bigger-result cursor-pointer" :style="{color: entry.color}">
             {{ entry.distance.toFixed(4) }}</v-label>
