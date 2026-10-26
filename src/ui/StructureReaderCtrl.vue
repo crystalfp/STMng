@@ -661,13 +661,14 @@ const resetRange = (): void => {
  *
  * @param idx - Index of the selected structure to display
  */
-const startPrototypeQuery = (idx: number): void => {
+const startPrototypeQuery = (idx: number | null): void => {
 
-    if(!idx) idx = 0;
+    if(idx === null) return;
 
     // Retrieve prototype
     askNode(id, "proto", {idx})
         .then((result) => {
+
             if(result.error) throw Error(result.error as string);
             mineral.value = result.mineral as string ?? "";
             aflowTag.value = result.aflow as string ?? "";
@@ -687,11 +688,13 @@ const startPrototypeQuery = (idx: number): void => {
  *
  * @param idx - Index of the selected structure to show
  */
-const startCollectionQuery = (idx: number): void => {
+const startCollectionQuery = (idx: number | null): void => {
 
-    if(!idx) idx = 0;
+    if(idx === null) return;
+
     askNode(id, "collection", {idx})
         .then((result) => {
+
             if(result.error) throw Error(result.error as string);
             setFileInTitle("collection: " +
                            (result.name as string).replaceAll(/<\/?sub>/gu, ""));
@@ -716,6 +719,7 @@ onUnmounted(() => {
  */
 const clearErrors = (): void => {
     resetNodeAlert();
+    prototypeQuery.value = undefined;
 };
 
 /**
@@ -747,8 +751,8 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
                   @update:modelValue="startPrototypeQuery"
                   @click:clear="clearErrors"/>
-    <v-label v-if="prototypeQuery" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
-    <table v-if="prototypeQuery" class="ml-4 text-body-2">
+    <v-label v-if="prototypeQuery!==undefined" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
+    <table v-if="prototypeQuery!==undefined" class="ml-4 text-body-2">
       <tbody>
         <tr><td class="c1">aflow:</td><td>{{ aflowTag }}</td></tr>
         <tr><td class="c1">strukturbericht:</td>
@@ -867,7 +871,7 @@ td :deep(sub) {
 }
 
 .c1 {
-  width: 7.2rem;
+  width: 7.4rem;
   user-select: none;
   padding-bottom: 2px;
 }

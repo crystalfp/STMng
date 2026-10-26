@@ -667,7 +667,10 @@ export class StructureReader extends NodeCore {
 			});
 		if(typeof structures === "string") {
 
-			sendAlertToClient(structures, {node: "structureReader", userMessage: "Dropped PDB file disappeared. Drop it again"});
+			sendAlertToClient(structures, {
+				node: "structureReader",
+				userMessage: "Dropped PDB file disappeared. Drop it again"
+			});
 			return;
 		}
 		this.structures = structures;
@@ -691,7 +694,7 @@ export class StructureReader extends NodeCore {
 	private channelProto(params: CtrlParams): CtrlParams {
 
 		const idx = params.idx as number;
-		if(!idx) {
+		if(idx === undefined) {
 			this.toNextNode(new EmptyStructure());
 			return {result: "Empty aflow ID"};
 		}
@@ -709,9 +712,10 @@ export class StructureReader extends NodeCore {
 			this.toNextNode(this.structures[0]);
 
 			return {
+				aflow: proto.aflow,
 				pearson: proto.pearson,
 				strukturbericht: proto.strukturbericht,
-				mineral: proto.mineral
+				mineral: proto.name
 			};
 		}
 
@@ -764,7 +768,7 @@ export class StructureReader extends NodeCore {
 
 		// Do the query
 		const idx = params.idx as number;
-		if(!idx) {
+		if(idx === undefined) {
 			this.toNextNode(new EmptyStructure());
 			return {result: "Empty filename"};
 		}
@@ -780,7 +784,7 @@ export class StructureReader extends NodeCore {
 		const checkMessage = StructureReader.checkStructures(this.structures);
 		if(!checkMessage) {
 
-			const name = description.mineral;
+			const {name} = description;
 			this.toNextNode(this.structures[0]);
 			this.countSteps = 1;
 			return {name};
