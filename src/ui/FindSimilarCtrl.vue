@@ -4,7 +4,7 @@
  * Controls for the prototype and collection matchers node.
  *
  * @author Mario Valle "mvalle at ikmail.com"
- * @since 2026-02-20
+ * @since 2026-10-25
  *
  * Copyright 2026 Mario Valle
  *
@@ -23,10 +23,8 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {onUnmounted, reactive, ref, toRaw, watch} from "vue";
-
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
-import type {CollectionIndexEntry} from "@/electron/modules/CollectionDb";
 
 import BlockButton from "@/widgets/BlockButton.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
@@ -45,38 +43,46 @@ const {id, label} = defineProps<{
 // > Persistent state that is saved in the project file
 const state = reactive({
     enabled: false,
-
     numberMatches: 3,
-
-    lengthTolerance: 0.2,
-    siteTolerance: 0.3,
-    angleTolerance: 5,
 });
 
-/**
- * Identifiers for the matched prototypes [title, aflow]
- * @notExported
- */
-type Prototype = [title: string, aflow: string];
-
-const similar = reactive<CollectionIndexEntry[]>([]);
-const showParameters = ref(false);
-const prototypes = reactive<Prototype[]>([]);
-const formula = ref("");
 const spaceGroup = ref("");
 const showDetails = ref(false);
+const formula = ref("");
+const showParameters = ref(false);
+
+/** The result selector is in the dead-time period */
+let waiting = false;
+
+/**
+ * Match result entry
+ * @notExported
+ */
+interface ResultEntry {
+	/** Unique structure identifier */
+	idx: number;
+	/** User facing structure title */
+	title: string;
+    /** True if from prototype db else from collection */
+    isPrototype: boolean;
+    /** Aflow UID if this is a prototype, otherwise empty string */
+    aflow: string;
+	/** Distance from the given structure  */
+	distance: number;
+    /** Color for the grouped distances */
+    color: string;
+}
+
+const results = reactive<ResultEntry[]>([]);
 
 /** Color legend */
-const legend = ref(false);
+const showLegend = ref(false);
 const colorRanges = reactive([
     {color: "#FF1700", range: "over 0.15",   label: "questionable relatives"},
     {color: "#FFC200", range: "0.12 - 0.15", label: "distant relatives"},
     {color: "#D5FF00", range: "0.04 - 0.12", label: "related structures"},
     {color: "#00FF00", range: "up to 0.04",  label: "identical structures"},
 ]);
-
-/** The result selector is in the dead-time period */
-let waiting = false;
 
 // > Initialize ui
 resetNodeAlert();
@@ -85,17 +91,40 @@ askNode(id, "init")
     .then((params) => {
         state.enabled = params.enableMatcher as boolean ?? false;
         state.numberMatches = params.numberMatches as number ?? 3;
-        state.lengthTolerance = params.lengthTolerance as number ?? 0.2;
-        state.siteTolerance = params.siteTolerance as number ?? 0.3;
-        state.angleTolerance = params.angleTolerance as number ?? 5;
 
-        prototypes.length = 0;
-        similar.length = 0;
+        results.length = 0;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
                       "matchers");
     });
+
+/** Receive input info from main */
+receiveFromNode(id, "load-info", (params) => {
+
+    if(params.error) {
+        showNodeAlert(`Error loading structure for "${label}": ${params.error as string}`,
+                      "matchers");
+        formula.value = "";
+        spaceGroup.value = "";
+        return;
+    }
+
+    formula.value = params.formula as string ?? "";
+    spaceGroup.value = params.spaceGroup as string ?? "";
+});
+
+/**
+ * Ask main to send input data info from main
+ *
+ * @param show - Status of the "show info" toggle
+ */
+const showDetailsChanged = (show: boolean | null): void => {
+
+    formula.value = "";
+    spaceGroup.value = "";
+    if(show) sendToNode(id, "info");
+};
 
 /** Pass state changes to the main process for saving in the project file */
 const stopWatcher = watch(state, (after) => {
@@ -106,53 +135,43 @@ const stopWatcher = watch(state, (after) => {
 // Cleanup
 onUnmounted(() => stopWatcher());
 
-/** Receive the parameters of the structures loaded */
-receiveFromNode(id, "load-coll", (params) => {
+/** Receive the parameters of the structures found */
+receiveFromNode(id, "results", (params) => {
 
-    const ids = params.ids as string[] ?? [];
-    const titles = params.titles as string[] ?? [];
+    const indices = params.idCollections as number[] ?? [];
+    const titles = params.titleCollections as string[] ?? [];
     const distances = params.distances as number[] ?? [];
-    const color = params.color as string[] ?? [];
-    spaceGroup.value = params.spaceGroup as string ?? "";
+    const isPrototype = params.isPrototype as number[] ?? [];
+    const aflow = params.aflow as string[] ?? [];
+    const colors = params.colors as string[] ?? [];
 
-    const len = ids.length;
-    similar.length = 0;
+    const len = indices.length;
+    results.length = len;
     for(let i=0; i < len; ++i) {
-        similar.push({
-            id: ids[i],
+        results[i] = {
+            idx: indices[i],
             title: titles[i],
             distance: distances[i],
-            color: color[i]
-        });
-    }
-});
-receiveFromNode(id, "load-proto", (params) => {
-
-    const aflow = params.aflow as string[] ?? [];
-    const titles = params.titles as string[] ?? [];
-    formula.value = params.formula as string ?? "";
-
-    const len = aflow.length;
-    prototypes.length = 0;
-    for(let i=0; i < len; ++i) {
-        prototypes.push([titles[i], aflow[i]]);
+            isPrototype: isPrototype[i] !== 0,
+            aflow: aflow[i],
+            color: colors[i]
+        };
     }
 });
 
 /**
  * Display in a secondary window the corresponding structure
  *
- * @param idOrAflow - Collection structure file ID or prototype Aflow UID
- * @param isCollection - True if the id comes from the collection results
+ * @param fileId - Collection structure file ID
  */
-const selectResult = (idOrAflow: string, isCollection: boolean): void => {
+const selectResult = (fileId: number): void => {
 
-    if(!idOrAflow || waiting) return;
+    if(fileId === undefined || waiting) return;
     setTimeout(() => {waiting = false;}, 500);
     waiting = true;
 
-    // Retrieve prototype
-    askNode(id, "show", {id: idOrAflow, isCollection})
+    // Open secondary window on the selected structure
+    askNode(id, "show", {id: fileId})
         .then((result) => {
             if(result.error) throw Error(result.error as string);
         })
@@ -161,38 +180,14 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
         });
 };
 
-/**
- * Reset parameters to default values
- */
-const resetParams = (): void => {
-
-    Object.assign(state, {
-        lengthTolerance: 0.2,
-        siteTolerance: 0.3,
-        angleTolerance: 5,
-        noThreshold: false,
-        threshold: 0.01,
-        numberMatches: 3,
-    });
-};
-
-/**
- * Open a secondary window with the matches
- */
-const showMatches = (): void => {
-
-    if(prototypes.length === 0 && similar.length === 0) return;
-
-    sendToNode(id, "matches");
-};
-
 </script>
 
 
 <template>
 <v-container class="container">
   <v-switch v-model="state.enabled" label="Enable matchers" class="mt-4 ml-1" />
-  <v-switch v-model="showDetails" label="Show input details" class="mt-n2 ml-1 mb-0" />
+  <v-switch v-model="showDetails" label="Show input details" class="mt-n2 ml-1 mb-0"
+            @update:model-value="showDetailsChanged"/>
   <v-container v-if="showDetails" class="pl-1 pt-2 pb-0">
     <v-row>
       <v-label text="Structure:" class="bigger-result no-select mt-n2" />
@@ -210,35 +205,28 @@ const showMatches = (): void => {
 
   <node-alert node="matchers" />
 
-  <v-label class="separator-title">Prototype matches</v-label>
-  <v-container v-if="state.enabled && prototypes.length > 0" class="mb-4 pa-0 pr-2">
-      <v-container v-for="entry of prototypes" :key="entry[1]" v-ripple
+  <v-label class="separator-title">Matching structures</v-label>
+  <v-container v-if="state.enabled && results.length > 0" class="mb-4 pa-0 pr-2">
+      <v-container v-for="entry of results" :key="entry.idx" v-ripple
                   class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
-                  @click="selectResult(entry[1], false)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry[0]" /><br>
-        <v-label class="bigger-result cursor-pointer">{{ `aflow: ${entry[1]}` }}</v-label>
+                  @click="selectResult(entry.idx)">
+        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
+        <v-label v-if="entry.isPrototype" class="bigger-result cursor-pointer">
+                {{ `aflow: ${entry.aflow}` }}</v-label>
+        <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
+        <v-label class="bigger-result cursor-pointer" :style="{color: entry.color}">
+            {{ entry.distance.toFixed(4) }}</v-label>
       </v-container>
   </v-container>
 
-  <v-label class="separator-title reduce-top">Collection matches</v-label>
-  <v-container v-if="state.enabled && similar.length > 0" class="pt-0 pl-0 pr-2 pb-2">
-      <v-container v-for="entry of similar" :key="entry.id" v-ripple
-                   class="mb-2 py-1 pl-2 border-thin rounded-lg cursor-pointer"
-                   @click="selectResult(entry.id, true)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" />
-        <br>
-        <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
-        <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
-            {{ entry.distance!.toFixed(4) }}</v-label>
-      </v-container>
-  </v-container>
-  <v-switch v-model="legend" label="Show color legend" class="mt-n3 ml-1 mb-n1" />
-  <v-container v-if="legend" class="pb-0">
+  <v-switch v-model="showLegend" label="Show color legend" class="mt-n3 ml-1 mb-n1" />
+  <v-container v-if="showLegend" class="pb-0">
     <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
       <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
       <span style="width: 5.5rem; margin-right: 3px">{{ n.range }}</span>{{ n.label }}
     </div>
   </v-container>
+
   <block-button label="Matchers parameters" class="mb-n2 mt-4"
                 @click="showParameters = !showParameters"/>
   <v-container v-if="showParameters" class="pa-0">
@@ -246,23 +234,10 @@ const showMatches = (): void => {
                       :min="1" :max="8" :step="1" class="mb-2 mt-2">
       <v-label :text="`Collection neighbors (${value})`" class="no-select" />
     </debounced-slider>
-    <debounced-slider v-slot="{value}" v-model="state.lengthTolerance"
-                      :min="0.05" :max="0.4" :step="0.05" class="mb-2 mt-2">
-      <v-label :text="`Fractional length tolerance (${value.toFixed(2)})`" class="no-select" />
-    </debounced-slider>
-    <debounced-slider v-slot="{value}" v-model="state.siteTolerance"
-                      :min="0.05" :max="0.6" :step="0.05" class="mb-2 mt-2">
-      <v-label :text="`Site tolerance (${value.toFixed(2)})`" class="no-select" />
-    </debounced-slider>
-    <debounced-slider v-slot="{value}" v-model="state.angleTolerance"
-                        :min="0.5" :max="10" :step="0.5" class="mb-0 mt-2">
-      <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
-    </debounced-slider>
-    <block-button class="mt-5 mb-n2" label="Reset parameters" @click="resetParams" />
   </v-container>
   <block-button label="Show matches" class="mt-2"
-                :disabled="prototypes.length === 0 && similar.length === 0"
-                @click="showMatches"/>
+                :disabled="results.length === 0"
+                @click="sendToNode(id, 'matches')"/>
 </v-container>
 </template>
 
@@ -273,8 +248,11 @@ const showMatches = (): void => {
   bottom: -0.5rem;
 }
 
-.reduce-top {
-  margin-top: -4px !important;
+.show-formula {
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  font-family: monospace;
+  letter-spacing: 1px;
 }
 
 .show-symmetry {
@@ -283,10 +261,4 @@ const showMatches = (): void => {
   font-size: 1.2rem;
 }
 
-.show-formula {
-  font-size: 1.2rem;
-  margin-left: 2rem;
-  font-family: monospace;
-  letter-spacing: 1px;
-}
 </style>

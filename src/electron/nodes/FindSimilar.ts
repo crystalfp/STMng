@@ -1,11 +1,10 @@
 /**
- * Interface to Pymatgen Aflow prototype matcher and the fingerprint
- * based collection matchers.
+ * Interface to the fingerprint based collection matcher.
  *
  * @packageDocumentation
  *
  * @author Mario Valle "mvalle at ikmail.com"
- * @since 2026-02-20
+ * @since 2026-10-25
  *
  * Copyright 2026 Mario Valle
  *
@@ -24,40 +23,38 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {NodeCore} from "../modules/NodeCore";
-import {hasNoUnitCell} from "../modules/Helpers";
-import {markDuplicates} from "../modules/MarkDuplicates";
-import {sendToClient} from "../modules/ToClient";
-import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
+import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen,
+		sendToSecondaryWindow} from "../modules/WindowsUtilities";
 import {getAtomData, getAtomicSymbol} from "../modules/AtomData";
-import {createOrUpdateSecondaryWindow, isSecondaryWindowOpen, sendToSecondaryWindow} from "../modules/WindowsUtilities";
-import {collectionGetName, collectionGetNearestStructures, collectionGetStructure} from "../modules/CollectionDb";
-import {findMatchingPrototypes, prototypeGetStructure} from "../modules/PrototypeDb";
-import type {Atom, ChannelDefinition, Crystal, CtrlParams,
-			 FingerprintingParameters, PrototypeAtomsData, Structure} from "@/types";
+import {markDuplicates} from "../modules/MarkDuplicates";
+import {hasNoUnitCell} from "../modules/Helpers";
+import {sendToClient} from "../modules/ToClient";
+import {getStructure, collectionsGetNearestStructures, getMetadata} from "../modules/StructureCollection";
+import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
+import type {Structure, ChannelDefinition, CtrlParams, Atom, Crystal,
+			 PrototypeAtomsData, FingerprintingParameters} from "@/types";
 
 export class FindSimilar extends NodeCore {
 
 	private structure: Structure | undefined;
 	private formula = "";
 
-	private readonly idCollection: string[] = [];
-	private readonly titleCollection: string[] = [];
-	private readonly distance: number[] = [];
-	private readonly colorBand: string[] = [];
-	private readonly idPrototypes: string[] = [];
-	private readonly titlePrototypes: string[] = [];
+	private readonly idCollections: number[] = [];
+	private readonly titleCollections: string[] = [];
+	private readonly distances: number[] = [];
+	private readonly colors: string[] = [];
+	private readonly isPrototype: number[] = [];
+	private readonly aflow: string[] = [];
 
 	// Mirror of the UI reactive state
 	private readonly state = {
 		enabled: false,
 		numberMatches: 3,
-		lengthTolerance: 0.2,
-		siteTolerance: 0.3,
-		angleTolerance: 5,
 	};
 
 	private readonly channels: ChannelDefinition[] = [
 		{name: "init",		type: "invoke", callback: this.channelInit.bind(this)},
+		{name: "info",		type: "send",	callback: this.channelInfo.bind(this)},
 		{name: "state",		type: "send",	callback: this.channelState.bind(this)},
 		{name: "show",		type: "invoke",	callback: FindSimilar.channelShow.bind(this)},
 		{name: "matches",	type: "send",	callback: this.channelMatches.bind(this)},
@@ -87,9 +84,6 @@ export class FindSimilar extends NodeCore {
 
    	    this.state.enabled = params.enabled as boolean ?? false;
         this.state.numberMatches = params.numberMatches as number ?? 1;
-		this.state.lengthTolerance = params.lengthTolerance as number ?? 0.2;
-		this.state.siteTolerance = params.siteTolerance as number ?? 0.3;
-		this.state.angleTolerance = params.angleTolerance as number ?? 5;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -100,20 +94,36 @@ export class FindSimilar extends NodeCore {
 	// > Input structure
 	override fromPreviousNode(data: Structure): void {
 
+		if(!data?.atoms.length) return;
 		this.structure = data;
+		const {atoms, crystal} = this.structure;
+		const {basis, spaceGroup} = crystal;
 
+		if(hasNoUnitCell(basis)) {
+			sendToClient(this.id, "load-info", {error: "Structure has no unit cell"});
+			return;
+		}
+
+		// Remove duplicate and outside unit cell atoms
+		const duplicates = markDuplicates(atoms, crystal);
+
+		this.formula = FindSimilar.getChemicalFormula(this.structure, duplicates);
+
+		sendToClient(this.id, "load-info", {formula: this.formula, spaceGroup});
+
+		if(!this.state.enabled) return;
 		this.findSimilar();
 
 		if(!isSecondaryWindowOpen("/matches")) return;
 
 		const dataToSend: CtrlParams = {
 			id: this.id,
-			idCollection: this.idCollection,
-			titleCollection: this.titleCollection,
-			distance: this.distance,
-			color: this.colorBand,
-			aflow: this.idPrototypes,
-			titlePrototypes: this.titlePrototypes,
+			idCollections: this.idCollections,
+			titleCollections: this.titleCollections,
+			distances: this.distances,
+			colors: this.colors,
+			aflow: this.aflow,
+			isPrototype: this.isPrototype,
 			spaceGroup: this.structure.crystal.spaceGroup,
 			formula: this.formula
 		};
@@ -122,95 +132,6 @@ export class FindSimilar extends NodeCore {
 	}
 
 	// > Computation
-	/**
-	 * Find matching structure in the collection and prototypes
-	 */
-	private findSimilar(): void {
-
-		// Nothing to do
-		if(!this.state.enabled ||
-		   !this.structure?.atoms.length ||
-		   hasNoUnitCell(this.structure.crystal.basis)) {
-
-			sendToClient(this.id, "load-coll", {
-				titles: [],
-				ids: [],
-				distances: [],
-				color: [],
-				spaceGroup: ""
-			});
-
-			sendToClient(this.id, "load-proto", {
-				titles: [],
-				aflow: [],
-				formula: ""
-			});
-
-			return;
-		}
-
-		this.findSimilarInCollection();
-		this.findSimilarInPrototypes();
-	}
-
-	/**
-	 * Find similar structures from the collection
-	 */
-	private findSimilarInCollection(): void {
-
-		if(this.structure === undefined) return;
-		const {atoms, crystal} = this.structure;
-
-		// Remove duplicate and outside unit cell atoms
-		const duplicates = markDuplicates(atoms, crystal);
-
-		this.formula = FindSimilar.getChemicalFormula(this.structure, duplicates);
-
-		// Compute the input structure fingerprint
-		const fp = FindSimilar.computeFingerprint(atoms, crystal, duplicates);
-
-		// Find similar
-		const results = collectionGetNearestStructures(fp, this.state.numberMatches);
-
-		// Prepare the data for the client
-		this.idCollection.length = 0;
-		this.titleCollection.length = 0;
-		this.distance.length = 0;
-		this.colorBand.length = 0;
-
-		for(const {title, id, distance} of results) {
-			this.titleCollection.push(title);
-			this.idCollection.push(id);
-			this.distance.push(distance!);
-			this.colorBand.push(FindSimilar.getBand(distance!));
-		}
-		sendToClient(this.id, "load-coll", {
-			titles: this.titleCollection,
-			ids: this.idCollection,
-			distances: this.distance,
-			color: this.colorBand,
-			spaceGroup: this.structure.crystal.spaceGroup
-		});
-	}
-
-	/**
-	 * Assign color for the distance range
-	 *
-	 * @param distance - Structure distance from the input one
-	 * @returns Color based on distance
-	 */
-	private static getBand(distance: number): string {
-
-		// #FF1700		over 0.15  - questionable relatives
-		// #FFC200		0.12-0.15  - distant relatives
-		// #D5FF00		0.04-0.12  - related structures
-		// #00FF00		up to 0.04 - identical structures
-
-		if(distance <= 0.04) return "#00FF00";
-		if(distance <= 0.12) return "#D5FF00";
-		return distance <= 0.15 ? "#FFC200" : "#FF0000";
-	}
-
 	/**
 	 * Compute fingerprint of the input structure
 	 *
@@ -264,30 +185,67 @@ export class FindSimilar extends NodeCore {
 		return result.fingerprint;
 	}
 
-	/**
-	 * Find similar structures from the prototypes
-	 */
-	private findSimilarInPrototypes(): void {
+	private findSimilar(): void {
 
-		const matches = findMatchingPrototypes(this.structure!,
-			this.state.lengthTolerance,
-			this.state.siteTolerance,
-			this.state.angleTolerance);
+		// Nothing to do
+		if(!this.state.enabled ||
+		   !this.structure?.atoms.length ||
+		   hasNoUnitCell(this.structure.crystal.basis)) {
 
-		// Prepare the data for the client
-		this.idPrototypes.length = 0;
-		this.titlePrototypes.length = 0;
-		const len = matches.aflow.length;
-		for(let i=0; i < len; ++i) {
+			sendToClient(this.id, "results", {
+				idCollections: [],
+				titleCollections: [],
+				distances: [],
+				colors: [],
+				isPrototype: [],
+				aflow: [],
+			});
 
-			this.idPrototypes.push(matches.aflow[i]);
-			this.titlePrototypes.push(matches.mineral[i]);
+			return;
 		}
 
-		sendToClient(this.id, "load-proto", {
-			titles: matches.mineral,
-			aflow: matches.aflow,
-			formula: this.formula
+		const {atoms, crystal} = this.structure;
+
+		// Remove duplicate and outside unit cell atoms
+		const duplicates = markDuplicates(atoms, crystal);
+
+		this.formula = FindSimilar.getChemicalFormula(this.structure, duplicates);
+
+		// Compute the input structure fingerprint
+		const fp = FindSimilar.computeFingerprint(atoms, crystal, duplicates);
+
+		// Find similar
+		const results = collectionsGetNearestStructures(fp, this.state.numberMatches);
+
+		// Prepare the data for the client
+		this.idCollections.length = 0;
+		this.titleCollections.length = 0;
+		this.distances.length = 0;
+		this.colors.length = 0;
+		this.isPrototype.length = 0;
+		this.aflow.length = 0;
+
+		for(const {title, id, distance} of results) {
+
+			const entry = getMetadata(id);
+			if(!entry) continue;
+
+			this.titleCollections.push(title);
+			this.idCollections.push(id);
+			this.distances.push(distance);
+			this.colors.push(FindSimilar.getBand(distance));
+
+			this.aflow.push(entry.proto ? entry.aflow ?? "" : "");
+			this.isPrototype.push(entry.proto ? 1 : 0);
+		}
+
+		sendToClient(this.id, "results", {
+			idCollections: this.idCollections,
+			titleCollections: this.titleCollections,
+			distances: this.distances,
+			isPrototype: this.isPrototype,
+			aflow: this.aflow,
+			colors: this.colors
 		});
 	}
 
@@ -320,35 +278,6 @@ export class FindSimilar extends NodeCore {
 		return formula;
 	}
 
-	// > Channel handlers
-	/**
-	 * Channel handler for UI initialization
-	 *
-	 * @returns Parameters to initialize the user interface
-	 */
-	private channelInit(): CtrlParams {
-
-		return {
-			enabled: this.state.enabled,
-        	numberMatches: this.state.numberMatches,
-			lengthTolerance: this.state.lengthTolerance,
-			siteTolerance: this.state.siteTolerance,
-			angleTolerance: this.state.angleTolerance,
-		};
-	}
-
-	/**
-	 * Channel handler for saving the UI status and start computation
-	 *
-	 * @param params - Status from client
-	 */
-	private channelState(params: CtrlParams): void {
-
-		this.initializeState(params);
-
-		this.findSimilar();
-	}
-
 	/**
 	 * Format the atoms for display
 	 *
@@ -378,6 +307,63 @@ export class FindSimilar extends NodeCore {
 	}
 
 	/**
+	 * Assign color for the distance range
+	 *
+	 *	 #FF1700		over 0.15  - questionable relatives
+	 *	 #FFC200		0.12-0.15  - distant relatives
+	 *	 #D5FF00		0.04-0.12  - related structures
+	 *	 #00FF00		up to 0.04 - identical structures
+	 *
+	 * @param distance - Structure distance from the input one
+	 * @returns Color based on distance
+	 */
+	private static getBand(distance: number): string {
+
+	    if(distance <= 0.04) return "#00FF00";
+        if(distance <= 0.12) return "#D5FF00";
+		return distance <= 0.15 ? "#FFC200" : "#FF0000";
+	}
+
+	// > Channel handlers
+	/**
+	 * Channel handler for UI initialization
+	 *
+	 * @returns Parameters to initialize the user interface
+	 */
+	private channelInit(): CtrlParams {
+
+		return {
+			enabled: this.state.enabled,
+        	numberMatches: this.state.numberMatches,
+		};
+	}
+
+	/**
+	 * Channel handler for saving the UI status and start computation
+	 *
+	 * @param params - Status from client
+	 */
+	private channelState(params: CtrlParams): void {
+
+		this.initializeState(params);
+
+		this.findSimilar();
+	}
+
+	/**
+	 * Channel handler for getting input structure data
+	 */
+	private channelInfo(): void {
+
+		if(!this.structure) return;
+
+		const {crystal} = this.structure;
+		const {spaceGroup} = crystal;
+
+		sendToClient(this.id, "load-info", {formula: this.formula, spaceGroup});
+	}
+
+	/**
 	 * Channel handler for display the structure matched
 	 *
 	 * @param params - Params from the client
@@ -385,48 +371,33 @@ export class FindSimilar extends NodeCore {
 	 */
 	private static channelShow(params: CtrlParams): CtrlParams {
 
-		const id = params.id as string;
-		if(!id) return {result: "Empty file ID"};
-		const isCollection = params.isCollection as boolean ?? false;
+		const id = params.id as number;
+		if(id === undefined) return {result: "Empty file ID"};
 
-		let dataForClient: CtrlParams;
-		if(isCollection) {
-			const structure = collectionGetStructure(id);
-			if(structure === undefined) {
-				const message = `File for ID "${id}" not found`;
-				return {error: message};
-			}
-
-			const name = collectionGetName(id);
-
-			dataForClient = {
-				matrix: structure.crystal.basis,
-				atoms: FindSimilar.formatAtoms(structure.atoms),
-				mineral: name,
-			};
+		const result = getStructure(id);
+		if(result === undefined) {
+			const message = `File for ID "${id}" not found`;
+			return {error: message};
 		}
-		else {
-			const prototype = prototypeGetStructure(id);
-			if(prototype === undefined) {
-				const message = `File for Aflow "${id}" not found`;
-				return {error: message};
-			}
-
-			dataForClient = {
-				aflow: id,
-				pearson: prototype.pearson,
-				strukturbericht: prototype.strukturbericht,
-				mineral: prototype.mineral,
-				matrix: prototype.structure.crystal.basis,
-				atoms: FindSimilar.formatAtoms(prototype.structure.atoms)
+		const dataForClient: CtrlParams = result.proto ?
+			{
+				aflow: result.aflow,
+				pearson: result.pearson ?? "",
+				strukturbericht: result.strukturbericht ?? "",
+				mineral: result.title,
+				matrix: result.structure.crystal.basis,
+				atoms: FindSimilar.formatAtoms(result.structure.atoms)
+			} : {
+				matrix: result.structure.crystal.basis,
+				atoms: FindSimilar.formatAtoms(result.structure.atoms),
+				mineral: result.title,
 			};
-		}
 
 		createOrUpdateSecondaryWindow({
 			routerPath: "/prototype",
 			width: 1400,
 			height: 900,
-			title: "Collection structure",
+			title: "Structure from collections",
 			data: dataForClient
 		});
 
@@ -440,12 +411,12 @@ export class FindSimilar extends NodeCore {
 
 		const dataToSend: CtrlParams = {
 			id: this.id,
-			idCollection: this.idCollection,
-			titleCollection: this.titleCollection,
-			distance: this.distance,
-			color: this.colorBand,
-			aflow: this.idPrototypes,
-			titlePrototypes: this.titlePrototypes,
+			idCollections: this.idCollections,
+			titleCollections: this.titleCollections,
+			distances: this.distances,
+			colors: this.colors,
+			aflow: this.aflow,
+			isPrototype: this.isPrototype,
 			spaceGroup: this.structure!.crystal.spaceGroup,
 			formula: this.formula
 		};

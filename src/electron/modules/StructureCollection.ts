@@ -1,5 +1,5 @@
 /**
- * Access structures from the Collection and from the Prototypes lists
+ * Access structures from the Collection and the Prototypes lists
  *
  * @packageDocumentation
  *
@@ -22,15 +22,19 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import type {Atom, Structure} from "@/types";
-import {publicDirPath} from "./GetPublicPath";
 import {existsSync, openSync, readSync, closeSync, readFileSync} from "node:fs";
+import {publicDirPath} from "./GetPublicPath";
 import {getAtomicSymbol} from "./AtomData";
 import {EmptyStructure} from "./EmptyStructure";
-import type {CollectionIndexEntry} from "./CollectionDb";
+import type {Atom, Structure} from "@/types";
 
-
-interface CollectionList {
+/**
+ * Common part for all index entries in the db file
+ * @notExported
+ */
+interface CollectionsCommon {
+	/** Entry identifier: is the index in the entries list */
+	id: number;
 	/** User facing structure title */
 	title: string;
 	/** Start byte of the structure in the db */
@@ -39,6 +43,10 @@ interface CollectionList {
 	fpIdx: number;
 }
 
+/**
+ * Specific entries for prototypes
+ * @notExported
+ */
 interface PrototypesAdd {
 	/** Aflow UID (mandatory for the prototypes entries) */
 	aflow: string;
@@ -48,17 +56,17 @@ interface PrototypesAdd {
 	strukturbericht?: string;
 }
 
-type CollectionsEntry = CollectionList & (
-	{
-		proto: false;
-	} |
-	({
-		proto: true;
-	} & PrototypesAdd
-));
+/**
+ * Entries in the .idx file "index" array
+ * @notExported
+ */
+type CollectionsEntry = CollectionsCommon & (
+	{proto: false} |
+	({proto: true} & PrototypesAdd)
+);
 
 /**
- * Collection database index file content
+ * Collection database .idx file content
  * @notExported
  */
 interface CollectionsIndex {
@@ -83,60 +91,52 @@ interface PrototypeStructure {
 	/** A detailed crystal structure classification by analogy to another known structure */
 	strukturbericht: string;
 	/** Prototype mineral/component name */
-	mineral: string;
+	name: string;
 	/** Prototype structure */
 	structure: Structure;
 }
 
-interface PrototypeIndex {
-	/** Offset to the structure data in the .dat binary file */
-	positionStructure: number;
-	/** AFLOW identifier (UID) */
-	aflow: string;
-	/** Pearson symbol */
-	pearson: string;
-	/** A detailed crystal structure classification by analogy to another known structure */
-	strukturbericht: string;
-	/** Prototype mineral/component name */
-	mineral: string;
-}
-
+/**
+ * collectionGetStructure return type
+ * @notExported
+ */
 interface CollectionStructure {
 
 	/** Collection element mineral/component name */
-	mineral: string;
+	name: string;
 	/** Collection structure */
 	structure: Structure;
 }
 
-interface CollectionIndex {
-	/** Offset to the structure data in the .dat binary file */
-	positionStructure: number;
-	/** Prototype mineral/component name */
-	mineral: string;
-}
-
 /**
- * Index of the collection
+ * Index of the similar structures list
+ * @notExported
  */
-export interface CollectionsIndexEntry {
+export interface SimilarStructuresEntry {
 	/** Unique structure identifier */
-	id: string;
+	id: number;
 	/** User facing structure title */
 	title: string;
 	/** Distance from the given structure  */
-	distance?: number;
-	/** Color classification of the distance */
-	color?: string;
+	distance: number;
 }
 
-/** Distance queue entry */
+/** Return type of getStructure */
+type CollectionsStructure = CollectionsEntry & {structure: Structure};
+
+/**
+ * Distance queue entry
+ * @notExported
+ */
 interface QueueEntry {
 	/** Distance value */
 	distance: number;
 	/** Corresponding index */
 	idx: number;
 }
+
+/** Max user selectable number of similar structures */
+const MAX_SELECTABLE = 8;
 
 /**
  * Class to conserve the n min distances
@@ -152,9 +152,12 @@ class DistancesQueue {
 	 * @param length - Length of the queue
 	 */
 	constructor(length: number) {
+
 		this.size = Math.max(length, 1);
 		this.entries = Array<QueueEntry>(this.size);
-		for(const entry of this.entries) entry.distance = Number.POSITIVE_INFINITY;
+		for(let i=0; i < this.size; ++i) {
+			this.entries[i] = {distance: Number.POSITIVE_INFINITY, idx: 0};
+		}
 	}
 
 	/**
@@ -188,20 +191,32 @@ class DistancesQueue {
 	}
 
 	/**
-	 * Dump the queue
+	 * Dump the first maxLength entries from the queue
 	 *
+	 * @param maxLength - Number of entries to dump
 	 * @returns The valid queue entries
 	 */
-	dump(): QueueEntry[] {
+	dump(maxLength: number): QueueEntry[] {
 
-		for(let i=0; i < this.size; ++i) {
+		if(maxLength < 1) maxLength = 1;
+		else if(maxLength > this.size) maxLength = this.size;
+
+		const out: QueueEntry[] = [];
+		for(let i=0; i < maxLength; ++i) {
 			if(this.entries[i].distance === Number.POSITIVE_INFINITY) {
-				this.entries.length = i+1;
-				break;
+				return out;
 			}
+			out.push(this.entries[i]);
 		}
 
-		return this.entries;
+		return out;
+	}
+
+	/**
+	 * Empty the queue
+	 */
+	clean(): void {
+		for(const entry of this.entries) entry.distance = Number.POSITIVE_INFINITY;
 	}
 }
 
@@ -221,8 +236,8 @@ class StructureCollection {
 	private cfp: Float64Array | undefined;
 	private readonly mapCfp = new Map<number, number[]>();
 
-	private readonly prototypeMap = new Map<number, PrototypeIndex>();
-	private readonly collectionMap = new Map<number, CollectionIndex>();
+	// private readonly prototypeMap = new Map<number, PrototypeIndex>();
+	// private readonly collectionMap = new Map<number, CollectionIndex>();
 
 	/**
 	 * Initialize the interface to the structure collection
@@ -254,7 +269,8 @@ class StructureCollection {
 		readSync(fd, header, 0, 6, 0);
 		closeSync(fd);
 		if(header[5] !== this.headerToCheck[5]) {
-			throw Error(`Collection database invalid: file format ${header[5]} instead of ${this.headerToCheck[5]}`);
+			throw Error("Collection database invalid: " +
+						`file format ${header[5]} instead of ${this.headerToCheck[5]}`);
 		}
 		if(header.some((value, index) => value !== this.headerToCheck[index])) {
 			throw Error("Corrupted collection database");
@@ -263,11 +279,14 @@ class StructureCollection {
 		const content = readFileSync(this.indexFilename, "utf8");
 		const db = JSON.parse(content) as CollectionsIndex;
 		if(db.version !== this.format) {
-			throw Error(`Collection database index invalid: file format ${db.version} instead of ${this.format}`);
+			throw Error("Collection database index invalid: " +
+						`file format ${db.version} instead of ${this.format}`);
 		}
 
 		const collator = new Intl.Collator();
-		this.entries = db.index.toSorted((a, b) => collator.compare(a.title, b.title));
+		this.entries = db.index
+							.toSorted((a, b) => collator.compare(a.title, b.title))
+							.map((e, idx) => ({...e, id: idx}));
 		this.countEntries = this.entries.length;
 		this.cfpLength = db.cfpLength;
 
@@ -277,31 +296,31 @@ class StructureCollection {
 			this.mapCfp.getOrInsert(fpIdx, []).push(i);
 		}
 
-		// Create the indices
-		let idc = 0;
-		let idp = 0;
-		for(const entry of this.entries) {
+		// // Create the indices
+		// let idc = 0;
+		// let idp = 0;
+		// for(const entry of this.entries) {
 
-			if(entry.proto) {
-				const out: PrototypeIndex = {
-					positionStructure: entry.start,
-					aflow: entry.aflow ?? "",
-					pearson: entry.pearson ?? "",
-					strukturbericht: entry.strukturbericht ?? "",
-					mineral: entry.title
-				};
-				this.prototypeMap.set(idp, out);
-				++idp;
-			}
-			else {
-				const out: CollectionIndex = {
-					positionStructure: entry.start,
-					mineral: entry.title,
-				};
-				this.collectionMap.set(idc, out);
-				++idc;
-			}
-		}
+		// 	if(entry.proto) {
+		// 		const out: PrototypeIndex = {
+		// 			positionStructure: entry.start,
+		// 			aflow: entry.aflow ?? "",
+		// 			pearson: entry.pearson ?? "",
+		// 			strukturbericht: entry.strukturbericht ?? "",
+		// 			mineral: entry.title
+		// 		};
+		// 		this.prototypeMap.set(idp, out);
+		// 		++idp;
+		// 	}
+		// 	else {
+		// 		const out: CollectionIndex = {
+		// 			positionStructure: entry.start,
+		// 			mineral: entry.title,
+		// 		};
+		// 		this.collectionMap.set(idc, out);
+		// 		++idc;
+		// 	}
+		// }
 
 		// Cache the fingerprint file
 		this.cacheFingerprintFile();
@@ -409,9 +428,9 @@ class StructureCollection {
 
 		return this.entries ? JSON.stringify(this.entries
 							.filter((e) => e.proto)
-							.map((e, idx) => ({
+							.map((e) => ({
 								title: e.title.replaceAll(/<\/?sub>/gu, ""),
-								idx
+								idx: e.id
 							}))) : "";
 	}
 
@@ -423,15 +442,15 @@ class StructureCollection {
 	 */
 	prototypeGetStructure(idx: number): PrototypeStructure | undefined {
 
-		const entry = this.prototypeMap.get(idx);
-		if(entry === undefined) return undefined;
-
+		if(idx < 0 || idx >= this.countEntries) return;
+		const entry = this.entries![idx];
+		if(!entry.proto) return;
 		return {
-			pearson: entry.pearson,
+			pearson: entry.pearson ?? "",
 			aflow: entry.aflow,
-			strukturbericht: entry.strukturbericht,
-			mineral: entry.mineral,
-			structure: this.data2structure(entry.positionStructure)
+			strukturbericht: entry.strukturbericht ?? "",
+			name: entry.title,
+			structure: this.data2structure(entry.start)
 		};
 	}
 
@@ -445,9 +464,9 @@ class StructureCollection {
 
 		return this.entries ? JSON.stringify(this.entries
 							.filter((e) => !e.proto)
-							.map((e, idx) => ({
+							.map((e) => ({
 								title: e.title.replaceAll(/<\/?sub>/gu, ""),
-								idx
+								idx: e.id
 							}))) : "";
 	}
 
@@ -459,13 +478,39 @@ class StructureCollection {
 	 */
 	collectionGetStructure(idx: number): CollectionStructure | undefined {
 
-		const entry = this.collectionMap.get(idx);
-		if(entry === undefined) return undefined;
+		if(idx < 0 || idx >= this.countEntries) return;
+		const entry = this.entries![idx]; console.log(entry);
+		if(entry.proto) return;
 
 		return {
-			mineral: entry.mineral,
-			structure: this.data2structure(entry.positionStructure)
+			name: entry.title,
+			structure: this.data2structure(entry.start)
 		};
+	}
+
+	/**
+	 * Get structure with full metadata
+	 *
+	 * @param idx - Index of the structure to return
+	 * @returns The selected structure or undefined if not found
+	 */
+	getStructure(idx: number): CollectionsStructure | undefined {
+
+		if(idx < 0 || idx >= this.countEntries) return;
+		const entry = this.entries![idx];
+		return {...entry, structure: this.data2structure(entry.start)};
+	}
+
+	/**
+	 * Get structure metadata
+	 *
+	 * @param idx - Index of the structure to return
+	 * @returns Metadata of the selected structure or undefined if not found
+	 */
+	getMetadata(idx: number): CollectionsEntry | undefined {
+
+		if(idx < 0 || idx >= this.countEntries) return;
+		return this.entries![idx];
 	}
 
 	/**
@@ -475,12 +520,12 @@ class StructureCollection {
 	 * @param n - Number of nearest structures to return
 	 * @returns List of nearest structures id, title and distance
 	 */
-	getNearestStructures(fp: Float64Array, n=1): CollectionsIndexEntry[] {
+	getNearestStructures(fp: Float64Array, n=1): SimilarStructuresEntry[] {
 
 		if(n < 1) n = 1;
 		if(fp.length !== this.cfpLength) return [];
 
-		const dq = new DistancesQueue(n);
+		const dq = new DistancesQueue(MAX_SELECTABLE);
 
 		for(const fpIdx of this.mapCfp.keys()) {
 
@@ -497,12 +542,12 @@ class StructureCollection {
 			dq.enqueue(dist, entryIdx);
 		}
 
-		const out: CollectionIndexEntry[] = [];
+		const out: SimilarStructuresEntry[] = [];
 
-		const q = dq.dump();
+		const q = dq.dump(n);
 		for(const entry of q) {
 			out.push({
-				id: entry.idx.toString(),
+				id: entry.idx,
 				title: this.entries![entry.idx].title,
 				distance: entry.distance
 			});
@@ -538,7 +583,7 @@ class StructureCollection {
  * @returns List of nearest structures id, title and distance
  */
 export const collectionsGetNearestStructures = (fp: Float64Array,
-											    n=1): CollectionsIndexEntry[] =>
+											    n=1): SimilarStructuresEntry[] =>
 	StructureCollection.getInstance().getNearestStructures(fp, n);
 
 /**
@@ -576,3 +621,21 @@ export const collectionLoadList = (): string =>
  */
 export const collectionGetStructure = (idx: number): CollectionStructure | undefined =>
 				StructureCollection.getInstance().collectionGetStructure(idx);
+
+/**
+ * Get structure with full metadata
+ *
+ * @param idx - Index of the structure to return
+ * @returns The selected structure plus metadata
+ */
+export const getStructure = (idx: number): CollectionsStructure | undefined =>
+				StructureCollection.getInstance().getStructure(idx);
+
+/**
+ * Get structure metadata
+ *
+ * @param idx - Index of the structure to return
+ * @returns Metadata of the selected structure or undefined if not found
+ */
+export const getMetadata = (idx: number): CollectionsEntry | undefined =>
+				StructureCollection.getInstance().getMetadata(idx);

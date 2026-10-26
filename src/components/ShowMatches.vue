@@ -49,6 +49,31 @@ const collection = reactive<CollectionMatch[]>([]);
 const spaceGroup = ref("");
 const formula    = ref("");
 
+/**
+ * Assign color for the distance range
+ *
+ * @param distance - Structure distance from the input one
+ * @returns Color based on distance
+ */
+const getBand = (distances: number[]): string[] => {
+
+    // #FF1700		over 0.15  - questionable relatives
+    // #FFC200		0.12-0.15  - distant relatives
+    // #D5FF00		0.04-0.12  - related structures
+    // #00FF00		up to 0.04 - identical structures
+
+    const out: string[] = [];
+    for(const distance of distances) {
+
+        if(distance <= 0.04) out.push("#00FF00");
+        else if(distance <= 0.12) out.push("#D5FF00");
+        else if(distance <= 0.15) out.push("#FFC200");
+        else out.push("#FF0000");
+    }
+
+    return out;
+};
+
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
 
@@ -75,7 +100,7 @@ requestData(windowPath, (params: CtrlParams) => {
     const idCollection = params.idCollection as string[] ?? [];
     const titleCollection = params.titleCollection as string[] ?? [];
     const distance = params.distance as number[] ?? [];
-    const color = params.color as string[] ?? [];
+    const color = getBand(distance);
 
     len = idCollection.length;
     collection.length = 0;
