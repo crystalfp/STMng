@@ -101,6 +101,7 @@ export class FindSimilar extends NodeCore {
 
 		if(hasNoUnitCell(basis)) {
 			sendToClient(this.id, "load-info", {error: "Structure has no unit cell"});
+			this.formula = "";
 			return;
 		}
 

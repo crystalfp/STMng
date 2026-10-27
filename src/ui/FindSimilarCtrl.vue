@@ -185,7 +185,7 @@ const selectResult = (fileId: number): void => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="state.enabled" label="Enable matchers" class="mt-4 ml-1" />
+  <v-switch v-model="state.enabled" label="Enable matching" class="mt-4 ml-1" />
   <v-switch v-model="showDetails" label="Show input details" class="mt-n2 ml-1 mb-0"
             @update:model-value="showDetailsChanged"/>
   <v-container v-if="showDetails" class="pl-1 pt-2 pb-0">
@@ -205,10 +205,10 @@ const selectResult = (fileId: number): void => {
 
   <node-alert node="matchers" />
 
-  <v-label class="separator-title">Matching structures</v-label>
+  <v-label class="separator-title">Similar structures</v-label>
   <v-container v-if="state.enabled && results.length > 0" class="mb-4 pa-0 pr-2">
       <v-container v-for="entry of results" :key="entry.idx" v-ripple
-                  class="mb-3 py-1 pl-2 border-thin rounded-lg cursor-pointer"
+                  class="mb-3 py-1 pl-2 mr-n1 border-thin rounded-lg cursor-pointer"
                   @click="selectResult(entry.idx)">
         <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
         <v-container v-if="entry.isPrototype" class="pa-0">
@@ -221,7 +221,7 @@ const selectResult = (fileId: number): void => {
       </v-container>
   </v-container>
 
-  <v-switch v-model="showLegend" label="Show color legend" class="mt-n3 ml-1 mb-n1" />
+  <v-switch v-model="showLegend" label="Show color legend" class="mt-n2 ml-1 mb-n1" />
   <v-container v-if="showLegend" class="pb-0">
     <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
       <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
@@ -229,7 +229,7 @@ const selectResult = (fileId: number): void => {
     </div>
   </v-container>
 
-  <block-button label="Matchers parameters" class="mb-n2 mt-4"
+  <block-button label="Matcher parameters" class="mb-n2 mt-4"
                 @click="showParameters = !showParameters"/>
   <v-container v-if="showParameters" class="pa-0">
     <debounced-slider v-slot="{value}" v-model="state.numberMatches"

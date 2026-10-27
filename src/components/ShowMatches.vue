@@ -34,12 +34,15 @@ const windowPath = "/matches";
 let id = "";
 
 interface PrototypesMatch {
+    id: number;
     aflow: string;
     title: string;
+    distance: number;
+    color: string;
 }
 
 interface CollectionMatch {
-    id: string;
+    id: number;
     title: string;
     distance: number;
     color: string;
@@ -48,31 +51,6 @@ const prototypes = reactive<PrototypesMatch[]>([]);
 const collection = reactive<CollectionMatch[]>([]);
 const spaceGroup = ref("");
 const formula    = ref("");
-
-/**
- * Assign color for the distance range
- *
- * @param distance - Structure distance from the input one
- * @returns Color based on distance
- */
-const getBand = (distances: number[]): string[] => {
-
-    // #FF1700		over 0.15  - questionable relatives
-    // #FFC200		0.12-0.15  - distant relatives
-    // #D5FF00		0.04-0.12  - related structures
-    // #00FF00		up to 0.04 - identical structures
-
-    const out: string[] = [];
-    for(const distance of distances) {
-
-        if(distance <= 0.04) out.push("#00FF00");
-        else if(distance <= 0.12) out.push("#D5FF00");
-        else if(distance <= 0.15) out.push("#FFC200");
-        else out.push("#FF0000");
-    }
-
-    return out;
-};
 
 /** Request the initial data and handle subsequent updates */
 requestData(windowPath, (params: CtrlParams) => {
@@ -85,32 +63,34 @@ requestData(windowPath, (params: CtrlParams) => {
 
     id = params.id as string ?? "";
 
+    const isPrototype = params.isPrototype as number[] ?? [];
     const aflow = params.aflow as string[] ?? [];
-    const titlePrototypes = params.titlePrototypes as string[] ?? [];
+    const titles = params.titleCollections as string[] ?? [];
+    const distances = params.distances as number[] ?? [];
+    const idCollections = params.idCollections as number[] ?? [];
+    const colors = params.colors as string[] ?? [];
 
-    let len = aflow.length;
+    const len = isPrototype.length;
     prototypes.length = 0;
-    for(let i=0; i < len; ++i) {
-        prototypes.push({
-            aflow: aflow[i],
-            title: titlePrototypes[i]
-        });
-    }
-
-    const idCollection = params.idCollection as string[] ?? [];
-    const titleCollection = params.titleCollection as string[] ?? [];
-    const distance = params.distance as number[] ?? [];
-    const color = getBand(distance);
-
-    len = idCollection.length;
     collection.length = 0;
     for(let i=0; i < len; ++i) {
-        collection.push({
-            id: idCollection[i],
-            title: titleCollection[i],
-            distance: distance[i],
-            color: color[i]
-        });
+        if(isPrototype[i]) {
+            prototypes.push({
+                aflow: aflow[i],
+                title: titles[i],
+                id: idCollections[i],
+                color: colors[i],
+                distance: distances[i],
+            });
+        }
+        else {
+            collection.push({
+                id: idCollections[i],
+                title: titles[i],
+                distance: distances[i],
+                color: colors[i]
+            });
+        }
     }
 
     spaceGroup.value = params.spaceGroup as string ?? "";
@@ -123,15 +103,14 @@ handleSpecialKeys(windowPath);
 /**
  * Display in a secondary window the corresponding structure
  *
- * @param IdOrAflow - Collection structure file ID or prototype Aflow UID
- * @param isCollection - True if the id comes from the collection results
+ * @param fileId - Collection structure file ID or prototype ID
  */
-const selectResult = (idOrAflow: string, isCollection: boolean): void => {
+const selectResult = (fileId: number): void => {
 
-    if(id === "") return;
+    if(fileId === undefined) return;
 
     // Retrieve prototype
-    askNode(id, "show", {id: idOrAflow, isCollection})
+    askNode(id, "show", {id: fileId})
         .then((result) => {
             if(result.error) throw Error(result.error as string);
         })
@@ -153,7 +132,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
   <v-container class="dd">
     <v-container v-for="entry of prototypes" :key="entry.aflow" v-ripple
                 class="mb-3 mr-2 py-1 pl-2 border-thin rounded-lg cursor-pointer"
-                @click="selectResult(entry.aflow, false)">
+                @click="selectResult(entry.id)">
       <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
       <v-label class="bigger-result cursor-pointer">{{ `aflow: ${entry.aflow}` }}</v-label>
     </v-container>
@@ -161,7 +140,7 @@ const selectResult = (idOrAflow: string, isCollection: boolean): void => {
   <v-container class="ee">
     <v-container v-for="entry of collection" :key="entry.id" v-ripple
                   class="mb-3 mr-2 py-1 pl-2 border-thin rounded-lg cursor-pointer"
-                  @click="selectResult(entry.id, true)">
+                  @click="selectResult(entry.id)">
       <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title"/><br>
       <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
       <v-label class="bigger-result cursor-pointer" :style="{color: entry.color!}">
