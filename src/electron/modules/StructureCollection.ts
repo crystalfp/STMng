@@ -245,8 +245,8 @@ class StructureCollection {
 	private constructor() {
 
 		// Filename without extension for the files composing the collection
-		// (three files: .idx, .dat, .cfp) TEMPORARY as *2
-		this.dbPrefix = publicDirPath("structure-collection2").replaceAll("\\", "/");
+		// (three files: .idx, .dat, .cfp)
+		this.dbPrefix = publicDirPath("structure-collection").replaceAll("\\", "/");
 
 		// Data file magic ("STMng") and file format version (1-255)
 		this.headerToCheck = new Uint8Array([83, 84, 77, 110, 103, this.format]);
@@ -286,7 +286,8 @@ class StructureCollection {
 		const collator = new Intl.Collator();
 		this.entries = db.index
 							.toSorted((a, b) => collator.compare(a.title, b.title))
-							.map((e, idx) => ({...e, id: idx}));
+							.map((e, idx) => {e.id = idx; return e;});
+
 		this.countEntries = this.entries.length;
 		this.cfpLength = db.cfpLength;
 
@@ -426,9 +427,9 @@ class StructureCollection {
 	 */
 	prototypeGetStructure(idx: number): PrototypeStructure | undefined {
 
-		if(idx < 0 || idx >= this.countEntries) return;
+		if(idx < 0 || idx >= this.countEntries) return undefined;
 		const entry = this.entries![idx];
-		if(!entry.proto) return;
+		if(!entry.proto) return undefined;
 		return {
 			pearson: entry.pearson ?? "",
 			aflow: entry.aflow,
@@ -462,9 +463,9 @@ class StructureCollection {
 	 */
 	collectionGetStructure(idx: number): CollectionStructure | undefined {
 
-		if(idx < 0 || idx >= this.countEntries) return;
+		if(idx < 0 || idx >= this.countEntries) return undefined;
 		const entry = this.entries![idx];
-		if(entry.proto) return;
+		if(entry.proto) return undefined;
 
 		return {
 			name: entry.title,
@@ -480,7 +481,7 @@ class StructureCollection {
 	 */
 	getStructure(idx: number): CollectionsStructure | undefined {
 
-		if(idx < 0 || idx >= this.countEntries) return;
+		if(idx < 0 || idx >= this.countEntries) return undefined;
 		const entry = this.entries![idx];
 		return {...entry, structure: this.data2structure(entry.start)};
 	}
@@ -493,8 +494,7 @@ class StructureCollection {
 	 */
 	getMetadata(idx: number): CollectionsEntry | undefined {
 
-		if(idx < 0 || idx >= this.countEntries) return;
-		return this.entries![idx];
+		return idx < 0 || idx >= this.countEntries ? undefined : this.entries![idx];
 	}
 
 	/**
