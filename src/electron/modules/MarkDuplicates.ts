@@ -39,6 +39,7 @@ export const markDuplicates = (atoms: Atom[], crystal: Crystal): boolean[] => {
 	const {basis, origin} = crystal;
 	const natoms = atoms.length;
 	const TOL = 1e-5;
+	const TOL_SMALL = 1e-8;
 
 	const inverse = invertBasis(basis);
 	const frac: number[][] = [];
@@ -56,7 +57,7 @@ export const markDuplicates = (atoms: Atom[], crystal: Crystal): boolean[] => {
 		const fy = cx*inverse[1] + cy*inverse[4] + cz*inverse[7];
 		const fz = cx*inverse[2] + cy*inverse[5] + cz*inverse[8];
 
-		if(fx < 0 || fx > 1 || fy < 0 || fy > 1 || fz < 0 || fz > 1) {
+		if(fx < -TOL_SMALL || fx > 1+TOL_SMALL || fy < -TOL_SMALL || fy > 1+TOL_SMALL || fz < -TOL_SMALL || fz > 1+TOL_SMALL) {
 			excluded[i] = true;
 		}
 
