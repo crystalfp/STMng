@@ -7,7 +7,7 @@ Requests:
   ☐ Create a tutorial
   ☐ (low priority) Incomplete polyhedra.
   ☐ Extending variable composition analysis to systems with >5 components.
-  ☐ An option to specify arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
+  ☐ An option to specify an arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
 Bugs:
 
@@ -19,7 +19,7 @@ To do:
   ☐ Use ref() instead of reactive() if you have to replace the entire array
   ☐ Don't use flags as function parameters
   ☐ Add synchronization between documentation and site
-  ☐ Check interface against <https://interfaces.dev/cheat-sheet>
+  ☐ Check user interface against <https://interfaces.dev/cheat-sheet>
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI

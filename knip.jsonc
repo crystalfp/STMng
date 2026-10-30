@@ -12,8 +12,7 @@
   "project": ["src/**/*.{js,ts,vue}"],
   "ignoreBinaries": [
     "start",
-    "dot",
-    "migrate"
+    "dot"
   ],
   "ignoreDependencies": [
     "vue-docgen-cli",
@@ -24,7 +23,6 @@
     "eslint-plugin-eslint-comments",
     "postcss-scss",
     "@rollup/plugin-node-resolve",
-    "@oxlint/migrate",
     "@golar/vue",
     "rolldown",
     "@eslint/config-inspector"

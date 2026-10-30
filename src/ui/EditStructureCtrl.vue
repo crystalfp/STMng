@@ -146,6 +146,9 @@ const stopWatcher1 = watch(controlStore.atomsSelected, (a: number[]) => {
     });
 });
 
+/**
+ * Respond to changes in coordinates mode (cartesian or fractional)
+ */
 const changedUseFractional = (): void => {
 
     if(details.length === 0) {
@@ -209,6 +212,7 @@ const showConfirm = ref(false);
 const confirmTitle = ref("");
 const confirmText = ref("");
 let action = "";
+
 /**
  * Delete the selected atom
  */
