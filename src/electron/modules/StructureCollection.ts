@@ -402,6 +402,14 @@ class StructureCollection {
 		return (1 - distance)/2;
 	}
 
+	private static removeHtml(label: string): string {
+
+		return label
+					.replaceAll(/<\/?sub>/gu, "")
+					.replaceAll(/<\/?sup>/gu, "")
+					.replaceAll(/&([a-z]+);/gu, "$1");
+	}
+
 	// > Exported functions
 	// >> Prototypes
 	/**
@@ -414,7 +422,7 @@ class StructureCollection {
 		return this.entries ? JSON.stringify(this.entries
 							.filter((e) => e.proto)
 							.map((e) => ({
-								title: e.title.replaceAll(/<\/?sub>/gu, ""),
+								title: StructureCollection.removeHtml(e.title),
 								idx: e.id
 							}))) : "";
 	}
@@ -450,7 +458,7 @@ class StructureCollection {
 		return this.entries ? JSON.stringify(this.entries
 							.filter((e) => !e.proto)
 							.map((e) => ({
-								title: e.title.replaceAll(/<\/?sub>/gu, ""),
+								title: StructureCollection.removeHtml(e.title),
 								idx: e.id
 							}))) : "";
 	}
