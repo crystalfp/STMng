@@ -53,7 +53,10 @@ interface DataRecord {
     enthalpy: number;
 }
 
-/** Selected line by click on the summary diagram */
+/**
+ * Selected line by click on the summary diagram
+ * @notExported
+ */
 interface SelectedSummary {
     /** Unique id */
     id: number;
@@ -67,6 +70,10 @@ interface SelectedSummary {
     ph: number;
 }
 
+/**
+ * Selected details
+ * @notExported
+ */
 interface SelectedDetails {
     /** Unique id */
     id: number;
@@ -97,7 +104,10 @@ const windowPath = "/phase-diagram";
 /** Capture and handle special keys (Escape, F1, F12) */
 handleSpecialKeys(windowPath);
 
-/** Reordered data by formula */
+/**
+ * Reordered data by formula
+ * @notExported
+ */
 interface CoalescingLine {
     /** Corresponding step */
     step: number;
@@ -492,7 +502,6 @@ const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
 .result-label :deep(sub) {
   position: relative;
   bottom: -0.5rem;
-
 }
 
 .phase-layout {
