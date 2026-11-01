@@ -25,7 +25,7 @@
 <ul>
 <li>Valle, M., &amp; Oganov, A. R. (2008). <i>Crystal Structures Classifier for an Evolutionary Algorithm Structure Predictor.</i> IEEE Symposium On Visual Analytics Science and Technology, VAST 2008, 11–18, DOI: <a href="https://doi.org/10.1109/VAST.2008.4677351">10.1109/VAST.2008.4677351</a></li>
 <li>Oganov, A. R., &amp; Valle, M. (2009). <i>How to quantify energy landscapes of solids.</i>  J. Chem. Phys. 14 March 2009; 130 (10): 104504, DOI: <a href="https://doi.org/10.1063/1.3079326">10.1063/1.3079326</a>
-<li>Valle, M., &amp; Oganov, A. R. (2010). <i>Crystal fingerprint space – a novel paradigm for studying crystal-structure sets.</i> Acta Crystallographica Section A, 66(5), 507–517, DOI: <a href="https://doi.org/10.1107/S0108767310026395 ">10.1107/S0108767310026395</a></li>
+<li>Valle, M., &amp; Oganov, A. R. (2010). <i>Crystal fingerprint space – a novel paradigm for studying crystal-structure sets.</i> Acta Crystallographica Section A, 66(5), 507–517, DOI: <a href="https://doi.org/10.1107/S0108767310026395">10.1107/S0108767310026395</a></li>
 </ul>
 <p>There is a notable difference in the implementation respect to the published algorithm. In this module the distances (interatomic distances and cell sizes) are scaled by:</p>
 <img src="scaling.png" width="194" height="81" alt="Scaling factor">
@@ -36,7 +36,7 @@
 <p>The controls are grouped in logical steps that normally should be completed top to bottom.</p>
 
 <h3>Accumulated structures</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
 	<td class="c1">Structures loaded</td>
 	<td class="c2">readonly text</td>
@@ -55,7 +55,7 @@
 </table>
 
 <h3>Filter structures</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
 	<td class="c1">Filter by energy per atom</td>
 	<td class="c2">toggle</td>
@@ -84,7 +84,7 @@
 </table>
 
 <h3>Compute fingerprints</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
 	<td class="c1">Structures are nanoclusters</td>
 	<td class="c2">toggle</td>
@@ -139,7 +139,7 @@
 <tr>
 	<td class="c1">Intrinsic dimension &amp; theoretical value</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">Estimation of the dimensionality of the embedded fingerprint space (the subspace containing the fingerprints that is embedded in the fingerprint space). The estimation is done using a Maximum Likelihood Estimator that provides local dimension estimates. The theory gives a value of <tt>3&nbsp;*&nbsp;numAtoms&nbsp;+&nbsp;3</tt> (three coordinates per atom, less three for an atom fixed at the origin, plus six cell parameters).</td>
+	<td class="c3">Estimation of the dimensionality of the embedded fingerprint space (the subspace containing the fingerprints that is embedded in the fingerprint space). The estimation is done using a Maximum Likelihood Estimator that provides local dimension estimates. The theory gives a value of <code>3&nbsp;*&nbsp;numAtoms&nbsp;+&nbsp;3</code> (three coordinates per atom, less three for an atom fixed at the origin, plus six cell parameters).</td>
 </tr>
 <tr>
 	<td class="c1">Local dimension range</td>
@@ -149,7 +149,7 @@
 </table>
 
 <h3>Compute distances</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
 	<td class="c1">Distance method</td>
 	<td class="c2">list</td>
@@ -173,12 +173,12 @@
 <tr>
 	<td class="c1">Fixed inequalities</td>
 	<td class="c2">readonly text</td>
-	<td class="c3">At the end of the computation with "Fix triangle inequality" set shows the result of the fixing.</td>
+	<td class="c3">At the end of the computation with “Fix triangle inequality” set shows the result of the fixing.</td>
 </tr>
 </table>
 
 <h3>Remove duplicates</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
 	<td class="c1">Remove</td>
 	<td class="c2">toggle</td>
@@ -197,7 +197,7 @@
 </table>
 
 <h3>Group similar</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
 	<td class="c1">Grouping method</td>
 	<td class="c2">list</td>
@@ -232,7 +232,7 @@
 </table>
 
 <h3>Show results</h3>
-<table cellpadding="2" cellspacing="2">
+<table class="params">
 <tr>
   <td class="c1">Export results</td>
   <td class="c2">button</td>

@@ -13,7 +13,7 @@ p {
 
 h1 {
   font-size: 200%;
-  line-height: 100%;
+  line-height: 1;
   color: #FF6400;
   font-weight: bold;
   padding-top: 1rem;
@@ -80,12 +80,6 @@ code {
   font-size: 110%;
 }
 
-tt {
-  font-family: Consolas, 'Courier New', monospace;
-	font-weight: bold;
-  font-size: 110%;
-}
-
 .m1 {
   width: 17rem;
 }
@@ -93,24 +87,26 @@ tt {
 td.c0 {
 	width: 10rem;
 	vertical-align: top;
-	padding-left: 20px;
+  padding: 2px 2px 2px 22px;
 	font-weight: bold;
 }
 
 td.c1 {
 	width: 20rem;
 	vertical-align: top;
-	padding-left: 20px;
+  padding: 2px 2px 2px 22px;
 	font-weight: bold;
 }
 
 td.c2 {
 	width: 12rem;
 	vertical-align: top;
+  padding: 2px;
 }
 
 td.c3 {
 	vertical-align: top;
+  padding: 2px;
 }
 
 div.description {
@@ -125,7 +121,7 @@ dt {
 .back {
   text-decoration: none;
   font-size: 160%;
-  padding: 0.1rem 0.5rem;
+  padding: 0.2em 0.3em;
   background-color: #FF6400;
   color: white;
 }
@@ -208,7 +204,7 @@ span[onclick] {
 }
 
 .color-word {
-  padding: 0 10px 3px 10px;
+  padding: 2px 9px 3px 9px;
   color: white;
 }
 
@@ -232,4 +228,9 @@ img {
 
 .alert {
   color: red;
+}
+
+table.params {
+  border-spacing: 2px;
+  border-collapse: separate;
 }

@@ -831,7 +831,7 @@ const border = computed(() => (theme.value === "light" ? "#E0DCDF" : "#3C3C3C"))
 }
 
 .tr {
-  line-height: 20px;
+  line-height: 1.25;
 }
 
 .tdp {
