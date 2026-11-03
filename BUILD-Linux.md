@@ -6,7 +6,7 @@
 
 ## Prerequisite tools
 1. Python 3.12
-2. NodeJS 25.x
+2. NodeJS 26.x
    1. Install NodeJS following the instructions here <https://nodejs.org/en/download/package-manager/current>
    2. Verify the NodeJS installation running `node --version ` and `npm --version`
 3. CMake 4.3.2 (to build SPGlib)
@@ -46,7 +46,7 @@
 2. `mv linux-scripts/* .`
 3. `npm install`
 4. Now you can run STMng in development mode from here by executing `npx vite` or `npm run dev`
-5. To build the bundled application: `npm run build` (ignore the typescript plugin errors)
+5. To build the bundled application: `npm run build`
 6. You will have the bundled application under `release/<version>` as `STMng-<version>.AppImage`
 7. If needed, make it executable: `chmod a+x ./release/<version>/STMng-<version>.AppImage`
 8. Run it: `./release/<version>/STMng-<version>.AppImage`
