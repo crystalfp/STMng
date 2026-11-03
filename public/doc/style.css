@@ -2,7 +2,6 @@ body {
   font-family: Roboto,Verdana,Helvetica,Geneva,"DejaVu Sans",sans-serif;
   color: black;
   margin-left: 1rem;
-  font-size: 18px;
   width: 1400px;
 }
 
@@ -12,7 +11,7 @@ p {
 }
 
 h1 {
-  font-size: 200%;
+  font-size: 2rem;
   line-height: 1;
   color: #FF6400;
   font-weight: bold;
@@ -20,26 +19,26 @@ h1 {
 }
 
 h1.title {
-  font-size: 220%;
+  font-size: 2.2rem;
 }
 
 h1.subh1 {
 	font-style: italic;
-	font-size: 110%;
+	font-size: 1.1rem;
 	margin: -2rem 0 1.8rem 0;
 	color: #6a87aa;
   font-weight: normal;
 }
 
 h2 {
-  font-size: 160%;
+  font-size: 1.6rem;
   color: #FF6400;
   font-weight: normal;
   padding-top: 0.7rem;
 }
 
 h3 {
-  font-size: 120%;
+  font-size: 1.2rem;
   color: #FF6400;
   font-weight: normal;
   padding-top: 0.1rem;
@@ -77,7 +76,7 @@ details[open] summary {
 code {
   white-space: pre-wrap;
   font-family: Consolas, 'Courier New', monospace;
-  font-size: 110%;
+  font-size: 1.1rem;
 }
 
 .m1 {
@@ -120,7 +119,7 @@ dt {
 
 .back {
   text-decoration: none;
-  font-size: 160%;
+  font-size: 1.6rem;
   padding: 0.2em 0.3em;
   background-color: #FF6400;
   color: white;
@@ -192,7 +191,7 @@ details > h2:first-of-type {
 .toggle-button {
   background-color: #FF6400;
   color: white;
-  font-size: 110%;
+  font-size: 1.1rem;
   padding: 3px 10px 5px 10px;
   margin-top: 0.2rem;
 }
@@ -233,4 +232,8 @@ img {
 table.params {
   border-spacing: 2px;
   border-collapse: separate;
+}
+
+img + p {
+  margin-top: 0;
 }
