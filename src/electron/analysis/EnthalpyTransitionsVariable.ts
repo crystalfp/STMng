@@ -129,7 +129,7 @@ const computeVertices2D = (pressure: number,
 	}
 
 	if(e0 === Number.POSITIVE_INFINITY || e1 === Number.POSITIVE_INFINITY) {
-		throw Error("Missing end-members");
+		throw Error("Missing end-members. Maybe the composition is wrong");
 	}
 
 	// Find enthalpy of formation
@@ -220,7 +220,7 @@ const computeVertices3D = (pressure: number,
 	if(e0 === Number.POSITIVE_INFINITY ||
 	   e1 === Number.POSITIVE_INFINITY ||
 	   e2 === Number.POSITIVE_INFINITY) {
-		throw Error("Missing end-members");
+		throw Error("Missing end-members. Maybe the composition is wrong");
 	}
 
 	// Find enthalpy of formation
@@ -423,7 +423,7 @@ const computeVertices4D = (pressure: number,
 	   e1 === Number.POSITIVE_INFINITY ||
 	   e2 === Number.POSITIVE_INFINITY ||
 	   e3 === Number.POSITIVE_INFINITY) {
-		throw Error("Missing end-members");
+		throw Error("Missing end-members. Maybe the composition is wrong");
 	}
 
 	// Find enthalpy of formation

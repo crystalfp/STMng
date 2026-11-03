@@ -356,7 +356,8 @@ const legendTitle = computed(() => ((pointColoring.value === "distance") ?
             labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
     <VisTooltip :triggers :followCursor="false" />
     <VisXYLabels v-if="showFormula" :data="line" :x="xp" :y="yp" :label="lp"
-                  xPositioning="data_space" yPositioning="data_space"/>
+                 color="black" backgroundColor="#598DFF70"
+                 xPositioning="data_space" yPositioning="data_space"/>
   </VisXYContainer>
   <VisXYContainer v-else-if="dimension===3"
                   :margin="{right: 20, top: 20, left: 20, bottom: 20}"
@@ -369,7 +370,8 @@ const legendTitle = computed(() => ((pointColoring.value === "distance") ?
                 color="#FF0000" :size="15" cursor="pointer" shape="square"/>
     <VisTooltip :triggers :followCursor="false" />
     <VisXYLabels v-if="showFormula" :data="vertex" :x="xp" :y="yp" :label="lp"
-                  xPositioning="data_space" yPositioning="data_space"/>
+                 color="black" backgroundColor="#598DFF70"
+                 xPositioning="data_space" yPositioning="data_space"/>
   </VisXYContainer>
   <v-alert v-else
         title="Not implemented"

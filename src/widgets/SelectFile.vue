@@ -176,7 +176,6 @@ const onDragLeave = (): void => {
 .drop {
   border: 6px dashed red;
   border-radius: 12px;
-  /* background-color: gray; */
   padding: 10px 8px 6px 0;
 }
 

@@ -159,7 +159,7 @@ export class VariableCompositionConvexHull {
 		}
 
 		if(e0 === Number.POSITIVE_INFINITY || e1 === Number.POSITIVE_INFINITY) {
-			return "Missing end-members";
+			return "Missing end-members. Maybe the composition is wrong";
 		}
 
 		// Find enthalpy of formation
@@ -255,7 +255,7 @@ export class VariableCompositionConvexHull {
 		if(e0 === Number.POSITIVE_INFINITY ||
 		   e1 === Number.POSITIVE_INFINITY ||
 		   e2 === Number.POSITIVE_INFINITY) {
-			return "Missing end-members";
+			return "Missing end-members. Maybe the composition is wrong";
 		}
 
 		// Find enthalpy of formation
@@ -385,7 +385,7 @@ export class VariableCompositionConvexHull {
 		   e1 === Number.POSITIVE_INFINITY ||
 		   e2 === Number.POSITIVE_INFINITY ||
 		   e3 === Number.POSITIVE_INFINITY) {
-			return "Missing end-members";
+			return "Missing end-members. Maybe the composition is wrong";
 		}
 
 		// Find enthalpy of formation
