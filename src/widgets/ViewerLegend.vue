@@ -65,7 +65,7 @@ const style = top === undefined ?
                     height: `${height}px`
                 });
 
-let colorScale: string;
+let colorScale = "";
 const haveFooter = ref(false);
 if(valuesContinue) {
 
