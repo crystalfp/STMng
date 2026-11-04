@@ -41,7 +41,7 @@ interface StateType {
 const state = reactive<StateType>({
     allPlanes: false,
     maxPlanesCount: 80,
-    processParallelism: false
+    processParallelism: true
 });
 
 // > Local variables

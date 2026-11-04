@@ -47,7 +47,7 @@ export class CrystalShape extends NodeCore {
 	private readonly state = {
 		allPlanes: false,
 		maxPlanesCount: 80,
-    	processParallelism: false
+    	processParallelism: true
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -93,7 +93,7 @@ export class CrystalShape extends NodeCore {
 
         this.state.allPlanes = params.allPlanes as boolean ?? false;
         this.state.maxPlanesCount = params.maxPlanesCount as number ?? 80;
-		this.state.processParallelism = params.processParallelism as boolean ?? false;
+		this.state.processParallelism = params.processParallelism as boolean ?? true;
 	}
 
 	loadStatus(params: CtrlParams): void {
