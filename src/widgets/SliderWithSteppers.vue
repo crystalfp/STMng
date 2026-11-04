@@ -133,7 +133,6 @@ onUnmounted(() => {
 <style scoped>
 
 .slider-with-stepper :deep(.v-slider__label) {
-  /* stylelint-disable value-keyword-case */
   width: v-bind(labelWidth);
   user-select: none;
 }

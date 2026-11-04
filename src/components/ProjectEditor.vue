@@ -967,10 +967,10 @@ const border = computed(() => (theme.value === "light" ? "#808080" : "#B3B3B3"))
 
 <style>
 /* These are necessary styles for vue flow */
-@import "@vue-flow/core/dist/style.css";
+@import url("@vue-flow/core/dist/style.css");
 
 /* This contains the default theme, these are optional styles */
-@import "@vue-flow/core/dist/theme-default.css";
+@import url("@vue-flow/core/dist/theme-default.css");
 
 .program-editor-container {
   display: grid;

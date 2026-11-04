@@ -21,7 +21,6 @@
     "typedoc-plugin-vue",
     "typedoc-plugin-missing-exports",
     "eslint-plugin-eslint-comments",
-    "postcss-scss",
     "@rollup/plugin-node-resolve",
     "@golar/vue",
     "rolldown",
