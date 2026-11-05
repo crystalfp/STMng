@@ -36,7 +36,7 @@ export const setupChannelFileSelector = (): void => {
 
 		const kind   = params.kind as string ?? "load";
 		const title  = params.title as string ?? "Select file";
-		const filter = JSON.parse(params.filter as string ?? "[{name: 'All', extensions: ['*']}]") as FileFilter[];
+		const filter = JSON.parse(params.filter as string ?? '[{"name":"All","extensions":["*"]}]') as FileFilter[];
 
 		if(kind === "load") {
 			const lastUsedPath = getLastUsedPath();
