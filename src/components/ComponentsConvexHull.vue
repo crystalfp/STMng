@@ -22,16 +22,17 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {computed, onUnmounted, ref, watch} from "vue";
+import {computed, onUnmounted, ref, shallowRef, watch} from "vue";
 import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import type {CtrlParams} from "@/types";
 
-import {Scatter, BulletShape, XYLabels, type BulletLegendItemInterface} from "@unovis/ts";
+import {Scatter, BulletShape, XYLabels, type BulletLegendItemInterface,
+        type AnnotationItem, type LengthUnit} from "@unovis/ts";
 import {VisXYContainer, VisScatter, VisAxis, VisLine, VisTooltip,
-        VisBulletLegend, VisXYLabels} from "@unovis/vue";
+        VisBulletLegend, VisAnnotations} from "@unovis/vue";
 import {Lut} from "three/addons/math/Lut.js";
 
 import SelectColormap from "@/widgets/SelectColormap.vue";
@@ -234,24 +235,10 @@ const toggleItem = (item: BulletLegendItemInterface, which: number): void => {
 };
 
 /**
- * Accessor for the label at the extreme of the range
+ * Accessor for the point color
  *
  * @param d - One data record
  */
-const lp = (d: DataRecord): string => {
-
-    // switch(d.parts) {
-    //     case "1-0-0":
-    //     case "0-1-0":
-    //     case "0-0-1":
-    //     case "1-0":
-    //     case "0-1":
-            return d.formula!.replaceAll(/<.?sub>/gu, "");
-    //     default:
-    //         return "";
-    // }
-};
-
 const cp = (d: DataRecord): string => d.color!;
 
 /**
@@ -337,6 +324,94 @@ const vc = computed(() => {
 const legendTitle = computed(() => ((pointColoring.value === "distance") ?
                                         "Distance" : "Enthalpy of formation"));
 
+// eslint-disable-next-line vue/prefer-use-template-ref, unicorn/no-null
+const scatter = shallowRef<{component?: Scatter<DataRecord>} | null>(null);
+
+const annotationLabels = computed<AnnotationItem[]>(() => {
+
+    const component = scatter.value?.component;
+    if(!component) return [];
+
+    let xmin = Number.POSITIVE_INFINITY;
+    let xmax = Number.NEGATIVE_INFINITY;
+    let ymin = Number.POSITIVE_INFINITY;
+    let ymax = Number.NEGATIVE_INFINITY;
+    for(const v of points.value) {
+        const x = v.x ?? 0;
+        const y = v.y ?? 0;
+        if(x > xmax) xmax = x;
+        if(x < xmin) xmin = x;
+        if(y > ymax) ymax = y;
+        if(y < ymin) ymin = y;
+    }
+
+    const count = line.value.length;
+    const out = Array<AnnotationItem>(count);
+    const m = 0.1;
+
+    for(let i=0; i < count; ++i) {
+
+        const x = (line.value[i].x!-xmin)/(xmax-xmin);
+        const y = 1-((line.value[i].y!-ymin)/(ymax-ymin));
+        const xl: LengthUnit = `${Math.round(100*(x*(1-2*m)+m))}%`;
+        const yl: LengthUnit = `${Math.round(100*y*(1-m))}%`;
+        const content = (line.value[i].formula ?? "unknown")
+                                    .replaceAll(/<\/?sub>/gu, "")
+                                    .replaceAll(/<\/?sup>/gu, "");
+        out[i] = {
+            x: xl,
+            y: yl,
+            textAlign: "center",
+            content,
+            subject: {
+                x: () => component.xScale(line.value[i].x!),
+                y: () => component.yScale(line.value[i].y!),
+                connectorLineStrokeDasharray: "2 2",
+            }
+        };
+    }
+
+    return out;
+});
+
+
+// eslint-disable-next-line vue/prefer-use-template-ref, unicorn/no-null
+const scatter3 = shallowRef<{component?: Scatter<DataRecord>} | null>(null);
+const annotationLabels3 = computed<AnnotationItem[]>(() => {
+
+    const component = scatter3.value?.component;
+    if(!component) return [];
+
+    const count = vertex.value.length;
+    const out = Array<AnnotationItem>(count);
+    const m = 0.1;
+
+    for(let i = 0; i < count; ++i) {
+
+        const x = component.xScale(vertex.value[i].x!);
+        const y = component.yScale(vertex.value[i].y!);
+        const content = (vertex.value[i].formula ?? "unknown")
+                            .replaceAll(/<\/?sub>/gu, "")
+                            .replaceAll(/<\/?sup>/gu, "");
+        const m1 = ((-5.333*y + 4.619)*y + 1)*m; // so m1 goes from m to 2m to m
+        const xl: LengthUnit = `${Math.round(100*(x*(1-2*m1)+m1))}%`;
+        const yl: LengthUnit = `${Math.round(100*((1-m1+(y/0.866)*(2*m1-1))))}%`;
+
+        out[i] = {
+            x: xl,
+            y: yl,
+            textAlign: "center",
+            content,
+            subject: {
+                x: () => component.xScale(vertex.value[i].x!),
+                y: () => component.yScale(vertex.value[i].y!),
+                connectorLineStrokeDasharray: "2 2",
+            }
+        };
+    }
+
+    return out;
+});
 </script>
 
 
@@ -348,16 +423,14 @@ const legendTitle = computed(() => ((pointColoring.value === "distance") ?
     <VisLine :data="line" :x="xp" :y="yp" curveType="linear"/>
     <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
                 :color="cp" :size="7" cursor="pointer"/>
-    <VisScatter v-if="showOnLine" :data="line" :x="xp" :y="yp"
-                color="#FF0000" :size="15" cursor="pointer" shape="square"/>
+    <VisScatter ref="scatter" :data="line" :x="xp" :y="yp"
+                color="#FF0000" :size="showOnLine ? 15 : 0" cursor="pointer" shape="square"/>
     <VisAxis type="x" :gridLine="false" label="Composition ratio"
             labelColor="black" :labelFontSize="24" tickTextColor="black"/>
     <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
             labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
     <VisTooltip :triggers :followCursor="false" />
-    <VisXYLabels v-if="showFormula" :data="line" :x="xp" :y="yp" :label="lp"
-                 color="black" backgroundColor="#598DFF70"
-                 xPositioning="data_space" yPositioning="data_space"/>
+    <VisAnnotations v-if="showFormula" :items="annotationLabels" />
   </VisXYContainer>
   <VisXYContainer v-else-if="dimension===3"
                   :margin="{right: 20, top: 20, left: 20, bottom: 20}"
@@ -366,12 +439,10 @@ const legendTitle = computed(() => ((pointColoring.value === "distance") ?
     <VisLine :data="line" :x="xp" :y="yp" curveType="linear" :lineWidth="3"/>
     <VisScatter v-if="showStructures" :key="forceUpdate" :data="points" :x="xp" :y="yp"
                 :color="cp" :size="9" cursor="pointer"/>
-    <VisScatter v-if="showOnLine" :data="vertex" :x="xp" :y="yp"
-                color="#FF0000" :size="15" cursor="pointer" shape="square"/>
+    <VisScatter ref="scatter3" :data="vertex" :x="xp" :y="yp"
+                color="#FF0000" :size="showOnLine ? 15 : 0" cursor="pointer" shape="square"/>
     <VisTooltip :triggers :followCursor="false" />
-    <VisXYLabels v-if="showFormula" :data="vertex" :x="xp" :y="yp" :label="lp"
-                 color="black" backgroundColor="#598DFF70"
-                 xPositioning="data_space" yPositioning="data_space"/>
+    <VisAnnotations v-if="showFormula" :items="annotationLabels3" />
   </VisXYContainer>
   <v-alert v-else
         title="Not implemented"
