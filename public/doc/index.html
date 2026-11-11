@@ -130,7 +130,7 @@
         <td>The file formats read and written by STMng.</td></tr>
     <tr><td class="m1"><a href="general/atom-data.html">Atom data provenance</a></td>
         <td>The source of the atomic data used by STMng.</td></tr>
-    <tr><td class="m1"><a href="general/compare-with-stm4.html">Functionalities comparison with STM4</a></td>
+    <tr><td class="m1"><a href="general/compare-with-stm4.html">Comparison of features with STM4</a></td>
         <td>Comparing the STMng functionalities with the ones present in STM4.</td></tr>
   </table>
 </details>
@@ -330,7 +330,7 @@
   <img src="./atom-data-editor.png" width="800" height="623" alt="Atom data editor">
   <p>Each atom has some characteristics, like color and covalent radius, stored in a default set. This set is used by the <a href="nodes/draw-structure.html">Draw structure</a> node and by the <a href="nodes/compute-bonds.html">Compute bonds</a> one.</p>
   <p>With this editor a new set of values could be created and used. In the main menu the set to use could be selected by a checkbox.</p>
-  <p class="alert">Note that the changes are not reactive, that is, they do not change what has been already visualized. Their effects appear, for example, at the next structure load.</p>
+  <p class="alert">Note that the changes are not reactive, that is, they do not modify what has been already visualized. Their effects appear at the next structure load or at next application run.</p>
   <p>The specie to edit is selected clicking on the cards on the left. Note that the circle size is proportional to the atom covalent radius.</p>
   <p>The <b>Reset button</b> discards all modifications done and reload the default data set. The <b>Save</b> button save modifications as the user data set. The <b>Close</b> button asks confirmation before closing the dialog if there are unsaved changes.</p>
   <p>The dialog subtitle lists which set is loaded and if it has been modified.</p>
@@ -341,6 +341,7 @@
   <p>Clicking on the increment (<code>+</code>) or decrement (<code>-</code>) buttons with <code>Ctrl</code> key multiplies the value change by 10. With the <code>Shift</code> key (alone or together with <code>Ctrl</code> key), the value is multiplied by 100.</p>
   <h2>Gutter</h2>
   <p>Clicking on the separator between the node interfaces panel and the viewer (the gutter) hides the node controls. Clicking again on the left side of the viewer unhide the panel.</p>
+  <p>The same effect is obtained with <code>Ctrl-E</code> or through the <code>View &gt; Extend viewer</code> menu entry.</p>
   <h2>Secondary windows</h2>
   <p>On all <span onclick="openDetails('#secondary'); return false;">secondary windows</span> the following keys are active:</p>
   <dl>
