@@ -26,6 +26,7 @@ import {onUnmounted, reactive, ref, toRaw, watch} from "vue";
 import {resetNodeAlert, showNodeAlert} from "@/services/AlertMessage";
 import {askNode, receiveFromNode, sendToNode} from "@/services/RoutesClient";
 
+import ThrottledButton from "@/widgets/ThrottledButton.vue";
 import BlockButton from "@/widgets/BlockButton.vue";
 import DebouncedSlider from "@/widgets/DebouncedSlider.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
@@ -237,9 +238,9 @@ const selectResult = (fileId: number): void => {
       <v-label :text="`Collection neighbors (${value})`" class="no-select" />
     </debounced-slider>
   </v-container>
-  <block-button label="Show matches" class="mt-2"
-                :disabled="results.length === 0"
-                @click="sendToNode(id, 'matches')"/>
+  <throttled-button label="Show matches" class="mt-2"
+                    :disabled="results.length === 0"
+                    @click="sendToNode(id, 'matches')"/>
 </v-container>
 </template>
 
