@@ -26,8 +26,7 @@ import {ref} from "vue";
 import {inv} from "mathjs";
 import {IcosahedronGeometry, Vector3,
 		CylinderGeometry, MeshStandardMaterial, FrontSide, Group, Color,
-		Mesh, LineSegments, LineBasicMaterial,
-        Box3} from "three";
+		Mesh, LineSegments, LineBasicMaterial, Box3} from "three";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
@@ -362,10 +361,6 @@ const addAtoms = (atoms: PrototypeAtomsData, matrix: number[]): {bonds: Bond[]; 
 
     sv.clearGroup("Atoms");
 
-    // const fullAtoms = addOutsideAtoms(matrix, atoms);
-    // const bonds = computeBonds(fullAtoms);
-    // clearOutsideAtoms(fullAtoms, bonds, atoms.radius.length);
-
     // Rebuild matrix from flattened matrix
     const m = [
         [matrix[0], matrix[1], matrix[2]],
@@ -483,7 +478,7 @@ const centerView = (): void => {
     bbox.setFromObject(atomsGroup);
     const center = new Vector3();
     bbox.getCenter(center);
-    sv.centerCamera([center.x, center.y, center.z]);
+    sv.centerCamera(center.toArray());
 };
 
 </script>

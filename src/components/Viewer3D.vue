@@ -197,7 +197,7 @@ onMounted(() => {
     });
 
     controls.addEventListener("sleep", () => {
-        configStore.camera.position = [camera.position.x, camera.position.y, camera.position.z];
+        camera.position.toArray(configStore.camera.position);
     });
 
     // Pick atoms by Ctrl+MouseLeft
