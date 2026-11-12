@@ -25,6 +25,8 @@
 import {NodeCore} from "../modules/NodeCore";
 import {checkAtomsSelector, selectAtomsByKind} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
+import {EmptyStructure} from "../modules/EmptyStructure";
+import {cartesianToFractionalCoordinates} from "../modules/Helpers";
 import {sendPolyhedraToClient} from "../modules/ToClient";
 import {BondType} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition, AtomSelectorModes} from "@/types";
@@ -66,19 +68,29 @@ export class DrawPolyhedra extends NodeCore {
 	override fromPreviousNode(data: Structure): void {
 
 		this.structure = data;
-		if(!data?.atoms.length || data.bonds.length === 0) {
+		if(!data?.atoms.length) {
 			sendPolyhedraToClient(this.id, "vertices", [], []);
+			this.toNextNode(new EmptyStructure());
 			return;
 		}
 
-		// Extract the polyhedrons vertices
-		const islands = this.createVerticeLists();
+		if(data.bonds.length === 0) {
+			sendPolyhedraToClient(this.id, "vertices", [], []);
+			this.toNextNode(data);
+			return;
+		}
+
+		// Extract the polyhedra vertices
+		const polyhedra = this.computePolyhedra();
+		const islands = this.createVerticeLists(polyhedra);
 		if(islands.length === 0) {
 			sendPolyhedraToClient(this.id, "vertices", [], []);
-			return;
+		}
+		else {
+			sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
 		}
 
-		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
+		this.toNextNode(this.removeIncompletePolyhedra(polyhedra));
 	}
 
 	// > Load/save status
@@ -128,27 +140,30 @@ export class DrawPolyhedra extends NodeCore {
 	}
 
 	/**
-	 * Compute vertices
+	 * Compute possible polyhedra
 	 *
-	 * @returns List of lists of polyhedrons vertices
+	 * @returns A map for each possible center atom the list of connected atoms (could be empty)
 	 */
-	private createVerticeLists(): number[][] {
+	private computePolyhedra(): Map<number, number[]> {
+
+		const polyhedra = new Map<number, number[]>();
+
+		// Sanity checks
+		if(!this.structure) return polyhedra;
 
 		// Extract structure parts
-		const {atoms, bonds} = this.structure!;
+		const {atoms, bonds} = this.structure;
 
 		// Sanity checks
 		const natoms = atoms.length;
-		if((natoms < 3) || (bonds.length === 0)) return [];
+		if((natoms < 3) || (bonds.length === 0)) return polyhedra;
 
 		// Select the polyhedra center atoms
-		const centerIdx = selectAtomsByKind(this.structure!, this.labelKind, this.atomsSelector);
+		const centerIdx = selectAtomsByKind(this.structure, this.labelKind, this.atomsSelector);
 
-		// Create lists of connected atoms (island)
-		const islands: number[][] = [];
-		this.centerAtomsColor.length = 0;
-
+		// Create lists of connected atoms
 		for(const idx of centerIdx) {
+
 			const connected = [];
 			for(const {from, to, type} of bonds) {
 
@@ -162,28 +177,125 @@ export class DrawPolyhedra extends NodeCore {
 			}
 
 			// Add triangles and polyhedra
-			if(this.countConstrain(connected.length)) {
-
-				islands.push(connected);
-
-				if(this.colorByCenterAtom) {
-					const {atomZ} = this.structure!.atoms[idx];
-					this.centerAtomsColor.push(getAtomData(atomZ).color);
-				}
-			}
+			const add = this.countConstrain(connected.length);
+			polyhedra.set(idx, add ? connected : []);
 		}
+
+		return polyhedra;
+	}
+
+	/**
+	 * Compute vertices
+	 *
+	 * @returns List of lists of polyhedrons vertices
+	 */
+	private createVerticeLists(polyhedra: Map<number, number[]>): number[][] {
+
+		// Extract structure parts
+		const {atoms} = this.structure!;
 
 		// Convert atom indexes to list of coordinates
 		const out: number[][] = [];
-		for(const island of islands) {
+		this.centerAtomsColor.length = 0;
+
+		for(const [center, vertices] of polyhedra) {
+
+			if(vertices.length === 0) continue;
+
+			if(this.colorByCenterAtom) {
+				const {atomZ} = atoms[center];
+				this.centerAtomsColor.push(getAtomData(atomZ).color);
+			}
 
 			const oneIsland: number[] = [];
-			for(const atomIdx of island) {
+			for(const atomIdx of vertices) {
 				const {position} = atoms[atomIdx];
 				oneIsland.push(position[0], position[1], position[2]);
 			}
 			out.push(oneIsland);
 		}
+		return out;
+	}
+
+	/**
+	 * Remove incomplete polyhedra
+	 *
+	 * @param polyhedra - Found polyhedra (key: center atom, value: list of bonded atoms)
+	 * @returns Structure without incomplete polyhedra
+	 */
+	private removeIncompletePolyhedra(polyhedra: Map<number, number[]>): Structure {
+
+		const {atoms, crystal, volume, extra, bonds} = this.structure!;
+
+		const natoms3 = atoms.length * 3;
+		const fractional = cartesianToFractionalCoordinates(this.structure!);
+		const TOL = 1e-8;
+		const outside: boolean[] = [];
+		for(let i=0; i < natoms3; i += 3) {
+
+			const fx = fractional[i];
+			if(fx < -TOL || fx > 1+TOL) {
+				outside.push(true);
+				continue;
+			}
+			const fy = fractional[i+1];
+			if(fy < -TOL || fy > 1+TOL) {
+				outside.push(true);
+				continue;
+			}
+			const fz = fractional[i+2];
+			if(fz < -TOL || fz > 1+TOL) {
+				outside.push(true);
+				continue;
+			}
+			outside.push(false);
+		}
+
+		const out: Structure = {
+			crystal: {
+				basis: crystal.basis,
+				origin: crystal.origin,
+				spaceGroup: crystal.spaceGroup
+			},
+			atoms: [],
+			bonds: [],
+			volume,
+			extra
+		};
+
+		const mapBonds = new Map<number, number>();
+		let idxIn = 0;
+		let idxOut = 0;
+		for(const atom of atoms) {
+
+			if(!(polyhedra.has(idxIn) && polyhedra.get(idxIn)!.length === 0 && outside[idxIn])) {
+
+				out.atoms.push({
+					atomZ: atom.atomZ,
+					position: [atom.position[0], atom.position[1], atom.position[2]],
+					label: atom.label,
+					chain: atom.chain
+				});
+				mapBonds.set(idxIn, idxOut);
+				++idxOut;
+			}
+			++idxIn;
+		}
+
+		// Fix bonds
+		for(const bond of bonds) {
+			const {from, to, type} = bond;
+
+			const outFrom = mapBonds.get(from);
+			const outTo   = mapBonds.get(to);
+			if(type !== BondType.normal) {
+				out.bonds.push({from, to, type});
+			}
+			else if(outFrom !== undefined && outTo !== undefined) {
+				out.bonds.push({from: outFrom, to: outTo, type});
+			}
+		}
+
 		return out;
 	}
 
@@ -234,9 +346,13 @@ export class DrawPolyhedra extends NodeCore {
 		if(status) return {error: status};
 
 		// Extract the polyhedrons vertices and send to client
-		const islands = this.createVerticeLists();
+		const polyhedra = this.computePolyhedra();
+		const islands = this.createVerticeLists(polyhedra);
 
 		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
+
+		this.toNextNode(this.removeIncompletePolyhedra(polyhedra));
+
 		return {status: "ok"};
 	}
 
@@ -252,8 +368,13 @@ export class DrawPolyhedra extends NodeCore {
 
 		// Extract the polyhedrons vertices and send to client
 		if(!this.structure) return;
-		const islands = this.createVerticeLists();
+		const polyhedra = this.computePolyhedra();
+		const islands = this.createVerticeLists(polyhedra);
+
+		this.toNextNode(this.removeIncompletePolyhedra(polyhedra));
 
 		sendPolyhedraToClient(this.id, "vertices", islands, this.centerAtomsColor);
+
+		this.toNextNode(this.removeIncompletePolyhedra(polyhedra));
 	}
 }
