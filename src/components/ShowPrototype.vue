@@ -26,7 +26,8 @@ import {ref} from "vue";
 import {inv} from "mathjs";
 import {IcosahedronGeometry, Vector3,
 		CylinderGeometry, MeshStandardMaterial, FrontSide, Group, Color,
-		Mesh, LineSegments, LineBasicMaterial} from "three";
+		Mesh, LineSegments, LineBasicMaterial,
+        Box3} from "three";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
@@ -472,6 +473,19 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
         bondsGroup.add(cylinder);
     }
 };
+
+/**
+ * Center the structure in the viewer
+ */
+const centerView = (): void => {
+
+    const bbox = new Box3();
+    bbox.setFromObject(atomsGroup);
+    const center = new Vector3();
+    bbox.getCenter(center);
+    sv.centerCamera([center.x, center.y, center.z]);
+};
+
 </script>
 
 
@@ -480,7 +494,10 @@ const addBonds = (atoms: PrototypeAtomsData, bonds: Bond[]): void => {
     <div class="layout-main prototype-viewer" />
     <v-container class="layout-buttons" style="justify-content: space-between">
       <v-label v-html="prototypeName"/>
-      <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+      <div class="d-flex ga-2 justify-end">
+        <v-btn @click="centerView">Center</v-btn>
+        <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
+      </div>
     </v-container>
 </v-app>
 </template>
