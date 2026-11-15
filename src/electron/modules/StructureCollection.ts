@@ -114,7 +114,7 @@ interface CollectionStructure {
  * Index of the similar structures list
  * @notExported
  */
-export interface SimilarStructuresEntry {
+interface SimilarStructuresEntry {
 	/** Unique structure identifier */
 	id: number;
 	/** User facing structure title */
