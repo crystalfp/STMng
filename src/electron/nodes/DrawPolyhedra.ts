@@ -31,6 +31,14 @@ import {sendPolyhedraToClient} from "../modules/ToClient";
 import {BondType} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition, AtomSelectorModes} from "@/types";
 
+/** Found polyhedra */
+interface Polyhedra {
+	/** Valid polyhedra (key: center atom, values: vertices) */
+	valid: Map<number, number[]>;
+	/** Incomplete polyhedra (key: center atom, values: vertices) */
+	invalid: Map<number, number[]>;
+}
+
 export class DrawPolyhedra extends NodeCore {
 
 	private structure: Structure | undefined;
@@ -144,9 +152,12 @@ export class DrawPolyhedra extends NodeCore {
 	 *
 	 * @returns A map for each possible center atom the list of connected atoms (could be empty)
 	 */
-	private computePolyhedra(): Map<number, number[]> {
+	private computePolyhedra(): Polyhedra {
 
-		const polyhedra = new Map<number, number[]>();
+		const polyhedra = {
+			valid: new Map<number, number[]>(),
+			invalid: new Map<number, number[]>()
+		};
 
 		// Sanity checks
 		if(!this.structure) return polyhedra;
@@ -177,8 +188,8 @@ export class DrawPolyhedra extends NodeCore {
 			}
 
 			// Add triangles and polyhedra
-			const add = this.countConstrain(connected.length);
-			polyhedra.set(idx, add ? connected : []);
+			if(this.countConstrain(connected.length)) polyhedra.valid.set(idx, connected);
+			else polyhedra.invalid.set(idx, connected);
 		}
 
 		return polyhedra;
@@ -189,7 +200,7 @@ export class DrawPolyhedra extends NodeCore {
 	 *
 	 * @returns List of lists of polyhedrons vertices
 	 */
-	private createVerticeLists(polyhedra: Map<number, number[]>): number[][] {
+	private createVerticeLists(polyhedra: Polyhedra): number[][] {
 
 		// Extract structure parts
 		const {atoms} = this.structure!;
@@ -198,9 +209,7 @@ export class DrawPolyhedra extends NodeCore {
 		const out: number[][] = [];
 		this.centerAtomsColor.length = 0;
 
-		for(const [center, vertices] of polyhedra) {
-
-			if(vertices.length === 0) continue;
+		for(const [center, vertices] of polyhedra.valid) {
 
 			if(this.colorByCenterAtom) {
 				const {atomZ} = atoms[center];
@@ -223,10 +232,11 @@ export class DrawPolyhedra extends NodeCore {
 	 * @param polyhedra - Found polyhedra (key: center atom, value: list of bonded atoms)
 	 * @returns Structure without incomplete polyhedra
 	 */
-	private removeIncompletePolyhedra(polyhedra: Map<number, number[]>): Structure {
+	private removeIncompletePolyhedra(polyhedra: Polyhedra): Structure {
 
 		const {atoms, crystal, volume, extra, bonds} = this.structure!;
 
+		// Classify atoms as internal/external to the unit cell
 		const natoms3 = atoms.length * 3;
 		const fractional = cartesianToFractionalCoordinates(this.structure!);
 		const TOL = 1e-8;
@@ -251,6 +261,84 @@ export class DrawPolyhedra extends NodeCore {
 			outside.push(false);
 		}
 
+		// Connection map
+		const connected1 = new Map<number, number[]>();
+		const connected = new Map<number, Set<number>>();
+		for(const {from, to, type} of bonds) {
+
+			if(type !== BondType.normal) continue;
+
+			if(outside[to]) {
+				connected1.getOrInsert(from, []).push(to);
+				// connected.getOrInsertComputed(from, () => new Set<number>()).add(to);
+			}
+			if(outside[from]) {
+				connected1.getOrInsert(to, []).push(from);
+				// connected.getOrInsertComputed(to, () => new Set<number>()).add(from);
+			}
+		}
+
+		for(const [key, values] of connected1) {
+
+			connected.set(key, new Set<number>(values));
+		}
+		for(const [key, values] of connected1) {
+			for(const value of values) {
+				connected.getOrInsertComputed(value, () => new Set<number>()).add(key);
+			}
+		}
+		for(const [key, values] of connected) {
+
+			if(values.has(key)) values.delete(key);
+		}
+
+		// Mark external atoms to remove because part of incomplete polyhedra
+		const natoms = atoms.length;
+		const future = Array<number>(natoms).fill(0); // 0: not visited, 1: to delete, 2: keep
+		const markDeleted = (start: number): void => {
+
+			const children = connected.get(start);
+			if(!children) return;
+			for(const child of children) {
+				if(future[child] !== 0) continue;
+				if(outside[child]) {
+
+					if(polyhedra.valid.has(child)) {
+						future[child] = 2;
+					}
+					else {
+						future[child] = 1;
+						markDeleted(child);
+					}
+				}
+				else {
+					future[child] = 2;
+				}
+			}
+		};
+
+		for(let idx=0; idx < atoms.length; ++idx) {
+
+			// Do not delete internal atoms
+			if(!outside[idx]) future[idx] = 2;
+
+			// It is a central atom
+			if(polyhedra.valid.has(idx)) {
+				const children = polyhedra.valid.get(idx)!;
+				future[idx] = 2;
+				for(const con of children) future[con] = 2;
+			}
+			else if(polyhedra.invalid.has(idx)) {
+				future[idx] = 1;
+				const children = polyhedra.invalid.get(idx)!;
+				for(const con of children) {
+					future[con] = 1;
+					markDeleted(idx);
+				}
+			}
+		}
+
+		// Copy only not deleted atoms
 		const out: Structure = {
 			crystal: {
 				basis: crystal.basis,
@@ -268,7 +356,7 @@ export class DrawPolyhedra extends NodeCore {
 		let idxOut = 0;
 		for(const atom of atoms) {
 
-			if(!(polyhedra.has(idxIn) && polyhedra.get(idxIn)!.length === 0 && outside[idxIn])) {
+			if(future[idxIn] !== 1) {
 
 				out.atoms.push({
 					atomZ: atom.atomZ,
