@@ -341,8 +341,9 @@
     // "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
 
     // *** Stylistic ***
-    "@stylistic/array-bracket-newline": ["warn", "consistent"],
-    "@stylistic/array-bracket-spacing": ["warn", "never"],
+    "@stylistic/list-style": ["off", {"overrides": {
+      "{}": { "singleLine": { "spacing": "never" }} },
+    }],
     "@stylistic/arrow-parens": ["warn", "always", { "requireForBlockBody": true }],
     "@stylistic/arrow-spacing": [ "error", { "after": true, "before": true } ],
     "@stylistic/block-spacing": [ "error", "never" ],
@@ -368,6 +369,7 @@
         "catch": {"after": false},
         "while": {"after": false},
         "for": {"after": false},
+        "await": {"after": true}
     }}],
     "@stylistic/lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
     "@stylistic/max-statements-per-line": ["warn", {"max": 2}],
@@ -467,8 +469,7 @@
     "@stylistic/template-tag-spacing": [ "error", "never" ],
     "@stylistic/type-annotation-spacing": [ "error", {
         "before": false,
-        "after": true,
-        "overrides": {"arrow": "ignore"}
+        "after": true
       }
     ],
     "@stylistic/type-generic-spacing": "error",
