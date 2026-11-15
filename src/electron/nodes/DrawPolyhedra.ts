@@ -268,14 +268,12 @@ export class DrawPolyhedra extends NodeCore {
 
 			if(type !== BondType.normal) continue;
 
-			if(outside[to]) {
+			// if(outside[to]) {
 				connected1.getOrInsert(from, []).push(to);
-				// connected.getOrInsertComputed(from, () => new Set<number>()).add(to);
-			}
-			if(outside[from]) {
+			// }
+			// if(outside[from]) {
 				connected1.getOrInsert(to, []).push(from);
-				// connected.getOrInsertComputed(to, () => new Set<number>()).add(from);
-			}
+			// }
 		}
 
 		for(const [key, values] of connected1) {
@@ -328,10 +326,14 @@ export class DrawPolyhedra extends NodeCore {
 				future[idx] = 2;
 				for(const con of children) future[con] = 2;
 			}
-			else if(polyhedra.invalid.has(idx)) {
+		}
+		for(let idx=0; idx < atoms.length; ++idx) {
+
+			if(polyhedra.invalid.has(idx)) {
 				future[idx] = 1;
 				const children = polyhedra.invalid.get(idx)!;
 				for(const con of children) {
+					if(future[con] === 2) continue;
 					future[con] = 1;
 					markDeleted(idx);
 				}
