@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {onUnmounted, ref, watch, computed} from "vue";
+import {onUnmounted, ref, watch, computed, useTemplateRef} from "vue";
 import {BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry,
         Float32BufferAttribute, LineBasicMaterial, LineLoop,
         Mesh, MeshStandardMaterial, LineSegments, Group,
@@ -102,7 +102,9 @@ handleSpecialKeys(windowPath);
 const pointsGroup = new Group();
 const labelsGroup = new Group();
 
+// Labels on points
 const labelRenderer = new CSS2DRenderer();
+const viewerContainer = useTemplateRef<Element>("viewer");
 
 /** Initialize the 3D viewer */
 const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
@@ -134,8 +136,7 @@ const sv = new SimpleViewer(".hull3d-viewer", false, (scene) => {
     labelRenderer.domElement.style.top = "0px";
     labelRenderer.domElement.style.height = `${window.innerHeight-CONTROLS_HEIGHT}px`;
     labelRenderer.domElement.style.pointerEvents = "none";
-    const viewerContainer = document.querySelector(".hull3d-viewer");
-    if(viewerContainer) viewerContainer.append(labelRenderer.domElement);
+    if(viewerContainer.value) viewerContainer.value.append(labelRenderer.domElement);
 
     // Increase ambient light intensity
     scene.traverse((object) => {
@@ -536,7 +537,7 @@ const changeVisibility = (): void => {
 
 <template>
 <v-app :theme class="layout-app">
-  <div class="layout-main hull3d-viewer" />
+  <div ref="viewer" class="layout-main hull3d-viewer" />
   <div v-if="viewStep !== ''" class="hull3d-panel">
     <div v-html="viewFormula"/>
     <table>

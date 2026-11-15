@@ -430,7 +430,7 @@ const annotationLabels3 = computed<AnnotationItem[]>(() => {
     <VisAxis type="y" :gridLine="false" label="Enthalpy of formation (eV/atom)"
             labelColor="black" :fullSize="true" :labelFontSize="24" tickTextColor="black"/>
     <VisTooltip :triggers :followCursor="false" />
-    <VisAnnotations v-if="showFormula" :items="annotationLabels" />
+    <VisAnnotations v-if="showFormula" :items="annotationLabels" :duration="0" />
   </VisXYContainer>
   <VisXYContainer v-else-if="dimension===3"
                   :margin="{right: 20, top: 20, left: 20, bottom: 20}"
@@ -442,7 +442,7 @@ const annotationLabels3 = computed<AnnotationItem[]>(() => {
     <VisScatter ref="scatter3" :data="vertex" :x="xp" :y="yp"
                 color="#FF0000" :size="showOnLine ? 15 : 0" cursor="pointer" shape="square"/>
     <VisTooltip :triggers :followCursor="false" />
-    <VisAnnotations v-if="showFormula" :items="annotationLabels3" />
+    <VisAnnotations v-if="showFormula" :items="annotationLabels3" :duration="0"/>
   </VisXYContainer>
   <v-alert v-else
         title="Not implemented"
