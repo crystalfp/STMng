@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {ref, useTemplateRef} from "vue";
+import {nextTick, ref, useTemplateRef} from "vue";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {requestData, closeWindow, clearLog} from "@/services/RoutesClient";
 import {theme} from "@/services/ReceiveTheme";
@@ -32,15 +32,18 @@ const text = ref("");
 const showConfirm = ref(false);
 const windowPath = "/log";
 
+const container = useTemplateRef<HTMLDivElement>("container");
+const scrollTop = (element: HTMLDivElement): void => {
+    element.scrollTop = element.scrollHeight;
+};
+
 requestData(windowPath, (params: CtrlParams) => {
 
     text.value = params.content as string ?? "";
 
-    const element = document.querySelector<HTMLTextAreaElement>(".layout-main");
+    if(!container.value) return;
 
-    if(element) {
-        setTimeout(() => {element.scrollTop = element.scrollHeight;}, 10);
-    }
+    void nextTick().then(() => scrollTop(container.value!));
 });
 
 /** Capture and handle special keys (Escape, F1, F12) */
@@ -77,11 +80,11 @@ const copyToClipboard = async (): Promise<void> => {
 
 <template>
 <v-app :theme class="layout-app">
-  <v-container class="layout-main">
+  <div ref="container" class="layout-main">
     <v-textarea ref="txt" :model-value="text" readonly auto-grow hide-details
-                  variant="underlined" flat width="100%" class="pl-2" />
-  </v-container>
-  <v-container class="layout-buttons">
+                  variant="solo" flat width="100%" class="pl-2" />
+  </div>
+  <v-container class="layout-buttons" style="border-top: 1px solid #b0b0b0;">
     <v-btn @click="showConfirm=true">Clear log</v-btn>
     <v-btn :disabled="!copyText" @click="copyToClipboard">Copy to clipboard</v-btn>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
