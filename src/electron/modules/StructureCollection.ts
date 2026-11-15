@@ -61,7 +61,9 @@ interface PrototypesAdd {
  * @notExported
  */
 type CollectionsEntry = CollectionsCommon & (
+	/** Special collection entries */
 	{proto: false} |
+	/** Entries from prototype encyclopedia */
 	({proto: true} & PrototypesAdd)
 );
 

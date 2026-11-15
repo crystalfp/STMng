@@ -28,12 +28,23 @@ import {showNodeAlert, resetNodeAlert} from "@/services/AlertMessage";
 import {useControlStore} from "@/stores/controlStore";
 import {useConfigStore} from "@/stores/configStore";
 import {resetCamera} from "@/services/ResetCamera";
-import type {FileFilter, CollectionsEntryType} from "@/types";
+import type {FileFilter} from "@/types";
 
 import EnableCapture from "@/components/EnableCapture.vue";
 import SelectFile from "@/widgets/SelectFile.vue";
 import NodeAlert from "@/widgets/NodeAlert.vue";
 import TitledSlot from "@/widgets/TitledSlot.vue";
+
+/**
+ * List of entries in the special collections
+ * @notExported
+ */
+interface CollectionsEntryType {
+    /** Title that appears in the widget (and the one searched over) */
+    title: string;
+    /** Corresponding index to load */
+    idx: number;
+}
 
 // > Properties
 const {id, label} = defineProps<{

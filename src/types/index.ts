@@ -608,13 +608,6 @@ export interface PrototypeAtomsData {
     addType?: AddKind[];
 }
 
-export interface CollectionsEntryType {
-    /** Title that appears in the widget (and the one searched over) */
-    title: string;
-    /** Corresponding index to load */
-    idx: number;
-}
-
 /**
  * Type of the list of fingerprinting methods names for selection
  */

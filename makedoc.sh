@@ -40,10 +40,9 @@ node_modules/.bin/typedoc \
 --excludeExternals \
 --sourceLinkTemplate "vscode://file$root/src/{path}:{line}:1" \
 --tsconfig ./tsconfig.json \
---exclude "node_modules/**/*" \
+--exclude "troika-three-text.d.ts" \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree | grep -v .rollup.cache` | grep -v node_modules
 fi
-# --exclude "{troika-three-text.d.ts,node_modules/**/*}" \
 
 
 # if [ $c = "s" -o $c = "a" ]

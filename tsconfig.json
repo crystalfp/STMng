@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "Preserve",
     "types": ["node"],
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "verbatimModuleSyntax": true,
     "noErrorTruncation": true,
     "esModuleInterop": true,
