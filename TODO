@@ -5,7 +5,7 @@ Requests:
   ☐ (future) Move to WebGPU renderer from current WebGL renderer
   ☐ (maybe) Add a `metadata` section to project files.
   ☐ Create a tutorial
-  ☐ (low priority) Incomplete polyhedra.
+  ✔ (low priority) Incomplete polyhedra. @done(2026-11-15 16:52)
   ☐ Extending variable composition analysis to systems with >5 components.
   ☐ An option to specify an arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
@@ -20,6 +20,7 @@ To do:
   ☐ Don't use flags as function parameters
   ☐ Add synchronization between documentation and site
   ☐ Check user interface against <https://interfaces.dev/cheat-sheet>
+  ✔ Remove `querySelector` form ComponentsConvexHull3D.vue (use ref) @done(2026-11-15 17:38)
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI

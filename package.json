@@ -5,7 +5,7 @@
   "productName": "STMng",
   "private": true,
   "main": "dist-electron/main.js",
-  "version": "1.70.4-test3",
+  "version": "1.70.4-test4",
   "author": "Mario Valle <mvalle@ikmail.com>",
   "license": "ISC",
   "homepage": "https://github.com/crystalfp/STMng",

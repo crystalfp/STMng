@@ -28,6 +28,7 @@ export default defineConfig([
         jsx: false,
         blockSpacing: false,
         arrowParens: true,
+        braceStyle: "stroustrup",
     }), {
     ignores: [
         "src/vite-env.d.ts",
