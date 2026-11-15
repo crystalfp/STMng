@@ -89,10 +89,6 @@ const getSelector = (): void => {
     }
     const selector = atomsSelectorInternal.value;
 
-    if(!selector) {
-        atomsSelector.value = "";
-        return;
-    }
     atomsSelector.value = selector;
 
     if(id && channel) {
@@ -127,6 +123,20 @@ const clearSelector = (): void => {
     atomsSelector.value = "";
     errorStatus.value = false;
     errorMessage.value = "";
+
+    if(id && channel) {
+        askNode(id, channel, {
+            atomsSelector: "",
+            labelKind: labelKind.value,
+        })
+        .then((params) => {
+            if(params.error) throw Error(params.error as string);
+        })
+        .catch((error: Error) => {
+            errorStatus.value = true;
+            errorMessage.value = error.message;
+        });
+    }
 };
 
 </script>
