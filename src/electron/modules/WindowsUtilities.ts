@@ -362,6 +362,7 @@ const setInitialSizes = (win: BrowserWindow): void => {
     }
 
     win.addListener("resize", () => {
+        if(win.isMinimized()) return;
         if(isMaximized()) win.maximize();
         else setWindowSize(win.getSize());
     });
