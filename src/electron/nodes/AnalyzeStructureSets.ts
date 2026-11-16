@@ -716,7 +716,7 @@ export class AnalyzeStructureSets extends NodeCore {
 	private static makeLabel(key: string,
 							 numberComponents: number,
 					  		 atomTypes: string[],
-							 atomCounts: number[]): [label: string, html: string] {
+							 atomCounts: number[]): string {
 
 		const keyParts = key.split("-");
 		const parts = keyParts.map((value) => Number.parseInt(value, 10));
@@ -737,19 +737,16 @@ export class AnalyzeStructureSets extends NodeCore {
 			}
 		}
 
-		let label = "";
 		let f = "";
 		for(const [atom, count] of formula) {
 			if(count === 1) {
-				label += atom;
 				f += atom;
 			}
 			else if(count > 1) {
-				label += `${atom}${count}`;
 				f += `${atom}<sub>${count}</sub>`;
 			}
 		}
-		return [label, f];
+		return f;
 	}
 
 	/**
@@ -792,14 +789,13 @@ export class AnalyzeStructureSets extends NodeCore {
 		const out: SummaryTableEntry[] = [];
 		for(const [key, value] of lines) {
 
-			const [label, formula] = AnalyzeStructureSets.makeLabel(key, numberComponents, atomTypes, atomCounts);
+			const formula = AnalyzeStructureSets.makeLabel(key, numberComponents, atomTypes, atomCounts);
 
 			for(const v of value) {
 
 				out.push({
 					xs: v[0],
 					xe: v[1],
-					label,
 					formula,
 					key,
 					indices: v[2]

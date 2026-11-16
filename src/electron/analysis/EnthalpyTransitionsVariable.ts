@@ -60,8 +60,6 @@ export interface SummaryTableEntry {
 	xs: number;
 	/** Interval end pressure */
 	xe: number;
-	/** Formula as normal string */
-	label: string;
 	/** Formula as HTML string */
 	formula: string;
 	/** Corresponding key */

@@ -26,6 +26,7 @@ import {computed, ref} from "vue";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData} from "@/services/RoutesClient";
+import {formatFormula} from "@/services/FormatFormula";
 import {Timeline} from "@unovis/ts";
 import {VisXYContainer, VisAxis, VisTimeline, VisTooltip} from "@unovis/vue";
 import type {CtrlParams} from "@/types";
@@ -87,9 +88,15 @@ interface SelectedDetails {
     step: string;
 }
 
+/**
+ * Adding label for display
+ * @notExported
+ */
+type SummaryTableEntryWithLabel = SummaryTableEntry & {label: string};
+
 const range = ref<DataRecord[]>([]);
 const lineHeight = ref(30);
-const summary = ref<SummaryTableEntry[]>([]);
+const summary = ref<SummaryTableEntryWithLabel[]>([]);
 const summaryLineHeight = ref(30);
 const showSummary = ref(true);
 const forceUpdate = ref(true);
@@ -137,7 +144,7 @@ requestData(windowPath, (params: CtrlParams) => {
         const [pl, ph] = table.pressures[i];
         for(let j=0; j < table.formulas[i].length; ++j) {
             const formula = table.formulas[i][j];
-            const name = formula.replaceAll(/<\/?sub>/gu, "");
+            const name = formatFormula(formula);
             const step = table.steps[i][j];
             const enthalpy = table.enthalpies[i][j];
 
@@ -215,7 +222,7 @@ requestData(windowPath, (params: CtrlParams) => {
         summary.value.push({
             xs: entry.xs,
             xe: entry.xe,
-            label: entry.label,
+            label: formatFormula(entry.formula),
             formula: entry.formula,
             key: entry.key,
             indices: entry.indices
@@ -363,9 +370,9 @@ const triggers = {
 };
 
 // Summary chart accessors
-const xs = (d: SummaryTableEntry): number => d.xs;
-const ls = (d: SummaryTableEntry): number => d.xe-d.xs;
-const ss = (d: SummaryTableEntry): string => d.label;
+const xs = (d: SummaryTableEntryWithLabel): number => d.xs;
+const ls = (d: SummaryTableEntryWithLabel): number => d.xe-d.xs;
+const ss = (d: SummaryTableEntryWithLabel): string => d.label;
 
 /** Hover on a summary chart line */
 const summaryTriggerFunction = (d: SummaryTableEntry): string => {
@@ -431,6 +438,7 @@ const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
       <VisTimeline :key="forceUpdate" :lineRow="ss" :x="xs" :lineDuration="ls"
                    :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="summaryLineHeight" :showEmptySegments="true"
+                   :rowLabelStyle="{'font-size': '20'}" :rowLabelWidth="100"
                    :lineWidth="20" lineCursor="pointer" :events="summaryEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                :labelFontSize="24" :domainLine="false" :numTicks="21"/>
@@ -443,6 +451,7 @@ const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
       <VisTimeline :key="forceUpdate" :lineRow="sp" :x="xp" :lineDuration="lp"
                    :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="lineHeight" :showEmptySegments="true"
+                   :rowLabelStyle="{'font-size': '20'}" :rowLabelWidth="100"
                    :lineWidth="20" lineCursor="pointer" :events="detailsEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                :labelFontSize="24" :domainLine="false" :numTicks="21"/>

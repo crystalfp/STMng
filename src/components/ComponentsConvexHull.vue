@@ -27,6 +27,7 @@ import log from "electron-log";
 import {theme} from "@/services/ReceiveTheme";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
+import {formatFormula} from "@/services/FormatFormula";
 import type {CtrlParams} from "@/types";
 
 import {Scatter, BulletShape, XYLabels, type BulletLegendItemInterface,
@@ -324,8 +325,12 @@ const vc = computed(() => {
 const legendTitle = computed(() => ((pointColoring.value === "distance") ?
                                         "Distance" : "Enthalpy of formation"));
 
+/** Set Annotations on special atoms */
 // eslint-disable-next-line vue/prefer-use-template-ref, unicorn/no-null
 const scatter = shallowRef<{component?: Scatter<DataRecord>} | null>(null);
+
+const fontSize = 24;
+const offset = 0.1;
 
 const annotationLabels = computed<AnnotationItem[]>(() => {
 
@@ -347,17 +352,14 @@ const annotationLabels = computed<AnnotationItem[]>(() => {
 
     const count = line.value.length;
     const out = Array<AnnotationItem>(count);
-    const m = 0.1;
 
     for(let i=0; i < count; ++i) {
 
         const x = (line.value[i].x!-xmin)/(xmax-xmin);
         const y = 1-((line.value[i].y!-ymin)/(ymax-ymin));
-        const xl: LengthUnit = `${Math.round(100*(x*(1-2*m)+m))}%`;
-        const yl: LengthUnit = `${Math.round(100*y*(1-m))}%`;
-        const content = (line.value[i].formula ?? "unknown")
-                                    .replaceAll(/<\/?sub>/gu, "")
-                                    .replaceAll(/<\/?sup>/gu, "");
+        const xl: LengthUnit = `${Math.round(100*(x*(1-2*offset)+offset))}%`;
+        const yl: LengthUnit = `${Math.round(100*y*(1-offset))}%`;
+        const content = {text: formatFormula(line.value[i].formula), fontSize};
         out[i] = {
             x: xl,
             y: yl,
@@ -374,7 +376,6 @@ const annotationLabels = computed<AnnotationItem[]>(() => {
     return out;
 });
 
-
 // eslint-disable-next-line vue/prefer-use-template-ref, unicorn/no-null
 const scatter3 = shallowRef<{component?: Scatter<DataRecord>} | null>(null);
 const annotationLabels3 = computed<AnnotationItem[]>(() => {
@@ -384,16 +385,13 @@ const annotationLabels3 = computed<AnnotationItem[]>(() => {
 
     const count = vertex.value.length;
     const out = Array<AnnotationItem>(count);
-    const m = 0.1;
 
     for(let i = 0; i < count; ++i) {
 
         const x = component.xScale(vertex.value[i].x!);
         const y = component.yScale(vertex.value[i].y!);
-        const content = (vertex.value[i].formula ?? "unknown")
-                            .replaceAll(/<\/?sub>/gu, "")
-                            .replaceAll(/<\/?sup>/gu, "");
-        const m1 = ((-5.333*y + 4.619)*y + 1)*m; // so m1 goes from m to 2m to m
+        const content = {text: formatFormula(vertex.value[i].formula), fontSize};
+        const m1 = ((-5.333*y + 4.619)*y + 1)*offset; // so m1 goes from m to 2m to m
         const xl: LengthUnit = `${Math.round(100*(x*(1-2*m1)+m1))}%`;
         const yl: LengthUnit = `${Math.round(100*((1-m1+(y/0.866)*(2*m1-1))))}%`;
 
