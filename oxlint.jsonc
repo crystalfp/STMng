@@ -341,9 +341,7 @@
     // "vue/no-undef-components": ["error", {"ignorePatterns": ["^v-", "^router-"]}],
 
     // *** Stylistic ***
-    "@stylistic/list-style": ["off", {"overrides": {
-      "{}": { "singleLine": { "spacing": "never" }} },
-    }],
+    "@stylistic/list-style": ["off", { "singleLine": { "spacing": "never" }}],
     "@stylistic/arrow-parens": ["warn", "always", { "requireForBlockBody": true }],
     "@stylistic/arrow-spacing": [ "error", { "after": true, "before": true } ],
     "@stylistic/block-spacing": [ "error", "never" ],
@@ -369,7 +367,7 @@
         "catch": {"after": false},
         "while": {"after": false},
         "for": {"after": false},
-        "await": {"after": true}
+        "await": {"after": true},
     }}],
     "@stylistic/lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
     "@stylistic/max-statements-per-line": ["warn", {"max": 2}],
