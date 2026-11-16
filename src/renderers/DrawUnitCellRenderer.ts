@@ -22,15 +22,13 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {Group, Vector3, type Material, ConeGeometry, LineDashedMaterial,
-		CylinderGeometry, MeshStandardMaterial, DoubleSide, Mesh,
-		LineSegments, LineBasicMaterial, FrontSide,
-		SphereGeometry} from "three";
+import {Group, Vector3, type Material, LineDashedMaterial,
+		CylinderGeometry, MeshStandardMaterial, Mesh, LineSegments,
+		LineBasicMaterial, FrontSide, SphereGeometry} from "three";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
 import {sm} from "@/services/SceneManager";
-import {spriteText} from "@/services/SpriteText";
 import {order3} from "@/services/SharedConstants";
-import type {PositionType} from "@/types";
+import {basisVectorArrow} from "@/services/ShowBasis";
 
 /**
  * Renderer for unit cell graphical output
@@ -211,65 +209,6 @@ export class DrawUnitCellRenderer {
 	}
 
 	/**
-	* Create an arrow in the direction of the basis vector
-	*
-	* @param basis - Basis vector to be show
-	* @param origin - Unit cell origin
-	* @param size - Base size of the arrows
-	* @param color - Color of the arrow and the label
-	* @param axisLabel - Label on the vector
-	* @param group - The arrow is added to this group
-	*/
-	private static basisVectorArrow(basis: Vector3, origin: Vector3, size: number,
-									color: string, axisLabel: string, group: Group): void {
-
-		const versor = basis.clone().normalize();
-		const basisLen = basis.length();
-
-		const coneSize = 2*size;
-		const coneLen = 5*size;
-
-		const material = new MeshStandardMaterial({
-			color,
-			roughness: 0.5,
-			metalness: 0.6,
-			side: DoubleSide
-		});
-
-		const cylinder = new Mesh(
-			new CylinderGeometry(size, size, basisLen-coneLen, 10),
-			material
-		);
-
-		cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), versor);
-		cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
-
-		// Arrow tips
-		const cone = new Mesh(
-			new ConeGeometry(coneSize, coneLen, 10, 1),
-			material
-		);
-
-		cone.quaternion.copy(cylinder.quaternion);
-		cone.position.addVectors(basis, origin);
-		cone.position.addScaledVector(versor, -coneLen/2);
-
-		// Correlate label size to axis length for legibility
-		const labelSize = 0.4 + 0.6*(basisLen-0.5)/19.5;
-
-		// Label
-		const labelPosition: PositionType = [
-			basis.x+origin.x+versor.x*0.1,
-			basis.y+origin.y+versor.y*0.1,
-			basis.z+origin.z+versor.z*0.1
-		];
-		const sprite = spriteText(axisLabel, color, labelSize, labelPosition);
-
-		group.add(cylinder, cone, sprite);
-		sm.modified();
-	}
-
-	/**
 	 * Draw the unit cell vectors
 	 *
 	 * @param visible - If the vectors are visible when created
@@ -301,9 +240,9 @@ export class DrawUnitCellRenderer {
 			width = Math.max(0.05, ltot/300);
 		}
 
-		DrawUnitCellRenderer.basisVectorArrow(basisA, originZero, width, "#FF0000", "a", this.outBV);
-		DrawUnitCellRenderer.basisVectorArrow(basisB, originZero, width, "#79FF00", "b", this.outBV);
-		DrawUnitCellRenderer.basisVectorArrow(basisC, originZero, width, "#0000FF", "c", this.outBV);
+		basisVectorArrow(basisA, originZero, width, "#FF0000", "a", this.outBV);
+		basisVectorArrow(basisB, originZero, width, "#79FF00", "b", this.outBV);
+		basisVectorArrow(basisC, originZero, width, "#0000FF", "c", this.outBV);
 
 		this.outBV.visible = visible;
 		sm.modified();

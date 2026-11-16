@@ -23,8 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {ref} from "vue";
-import {MeshStandardMaterial, Group, Vector3, CylinderGeometry,
-        Float32BufferAttribute, Mesh, DoubleSide, ConeGeometry,
+import {MeshStandardMaterial, Group, Vector3, Float32BufferAttribute, Mesh,
         BufferGeometry, AmbientLight, FrontSide, DirectionalLight,
         Object3D, Color} from "three";
 import {STLExporter} from "three/addons/exporters/STLExporter.js";
@@ -33,8 +32,8 @@ import {theme} from "@/services/ReceiveTheme";
 import {SimpleViewer} from "@/services/SimpleViewer";
 import {Lut} from "three/addons/math/Lut.js";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
-import {spriteText} from "@/services/SpriteText";
-import type {CtrlParams, PositionType} from "@/types";
+import {basisVectorArrow} from "@/services/ShowBasis";
+import type {CtrlParams} from "@/types";
 
 const windowPath = "/crystal-shape";
 
@@ -90,64 +89,6 @@ let cameraPosition: [x: number, y: number, z: number] = [1, 1, 1];
 let cameraZoom = 1;
 
 /**
- * Create an arrow in the direction of the basis vector
- *
- * @param basis - Basis vector to be show
- * @param origin - Unit cell origin
- * @param size - Base size of the arrows
- * @param color - Color of the arrow and the label
- * @param axisLabel - Label on the vector
- * @param group - The arrow is added to this group
- */
-const basisVectorArrow = (basis: Vector3, origin: Vector3, size: number,
-                          color: string, axisLabel: string): void => {
-
-    const versor = basis.clone().normalize();
-    const basisLen = basis.length();
-
-    const coneSize = 2*size;
-    const coneLen = 5*size;
-
-    const material = new MeshStandardMaterial({
-        color,
-        roughness: 0.5,
-        metalness: 0.6,
-        side: DoubleSide,
-    });
-
-    const cylinder = new Mesh(
-        new CylinderGeometry(size, size, basisLen-coneLen, 10),
-        material
-    );
-
-    cylinder.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), versor);
-    cylinder.position.addVectors(origin, versor.clone().multiplyScalar((basisLen-coneLen)/2));
-
-    // Arrow tips
-    const cone = new Mesh(
-        new ConeGeometry(coneSize, coneLen, 10, 1),
-        material
-    );
-
-    cone.quaternion.copy(cylinder.quaternion);
-    cone.position.addVectors(basis, origin);
-    cone.position.addScaledVector(versor, -coneLen/2);
-
-    // Correlate label size to axis length for legibility
-    const labelSize = size*4;
-
-    // Label
-    const labelPosition: PositionType = [
-        basis.x+origin.x+versor.x*size,
-        basis.y+origin.y+versor.y*size,
-        basis.z+origin.z+versor.z*size
-    ];
-    const sprite = spriteText(axisLabel, color, labelSize, labelPosition);
-
-    basisVectorGroup.add(cylinder, cone, sprite);
-};
-
-/**
  * Render the basis vectors
  *
  * @param center - Origin of the axis
@@ -178,9 +119,9 @@ const renderBasisVectors = (center: [x: number, y: number, z: number],
 	basisB.multiplyScalar(scale);
 	basisC.multiplyScalar(scale);
 
-	basisVectorArrow(basisA, origin, width, "#FF0000", "a");
-	basisVectorArrow(basisB, origin, width, "#79FF00", "b");
-	basisVectorArrow(basisC, origin, width, "#0000FF", "c");
+	basisVectorArrow(basisA, origin, width, "#FF0000", "a", basisVectorGroup);
+	basisVectorArrow(basisB, origin, width, "#79FF00", "b", basisVectorGroup);
+	basisVectorArrow(basisC, origin, width, "#0000FF", "c", basisVectorGroup);
 
     sv.setSceneModified();
 };

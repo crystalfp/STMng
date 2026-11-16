@@ -21,6 +21,8 @@ To do:
   ☐ Add synchronization between documentation and site
   ☐ Check user interface against <https://interfaces.dev/cheat-sheet>
   ✔ Remove `querySelector` form ComponentsConvexHull3D.vue (use ref) @done(2026-11-15 17:38)
+  ✔ Unify basis vectors rendering (renderers/DrawUnitCellRenderer.ts components/ShowCrystalShape.vue) @done(2026-11-16 18:14)
+  ✔ Prova a usare Unicode subscript per le label delle charts @done(2026-11-16 18:13)
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
