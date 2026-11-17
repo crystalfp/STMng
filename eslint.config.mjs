@@ -143,6 +143,7 @@ export default defineConfig([
         "@typescript-eslint/array-type": ["warn", {default: "array", readonly: "array"}],
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/restrict-template-expressions": ["warn", {allowNumber: true}],
+        "@typescript-eslint/no-unsafe-class-instance-assignment": "off",
 
         // "max-len": ["off", 130],
         "no-dupe-class-members": "error",

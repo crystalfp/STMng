@@ -150,11 +150,11 @@ if(options.extra) {
     for(const sw of switches) {
         if(sw.includes("=")) {
             const element = sw.split("=");
-            if(element.length > 2) {
-
-                app.commandLine.appendSwitch(element[0], `${element[1]}=${element[2]}`);
-            }
-            else app.commandLine.appendSwitch(element[0], element[1]);
+            app.commandLine.appendSwitch(element[0],
+                                         element.length > 2 ?
+                                                `${element[1]}=${element[2]}` :
+                                                element[1]
+                                        );
         }
         else {
             app.commandLine.appendSwitch(sw);
