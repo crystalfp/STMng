@@ -94,7 +94,7 @@ export class FindSimilar extends NodeCore {
 	// > Input structure
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data?.atoms.length) return;
+		if(!data?.atoms.length || !this.state.enabled) return;
 		this.structure = data;
 		const {atoms, crystal} = this.structure;
 		const {basis, spaceGroup} = crystal;
@@ -112,10 +112,9 @@ export class FindSimilar extends NodeCore {
 
 		sendToClient(this.id, "load-info", {formula: this.formula, spaceGroup});
 
-		if(!this.state.enabled) return;
 		this.findSimilar();
 
-		if(!isSecondaryWindowOpen("/matches")) return;
+		if(!this.state.enabled || !isSecondaryWindowOpen("/matches")) return;
 
 		const dataToSend: CtrlParams = {
 			id: this.id,
@@ -186,6 +185,9 @@ export class FindSimilar extends NodeCore {
 		return result.fingerprint;
 	}
 
+	/**
+	 * Find similar structures
+	 */
 	private findSimilar(): void {
 
 		// Nothing to do
