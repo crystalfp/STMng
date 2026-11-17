@@ -109,7 +109,7 @@
     "vitest": "^5.1.0",
     "vue-docgen-cli": "^4.79.0",
     "vue-eslint-parser": "^10.4.2",
-    "vue-mess-detector": "^0.68.1"
+    "vue-mess-detector": "^0.69.0"
   },
   "allowScripts": {
     "esbuild": false,
