@@ -36,7 +36,7 @@ export class SliceStructureRenderer {
 	private readonly group: Group = new Group();
 	private readonly material = new MeshLambertMaterial({
 		color: "#FFFFFF",
-		opacity: 0.5,
+		opacity: 0.7,
 		side: DoubleSide,
 		transparent: true
 	});
