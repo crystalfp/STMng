@@ -90,8 +90,11 @@ const format          = ref("");     // File format to be read
 const inProgress      = ref(false);  // True during file load
 const useBohr         = ref(true);   // Use Bohr units
 const stepIncrement   = ref(1);      // How many steps skip every tick
-const speed           = ref<0 | 1 | 2>(1); // Animation speed:
-                                           // 0: no delay; 1: delay 200ms; 2: delay 400ms
+const speed           = ref<0 | 1 | 2 | 3>(1); // Animation speed:
+                                               // 0: no delay and disable rendering
+                                               // 1: no delay
+                                               // 2: delay 200ms
+                                               // 3: delay 400ms
 const readHydrogen    = ref(false);  // Read also hydrogen atoms for the PDB reader
 const energyPerAtom   = ref(false);  // Energy file has energy per atom and not per structure
 const appendFile      = ref(false);  // The file will be appended to the list of steps
@@ -174,7 +177,7 @@ askNode(id, "init")
         useBohr.value       = params.useBohr as boolean ?? true;
         readHydrogen.value  = params.readHydrogen as boolean ?? false;
         stepIncrement.value = params.stepIncrement as number ?? 1;
-        speed.value         = params.speed as 0 | 1 | 2 ?? 1;
+        speed.value         = params.speed as 0 | 1 | 2 | 3 ?? 2;
         energyPerAtom.value = params.energyPerAtom as boolean ?? false;
         const dbString      = params.db as string;
         prototypesList.length = 0;
@@ -271,9 +274,9 @@ const stopWatcher3 = watch(running, async () => {
             }
         }
 
-        // Delay between steps: 0: no delay; 1: delay 200ms; 2: delay 400ms
-        if(speed.value === 1) await new Promise((resolve) => {setTimeout(resolve, 200);});
-        else if(speed.value === 2) await new Promise((resolve) => {setTimeout(resolve, 400);});
+        // Delay between steps
+        if(speed.value === 2) await new Promise((resolve) => {setTimeout(resolve, 200);});
+        else if(speed.value === 3) await new Promise((resolve) => {setTimeout(resolve, 400);});
 
         try {
             const response = await askNode(id, "step", {step: nextStep});
@@ -347,7 +350,7 @@ const setFormat = (): void => {
 
     // Reset blocked rendering
     if(speed.value !== 0) return;
-    speed.value = 1;
+    speed.value = 2;
     controlStore.blockRendering = false;
 };
 
@@ -854,9 +857,10 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
         <v-spacer />
       </v-row>
 
-      <titled-slot title="Speed:" inline class="mt-6 mb-6 ml-0">
+      <titled-slot title="Speed:" inline class="mt-6 mb-6 ml-0 ts">
         <v-btn-toggle v-model="speed" mandatory @update:modelValue="checkRenderingSpeed">
-          <v-btn color="red">Fast</v-btn>
+          <v-btn color="red">Max</v-btn>
+          <v-btn>Fast</v-btn>
           <v-btn>Medium</v-btn>
           <v-btn>Slow</v-btn>
         </v-btn-toggle>
@@ -870,6 +874,10 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
 
 
 <style scoped>
+.ts :deep(label) {
+ margin-right: 4px;
+}
+
 :deep(sub) {
   position: relative;
   bottom: -0.5rem;

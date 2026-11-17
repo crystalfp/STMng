@@ -46,7 +46,7 @@ export class StructureReader extends NodeCore {
 	private loopSteps = false;
 	private stepBackward = false;
 	private step = 1;
-	private speed = 1;
+	private speed = 2;
 
 	/** Total number of steps in the structure loaded */
 	private countSteps = 1;
@@ -127,7 +127,7 @@ export class StructureReader extends NodeCore {
         this.readHydrogen  = params.readHydrogen as boolean ?? false;
 		this.energyPerAtom = params.energyPerAtom as boolean ?? false;
 		this.stepIncrement = params.stepIncrement as number ?? 1;
-        this.speed         = params.speed as number ?? 1;
+        this.speed         = params.speed as number ?? 2;
 	}
 
 	// > Channel handlers
@@ -454,7 +454,7 @@ export class StructureReader extends NodeCore {
 		this.loopSteps = params.loopSteps as boolean ?? false;
         this.stepIncrement = params.stepIncrement as number ?? 1;
         this.stepBackward = params.stepBackward as boolean ?? false;
-        this.speed = params.speed as number ?? 1;
+        this.speed = params.speed as number ?? 2;
 	}
 
 	/**
