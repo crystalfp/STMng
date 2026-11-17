@@ -268,7 +268,8 @@ onUnmounted(() => {
   <v-switch v-model="dashedLine" :disabled="lineWidth > 0" label="Dashed lines" class="ml-2" />
   <v-switch v-model="showBasisVectors" label="Show basis vectors" class="ml-2" />
   <slider-with-steppers v-model="lineWidth" v-model:raw="showLineWidth"
-                          :label="`Line width (${showLineWidth})`" label-width="7rem"
+                          :label="`Line width (${showLineWidth})`"
+                          label-width="7rem" :disabled="dashedLine"
                           :min="0" :max="3" :step="1" class="mb-2 ml-1"/>
   <color-selector v-model="lineColor" label="Line color" />
   <v-label class="separator-title">Cell repetitions</v-label>
