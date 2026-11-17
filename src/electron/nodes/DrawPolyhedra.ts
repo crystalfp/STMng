@@ -1,5 +1,5 @@
 /**
- * Extract the enclosing polyhedra.
+ * Extract the enclosing polyhedra
  *
  * @packageDocumentation
  *
@@ -26,7 +26,7 @@ import {NodeCore} from "../modules/NodeCore";
 import {checkAtomsSelector, selectAtomsByKind} from "../modules/AtomsChooser";
 import {getAtomData} from "../modules/AtomData";
 import {EmptyStructure} from "../modules/EmptyStructure";
-import {cartesianToFractionalCoordinates} from "../modules/Helpers";
+import {cartesianToFractionalCoordinates, hasNoUnitCell} from "../modules/Helpers";
 import {sendPolyhedraToClient} from "../modules/ToClient";
 import {BondType} from "../../services/SharedConstants";
 import type {Structure, CtrlParams, ChannelDefinition, AtomSelectorModes} from "@/types";
@@ -234,11 +234,14 @@ export class DrawPolyhedra extends NodeCore {
 	 */
 	private removeIncompletePolyhedra(polyhedra: Polyhedra): Structure {
 
-		const {atoms, crystal, volume, extra, bonds} = this.structure!;
+		if(!this.structure) return new EmptyStructure();
+		const {atoms, crystal, volume, extra, bonds} = this.structure;
+
+		if(hasNoUnitCell(crystal.basis)) return this.structure;
 
 		// Classify atoms as internal/external to the unit cell
 		const natoms3 = atoms.length * 3;
-		const fractional = cartesianToFractionalCoordinates(this.structure!);
+		const fractional = cartesianToFractionalCoordinates(this.structure);
 		const TOL = 1e-8;
 		const outside: boolean[] = [];
 		for(let i=0; i < natoms3; i += 3) {
