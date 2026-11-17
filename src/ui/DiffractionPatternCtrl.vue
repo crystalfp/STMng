@@ -50,8 +50,7 @@ const state = reactive({
     width: 0.1,
     threshold: 3,
     wavelengthCode: "CuKa",
-    wavelengthNumeric: 1.54184,
-    showHKL: false
+    wavelengthNumeric: 1.54184
 });
 const theta = ref([0, 90]);
 
@@ -72,7 +71,6 @@ askNode(id, "init")
         theta.value[0] = params.thetaLow as number ?? 0;
         theta.value[1] = params.thetaHigh as number ?? 90;
         state.width = params.width as number ?? 0.1;
-		state.showHKL = params.showHKL as boolean ?? false;
         const codes = params.wavelengthCodes as string[] ?? [];
         wavelengthCodes.length = 0;
         for(const code of codes) wavelengthCodes.push({title: code, value: code});
@@ -94,7 +92,6 @@ const stopWatcher = watchEffect(() => {
         thetaLow: theta.value[0],
         thetaHigh: theta.value[1],
         width: state.width,
-        showHKL: state.showHKL,
         threshold: state.threshold
     });
 });
@@ -117,8 +114,8 @@ receiveFromNode(id, "enable", (params: CtrlParams) => {
   <v-select v-model="state.wavelengthCode" :items="wavelengthCodes"
             class="my-4" label="Wavelength"/>
   <v-number-input v-if="state.wavelengthCode === 'Manual'"
-                  v-model="state.wavelengthNumeric"
-                  label="Numeric wavelength" :precision="6"
+                  v-model="state.wavelengthNumeric" :hide-details="true"
+                  label="Numeric wavelength" :precision="6" class="mb-4"
                   :min="0.1" :max="4" :step="0.1" />
   <debounced-range-slider v-slot="{values}" v-model="theta"
                           :step="0.01" :min="0" :max="90"
@@ -126,7 +123,6 @@ receiveFromNode(id, "enable", (params: CtrlParams) => {
     <v-label :text="`Two theta range (${values[0].toFixed(2)} – ${values[1].toFixed(2)})`"
              class="ml-n2 no-select"/>
   </debounced-range-slider>
-  <v-switch v-model="state.showHKL" label="Show HKL" class="ml-3 mb-6" />
   <debounced-slider v-slot="{value}" v-model="state.width"
                     :min="0" :max="1" :step="0.05" class="ml-2 mb-2">
     <v-label :text="`Peak width (${value.toFixed(2)})`" class="no-select" />

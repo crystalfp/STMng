@@ -57,7 +57,6 @@ export class DiffractionPattern extends NodeCore {
 		width: 0.1,
 		wavelengthCode: "CuKa",
 		wavelengthNumeric: 1.54184,
-		showHKL: false,
 		threshold: 3
 	};
 
@@ -136,7 +135,6 @@ export class DiffractionPattern extends NodeCore {
 		this.state.width = params.width as number ?? 0.1;
 		this.state.wavelengthCode = params.wavelengthCode as string ?? "CuKa";
 		this.state.wavelengthNumeric = params.wavelengthNumeric as number ?? 1.54184;
-		this.state.showHKL = params.showHKL as boolean ?? false;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -194,7 +192,6 @@ export class DiffractionPattern extends NodeCore {
 			labelX: xCleaned,
 			labelY: yCleaned,
 			labelText: labelCleaned,
-			labelShow: this.state.showHKL,
 			lineX: this.lineCoordinates.x,
 			lineY: this.lineCoordinates.y,
 			lineSmooth: this.state.width > 0,
@@ -304,7 +301,6 @@ export class DiffractionPattern extends NodeCore {
 			wavelengthCode: this.state.wavelengthCode,
 			wavelengthCodes: XRDCalculator.getWavelengthNames(),
 			wavelengthNumeric: this.state.wavelengthNumeric,
-			showHKL: this.state.showHKL,
 			threshold: this.state.threshold
 		};
 	}
@@ -331,7 +327,6 @@ export class DiffractionPattern extends NodeCore {
 		this.state.thetaLow = thetaLow;
 		this.state.thetaHigh = thetaHigh;
 		this.state.width = params.width as number ?? 0.1;
-		this.state.showHKL = params.showHKL as boolean ?? false;
 		this.state.threshold = threshold;
 
 		// Compute spectra if the view window is open

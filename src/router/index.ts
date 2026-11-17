@@ -38,7 +38,7 @@ export const router = createRouter({
         },
         {
             path: "/chart",
-            component: (): Component => import("@/components/ChartViewer.vue")
+            component: (): Component => import("@/components/DiffractionChartViewer.vue")
         },
         {
             path: "/project-editor",
