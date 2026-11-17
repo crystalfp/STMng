@@ -119,9 +119,10 @@ const renderBasisVectors = (center: [x: number, y: number, z: number],
 	basisB.multiplyScalar(scale);
 	basisC.multiplyScalar(scale);
 
-	basisVectorArrow(basisA, origin, width, "#FF0000", "a", basisVectorGroup);
-	basisVectorArrow(basisB, origin, width, "#79FF00", "b", basisVectorGroup);
-	basisVectorArrow(basisC, origin, width, "#0000FF", "c", basisVectorGroup);
+    // extra scaling is 1/64
+	basisVectorArrow(basisA, origin, width, "#FF0000", "a", basisVectorGroup, 0.016);
+	basisVectorArrow(basisB, origin, width, "#79FF00", "b", basisVectorGroup, 0.016);
+	basisVectorArrow(basisC, origin, width, "#0000FF", "c", basisVectorGroup, 0.016);
 
     sv.setSceneModified();
 };

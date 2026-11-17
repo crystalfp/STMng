@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU General Public License
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
-import {Vector3, Group, MeshStandardMaterial, DoubleSide, Mesh,
+import {Vector3, type Group, MeshStandardMaterial, DoubleSide, Mesh,
 		CylinderGeometry, ConeGeometry} from "three";
 import {spriteText} from "./SpriteText";
 import type {PositionType} from "@/types";
@@ -36,10 +36,11 @@ import type {PositionType} from "@/types";
 * @param color - Color of the arrow and the label
 * @param axisLabel - Label on the vector
 * @param group - The arrow is added to this group
+* @param extraScale - Extra scaling for the label size
 */
 export const basisVectorArrow = (basis: Vector3, origin: Vector3,
 						  size: number, color: string, axisLabel: string,
-						  group: Group): void => {
+						  group: Group, extraScale=1): void => {
 
 	const versor = basis.clone().normalize();
 	const basisLen = basis.length();
@@ -77,11 +78,11 @@ export const basisVectorArrow = (basis: Vector3, origin: Vector3,
 
 	// Label
 	const labelPosition: PositionType = [
-		basis.x+origin.x+versor.x*0.1,
-		basis.y+origin.y+versor.y*0.1,
-		basis.z+origin.z+versor.z*0.1
+		basis.x+origin.x+versor.x*0.05*basisLen,
+		basis.y+origin.y+versor.y*0.05*basisLen,
+		basis.z+origin.z+versor.z*0.05*basisLen
 	];
-	const sprite = spriteText(axisLabel, color, labelSize, labelPosition);
+	const sprite = spriteText(axisLabel, color, labelSize*extraScale, labelPosition);
 
 	group.add(cylinder, cone, sprite);
 };
