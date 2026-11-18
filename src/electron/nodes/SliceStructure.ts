@@ -49,7 +49,7 @@ export class SliceStructure extends NodeCore {
 	private showSlicer = false;
 	private sliceInside = false;
 	private mode: SlicingModes = "plane";
-	private geometryColor = "#FFFFFF80";
+	private geometryColor = "#FFFFFFB3";
 
 	private selectorKind: AtomSelectorModes = "symbol";
 	private atomsSelector = "";
@@ -170,7 +170,7 @@ export class SliceStructure extends NodeCore {
 		this.atomsSelector = params.atomsSelector as string ?? "";
         this.sphereRadius = params.sphereRadius as number ?? 1;
         this.thickness = params.thickness as number ?? 1;
-		this.geometryColor = params.geometryColor as string ?? "#FFFFFF80";
+		this.geometryColor = params.geometryColor as string ?? "#FFFFFFB3";
 	}
 
 	/**
@@ -844,7 +844,7 @@ export class SliceStructure extends NodeCore {
         this.enableSlicer = params.enableSlicer as boolean ?? false;
         this.showSlicer = params.showSlicer as boolean ?? false;
         this.mode = params.mode as SlicingModes ?? "plane";
-		this.geometryColor = params.geometryColor as string ?? "#FFFFFF80";
+		this.geometryColor = params.geometryColor as string ?? "#FFFFFFB3";
 
 		if(!this.structure) return;
 
