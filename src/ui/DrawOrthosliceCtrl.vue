@@ -209,7 +209,7 @@ onUnmounted(() => {
 
   <debounced-slider v-slot="{value}" v-model="plane"
                       :step="1" :min="0" :max="maxPlane" class="ml-2 my-4">
-    <v-label :text="`Plane (${value})`" class="no-select"/>
+    <v-label :text="`Plane (${value} of ${maxPlane})`" class="no-select"/>
   </debounced-slider>
 
   <debounced-range-slider v-slot="{values}" v-model="limits"
