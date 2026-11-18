@@ -5,7 +5,6 @@ Requests:
   ☐ (future) Move to WebGPU renderer from current WebGL renderer
   ☐ (maybe) Add a `metadata` section to project files.
   ☐ Create a tutorial
-  ✔ (low priority) Incomplete polyhedra. @done(2026-11-15 16:52)
   ☐ Extending variable composition analysis to systems with >5 components.
   ☐ An option to specify an arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
@@ -20,9 +19,9 @@ To do:
   ☐ Don't use flags as function parameters
   ☐ Add synchronization between documentation and site
   ☐ Check user interface against <https://interfaces.dev/cheat-sheet>
-  ✔ Remove `querySelector` form ComponentsConvexHull3D.vue (use ref) @done(2026-11-15 17:38)
-  ✔ Unify basis vectors rendering (renderers/DrawUnitCellRenderer.ts components/ShowCrystalShape.vue) @done(2026-11-16 18:14)
-  ✔ Prova a usare Unicode subscript per le label delle charts @done(2026-11-16 18:13)
+  ☐ Find font with better subscripts
+  ☐ Add color legend to orthoslice and isosurfaces
+  ☐ Remove `querySelector` (use ref)
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
@@ -75,6 +74,11 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Isosurfaces: plane (n of total) @done(2026-11-18 06:57) @project(To do)
+  ✔ Unify basis vectors rendering (renderers/DrawUnitCellRenderer.ts components/ShowCrystalShape.vue) @done(2026-11-16 18:14) @project(To do)
+  ✔ Use Unicode subscript for charts labels @done(2026-11-16 18:13) @project(To do)
+  ✔ (low priority) Incomplete polyhedra. @done(2026-11-15 16:52) @project(Requests)
+  ✔ Remove `querySelector` form ComponentsConvexHull3D.vue (use ref) @done(2026-11-15 17:38) @project(To do)
   ✔ Fixing X-ray diffraction @done(2026-09-13 05:33) @project(Requests)
   ✔ Avoid: new object every render. Better use `computed()` See <https://certificates.dev/blog/vapor-mode-in-practice> @done(2026-09-10 07:46) @project(To do)
   ✔ Remember last used path in dialog save file <https://www.electronjs.org/docs/latest/breaking-changes#behavior-changed-dialog-methods-default-to-downloads-directory> @done(2026-09-13 05:32) @project(To do)
