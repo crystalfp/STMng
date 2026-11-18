@@ -551,9 +551,9 @@ const changeVisibility = (): void => {
   </div>
   <v-container class="layout-buttons hull3d-controls">
     <slider-with-steppers v-model="scale" v-model:raw="showScale" class="aa"
-                          label-width="5.5rem" :disabled="disableScale"
+                          label-width="6rem" :disabled="disableScale"
                           :label="`Scale (${showScale})`"
-                          :min="0" :max="1" :step="0.01" />
+                          :min="0" :max="0.4" :step="0.005" />
     <slider-with-steppers v-model="pointSize" v-model:raw="showPointSize"
                           label-width="8rem" class="bb"
                           :label="`Point size (${showPointSize})`"

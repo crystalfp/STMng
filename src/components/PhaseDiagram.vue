@@ -438,7 +438,7 @@ const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
       <VisTimeline :key="forceUpdate" :lineRow="ss" :x="xs" :lineDuration="ls"
                    :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="summaryLineHeight" :showEmptySegments="true"
-                   :rowLabelStyle="{'font-size': '20'}" :rowLabelWidth="100"
+                   :rowLabelStyle="{'font-size': '18', 'font-family': 'Verdana'}" :rowLabelWidth="100"
                    :lineWidth="20" lineCursor="pointer" :events="summaryEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                :labelFontSize="24" :domainLine="false" :numTicks="21"/>
@@ -451,7 +451,7 @@ const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
       <VisTimeline :key="forceUpdate" :lineRow="sp" :x="xp" :lineDuration="lp"
                    :showLabels="true" :alternatingRowColors="true"
                    :rowHeight="lineHeight" :showEmptySegments="true"
-                   :rowLabelStyle="{'font-size': '20'}" :rowLabelWidth="100"
+                   :rowLabelStyle="{'font-size': '18', 'font-family': 'Verdana'}" :rowLabelWidth="100"
                    :lineWidth="20" lineCursor="pointer" :events="detailsEvents" />
       <VisAxis type="x" :gridLine="false" label="Pressure (GPa)"
                :labelFontSize="24" :domainLine="false" :numTicks="21"/>

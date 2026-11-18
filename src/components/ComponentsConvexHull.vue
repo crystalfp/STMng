@@ -329,7 +329,8 @@ const legendTitle = computed(() => ((pointColoring.value === "distance") ?
 // eslint-disable-next-line vue/prefer-use-template-ref, unicorn/no-null
 const scatter = shallowRef<{component?: Scatter<DataRecord>} | null>(null);
 
-const fontSize = 24;
+const fontSize = 20;
+const fontFamily = "Verdana";
 const offset = 0.1;
 
 const annotationLabels = computed<AnnotationItem[]>(() => {
@@ -359,7 +360,7 @@ const annotationLabels = computed<AnnotationItem[]>(() => {
         const y = 1-((line.value[i].y!-ymin)/(ymax-ymin));
         const xl: LengthUnit = `${Math.round(100*(x*(1-2*offset)+offset))}%`;
         const yl: LengthUnit = `${Math.round(100*y*(1-offset))}%`;
-        const content = {text: formatFormula(line.value[i].formula), fontSize};
+        const content = {text: formatFormula(line.value[i].formula), fontSize, fontFamily};
         out[i] = {
             x: xl,
             y: yl,
@@ -390,7 +391,7 @@ const annotationLabels3 = computed<AnnotationItem[]>(() => {
 
         const x = component.xScale(vertex.value[i].x!);
         const y = component.yScale(vertex.value[i].y!);
-        const content = {text: formatFormula(vertex.value[i].formula), fontSize};
+        const content = {text: formatFormula(vertex.value[i].formula), fontSize, fontFamily};
         const m1 = ((-5.333*y + 4.619)*y + 1)*offset; // so m1 goes from m to 2m to m
         const xl: LengthUnit = `${Math.round(100*(x*(1-2*m1)+m1))}%`;
         const yl: LengthUnit = `${Math.round(100*((1-m1+(y/0.866)*(2*m1-1))))}%`;
