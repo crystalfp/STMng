@@ -9,6 +9,9 @@ Requests:
   ☐ An option to specify an arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
 Bugs:
+  ✔ licorice → CPK, Hide labels, show labels (labels remain at the licorice distance) @done(2026-11-18 17:53)
+  ✔ Convex hull 3D: Reduce range of scale (0.5), larger label (3 decimals) for scale @done(2026-11-18 15:53)
+  ✘ Edit structure, change atom to Hs (108) everything disappear @cancelled(2026-11-18 16:06)
 
 To do:
   ☐ Check error return from main process to client
@@ -22,6 +25,9 @@ To do:
   ☐ Find font with better subscripts
   ☐ Add color legend to orthoslice and isosurfaces
   ☐ Remove `querySelector` (use ref)
+  ☐ Add color legend for the number of bonds (Bonds)
+  ☐ Add option on Diffraction chart to show the peaks (intensity & 2angle) as labels
+  ☐ From aflow UID to the encyclopedia page (search does not work on the page)
 
 Performance:
   ☐ Use web worker for heavy rendering <https://vueuse.org/core/useWebWorkerFn/> to unblock UI
