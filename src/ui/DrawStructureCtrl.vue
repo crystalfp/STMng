@@ -191,7 +191,7 @@ receiveFromNodeForRendering(id, "structure", (updatedRenderInfo: StructureRender
 });
 
 // Change draw parameters
-const stopWatcher1 = watch([labelKind, drawKind, shadedBonds,
+const stopWatcher1 = watch([labelKind, drawKind, shadedBonds, showLabels,
                             showBondsStrengths, spheresRadiusMultiplier,
                             bondsRadiusMultiplier, atomColoring,
                             monochromeColor], () => {
