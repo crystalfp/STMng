@@ -296,6 +296,7 @@ const determineEnergiesNeeded = (cell: readonly number[][],
  * @returns True if the signs are correct
  */
 const checkSign = (h: number, k: number, l: number): boolean =>
+	/* eslint-disable unicorn/prefer-simplified-conditions */
 	(h > 0 && k > 0 && l > 0) ||
 	(h < 0 && k > 0 && l > 0) ||
 	(h > 0 && k < 0 && l > 0) ||
@@ -309,6 +310,7 @@ const checkSign = (h: number, k: number, l: number): boolean =>
 	(h > 0 && k === 0 && l === 0) ||
 	(h === 0 && k > 0 && l === 0) ||
 	(h === 0 && k === 0 && l > 0);
+	/* eslint-enable unicorn/prefer-simplified-conditions */
 
 /**
  * Check if the miller indices cannot be simplified
