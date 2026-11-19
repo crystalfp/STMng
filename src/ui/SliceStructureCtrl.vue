@@ -49,7 +49,7 @@ const enableSlicer = ref(false);
 const showSlicer = ref(false);
 const sliceInside = ref(false);
 const mode = ref<SlicingModes>("plane");
-const geometryColor = ref("#FFFFFFB3");
+const geometryColor = ref("#FFFFFCC");
 
 /** Available modes */
 const modeList = reactive([
@@ -116,7 +116,7 @@ askNode(id, "init")
 		atomsSelector.value = params.atomsSelector as string ?? "";
         sphereRadius.value = params.sphereRadius as number ?? 1;
         thickness.value = params.thickness as number ?? 1;
-        geometryColor.value = params.geometryColor as string ?? "#FFFFFFB3";
+        geometryColor.value = params.geometryColor as string ?? "#FFFFFFCC";
 
         showPercentA.value = percentA.value;
         showPercentB.value = percentB.value;
@@ -307,7 +307,7 @@ const resetParameters = (): void => {
     selectorKind.value = "symbol";
     atomsSelector.value = "";
 
-    geometryColor.value = "#FFFFFFB3";
+    geometryColor.value = "#FFFFFFCC";
 };
 
 /** Check parameters validity */

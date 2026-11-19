@@ -90,8 +90,8 @@ const highlight = computed(() => (theme.value === "light" ? "#202020" : "#e6e6e6
 
 <template>
 <div class="legend" :style>
-  <div v-if="valuesDiscrete !== undefined" class="px-1">
-    <div v-if="haveHeader" class="w-100 d-flex justify-center mt-2 mb-1">{{ title }}</div>
+  <div v-if="valuesDiscrete !== undefined" class="px-1 pt-2">
+    <div v-if="haveHeader" class="w-100 d-flex justify-center mb-1">{{ title }}</div>
     <div v-for="n of valuesDiscrete" :key="n.color">
       <span :style="{backgroundColor: n.color}" class="ml-2 mr-3">&emsp;</span>{{ n.label }}
     </div>
