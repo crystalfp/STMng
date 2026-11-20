@@ -94,8 +94,9 @@ export class FindSimilar extends NodeCore {
 	// > Input structure
 	override fromPreviousNode(data: Structure): void {
 
-		if(!data?.atoms.length || !this.state.enabled) return;
+		if(!data?.atoms.length) return;
 		this.structure = data;
+		if(!this.state.enabled) return;
 		const {atoms, crystal} = this.structure;
 		const {basis, spaceGroup} = crystal;
 
