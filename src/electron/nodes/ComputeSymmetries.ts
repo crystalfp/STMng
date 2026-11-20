@@ -30,6 +30,7 @@ import {sendAlertToClient, sendToClient} from "../modules/ToClient";
 import {cartesianToFractionalCoordinates, hasNoUnitCell,
 		basisToLengthAngles} from "../modules/Helpers";
 import {EmptyStructure} from "../modules/EmptyStructure";
+import {replicateAtoms} from "../modules/ReplicateAtoms";
 import {PointGroupAnalyzer} from "../pymatgen/PointGroupAnalyzer";
 import type {Structure, Atom, CtrlParams, ChannelDefinition,
 			 BasisType, PositionType, Extra} from "@/types";
@@ -67,17 +68,6 @@ interface ComputeSymmetriesOutput {
 	/** Extra structure data */
 	extra: Extra;
 }
-
-// > Kind of directions for filling unit cell
-const X_MIN = 0x010;
-const Y_MIN = 0x020;
-const Z_MIN = 0x040;
-const X_MAX = 0x080;
-const Y_MAX = 0x100;
-const Z_MAX = 0x200;
-const X_ANY = 0x001;
-const Y_ANY = 0x002;
-const Z_ANY = 0x004;
 
 /** Space groups that are not symmetries */
 const noSymmetriesSpaceGroup = new Set(["", "P1", "P 1", "p1", "p 1", "x,y,z", "x, y, z"]);
@@ -519,8 +509,6 @@ export class ComputeSymmetries extends NodeCore {
 	 */
 	private fillCell(out: ComputeSymmetriesOutput): Structure {
 
-		const MARGIN = 10**this.fillTolerance;
-
 		const {basis, spaceGroup, fractionalCoordinates, atomsZ, labels,
 			   chains, extra} = out;
 
@@ -536,30 +524,13 @@ export class ComputeSymmetries extends NodeCore {
 			extra
 		};
 
-		let natoms = atomsZ.length;
-		const idx = Array<number>(natoms);
-		const direction = Array<number>(natoms).fill(0);
-		for(let i=0; i < natoms; ++i) {
-
-			const k = i*3;
-			const xf = fractionalCoordinates[k];
-			const yf = fractionalCoordinates[k+1];
-			const zf = fractionalCoordinates[k+2];
-
-			// Mark atoms exactly on the border
-			if(xf < MARGIN && xf > -MARGIN)			direction[i]  = X_MIN|X_ANY;
-			else if(xf > 1-MARGIN && xf < 1+MARGIN)	direction[i]  = X_MAX|X_ANY;
-			if(yf < MARGIN && yf > -MARGIN)			direction[i] |= Y_MIN|Y_ANY;
-			else if(yf > 1-MARGIN && yf < 1+MARGIN)	direction[i] |= Y_MAX|Y_ANY;
-			if(zf < MARGIN && zf > -MARGIN)			direction[i] |= Z_MIN|Z_ANY;
-			else if(zf > 1-MARGIN && zf < 1+MARGIN)	direction[i] |= Z_MAX|Z_ANY;
-
-			idx[i] = i;
-		}
+		const idx = replicateAtoms(fractionalCoordinates, 10**this.fillTolerance);
 
 		// No atoms to add. Do nothing
-		if(direction.every((value) => value === 0)) {
+		let natoms = idx.length;
+		if(natoms === 0) {
 
+			natoms = atomsZ.length;
 			for(let i=0; i < natoms; ++i) {
 
 				structure.atoms.push({
@@ -569,140 +540,19 @@ export class ComputeSymmetries extends NodeCore {
 					position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
 				});
 			}
-			return structure;
 		}
+		else {
 
-		// Replicate the original atoms
-		const fc = fractionalCoordinates;
-		for(let i=0; i < natoms; ++i) {
+			// Finish building the structure (removing duplicated atoms is done afterwards)
+			for(let i=0; i < natoms; ++i) {
 
-			const dir = direction[i];
-
-			if(dir === 0) continue;
-
-			const k = 3*i;
-
-			switch(dir & (X_ANY|Y_ANY|Z_ANY)) {
-
-			case X_ANY:
-				fc.push(dir & X_MIN ? 1 : 0, fc[k+1], fc[k+2]);
-				idx.push(i);
-				break;
-
-			case Y_ANY:
-				fc.push(fc[k], dir & Y_MIN ? 1 : 0, fc[k+2]);
-				idx.push(i);
-				break;
-
-			case Z_ANY:
-				fc.push(fc[k], fc[k+1], dir & Z_MIN ? 1 : 0);
-				idx.push(i);
-				break;
-
-			case X_ANY|Y_ANY:
-				if((dir & (X_MIN|Y_MIN)) !== (X_MIN|Y_MIN)) {
-					fc.push(0, 0, fc[k+2]);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Y_MIN)) !== (X_MAX|Y_MIN)) {
-					fc.push(1, 0, fc[k+2]);
-					idx.push(i);
-				}
-				if((dir & (X_MIN|Y_MAX)) !== (X_MIN|Y_MAX)) {
-					fc.push(0, 1, fc[k+2]);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Y_MAX)) !== (X_MAX|Y_MAX)) {
-					fc.push(1, 1, fc[k+2]);
-					idx.push(i);
-				}
-				break;
-
-			case X_ANY|Z_ANY:
-				if((dir & (X_MIN|Z_MIN)) !== (X_MIN|Z_MIN)) {
-					fc.push(0, fc[k+1], 0);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Z_MIN)) !== (X_MAX|Z_MIN)) {
-					fc.push(1, fc[k+1], 0);
-					idx.push(i);
-				}
-				if((dir & (X_MIN|Z_MAX)) !== (X_MIN|Z_MAX)) {
-					fc.push(0, fc[k+1], 1);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Z_MAX)) !== (X_MAX|Z_MAX)) {
-					fc.push(1, fc[k+1], 1);
-					idx.push(i);
-				}
-				break;
-
-			case Y_ANY|Z_ANY:
-				if((dir & (Y_MIN|Z_MIN)) !== (Y_MIN|Z_MIN)) {
-					fc.push(fc[k], 0, 0);
-					idx.push(i);
-				}
-				if((dir & (Y_MAX|Z_MIN)) !== (Y_MAX|Z_MIN)) {
-					fc.push(fc[k], 1, 0);
-					idx.push(i);
-				}
-				if((dir & (Y_MIN|Z_MAX)) !== (Y_MIN|Z_MAX)) {
-					fc.push(fc[k], 0, 1);
-					idx.push(i);
-				}
-				if((dir & (Y_MAX|Z_MAX)) !== (Y_MAX|Z_MAX)) {
-					fc.push(fc[k], 1, 1);
-					idx.push(i);
-				}
-				break;
-
-			case X_ANY|Y_ANY|Z_ANY:
-				if((dir & (X_MIN|Y_MIN|Z_MIN)) !== (X_MIN|Y_MIN|Z_MIN)) {
-					fc.push(0, 0, 0);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Y_MIN|Z_MIN)) !== (X_MAX|Y_MIN|Z_MIN)) {
-					fc.push(1, 0, 0);
-					idx.push(i);
-				}
-				if((dir & (X_MIN|Y_MAX|Z_MIN)) !== (X_MIN|Y_MAX|Z_MIN)) {
-					fc.push(0, 1, 0);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Y_MAX|Z_MIN)) !== (X_MAX|Y_MAX|Z_MIN)) {
-					fc.push(1, 1, 0);
-					idx.push(i);
-				}
-				if((dir & (X_MIN|Y_MIN|Z_MAX)) !== (X_MIN|Y_MIN|Z_MAX)) {
-					fc.push(0, 0, 1);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Y_MIN|Z_MAX)) !== (X_MAX|Y_MIN|Z_MAX)) {
-					fc.push(1, 0, 1);
-					idx.push(i);
-				}
-				if((dir & (X_MIN|Y_MAX|Z_MAX)) !== (X_MIN|Y_MAX|Z_MAX)) {
-					fc.push(0, 1, 1);
-					idx.push(i);
-				}
-				if((dir & (X_MAX|Y_MAX|Z_MAX)) !== (X_MAX|Y_MAX|Z_MAX)) {
-					fc.push(1, 1, 1);
-					idx.push(i);
-				}
-				break;
+				structure.atoms.push({
+					atomZ: atomsZ[idx[i]],
+					label: labels[idx[i]],
+					chain: chains[idx[i]],
+					position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
+				});
 			}
-		}
-
-		// Finish building the structure (removing duplicated atoms is done afterwards)
-		natoms = fractionalCoordinates.length / 3;
-		for(let i=0; i < natoms; ++i) {
-
-			structure.atoms.push({
-				atomZ: atomsZ[idx[i]],
-				label: labels[idx[i]],
-				chain: chains[idx[i]],
-				position: ComputeSymmetries.fractionalToPosition(i, fractionalCoordinates, basis)
-			});
 		}
 
 		return structure;

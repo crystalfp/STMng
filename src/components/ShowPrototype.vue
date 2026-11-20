@@ -35,6 +35,7 @@ import {computeBonds} from "@/services/BondsSupport";
 import {spriteText, disposeTextInGroup} from "@/services/SpriteText";
 import {colorTextureMaterial} from "@/services/HelperMaterials";
 import {computeCellEdges} from "@/services/ComputeCellEdges";
+import {replicateAtoms} from "@/electron/modules/ReplicateAtoms";
 import type {PositionType, PrototypeAtomsData, Bond, CtrlParams} from "@/types";
 
 const windowPath = "/prototype";
@@ -43,17 +44,6 @@ const roughness = 0.5;
 const metalness = 0.6;
 
 const prototypeName = ref("");
-
-// Kind of directions for filling the unit cell
-const X_MIN = 0x010;
-const Y_MIN = 0x020;
-const Z_MIN = 0x040;
-const X_MAX = 0x100;
-const Y_MAX = 0x200;
-const Z_MAX = 0x400;
-const X_ANY = 0x001;
-const Y_ANY = 0x002;
-const Z_ANY = 0x004;
 
 /** Initialize the 3D viewer */
 const labelsGroup = new Group();
@@ -106,7 +96,7 @@ requestData(windowPath, (params: CtrlParams) => {
         prototypeName.value = `${mineral}&ensp;(aflow: ${aflow}${sb}${pe})`;
     }
     else {
-        prototypeName.value = mineral || "";
+        prototypeName.value = mineral;
     }
 });
 
@@ -172,8 +162,6 @@ const fillCell = (atoms: PrototypeAtomsData, matrix: number[][]): PrototypeAtoms
 
     const inverse = inv(matrix);
 
-	const direction = Array<number>(natoms).fill(0);
-    const idx: number[] = Array<number>(natoms);
     const fc: number[] = Array<number>(natoms*3);
     for(let i=0; i < natoms; ++i) {
 
@@ -189,139 +177,11 @@ const fillCell = (atoms: PrototypeAtomsData, matrix: number[][]): PrototypeAtoms
         fc[i3]   = xf;
         fc[i3+1] = yf;
         fc[i3+2] = zf;
-
-        // Mark atoms exactly on the border
-        if(xf < MARGIN && xf > -MARGIN)			direction[i]  = X_MIN|X_ANY;
-        else if(xf > 1-MARGIN && xf < 1+MARGIN)	direction[i]  = X_MAX|X_ANY;
-        if(yf < MARGIN && yf > -MARGIN)			direction[i] |= Y_MIN|Y_ANY;
-        else if(yf > 1-MARGIN && yf < 1+MARGIN)	direction[i] |= Y_MAX|Y_ANY;
-        if(zf < MARGIN && zf > -MARGIN)			direction[i] |= Z_MIN|Z_ANY;
-        else if(zf > 1-MARGIN && zf < 1+MARGIN)	direction[i] |= Z_MAX|Z_ANY;
-
-        idx[i] = i;
     }
 
-    if(direction.every((value) => value === 0)) return structuredClone(atoms);
+    const idx = replicateAtoms(fc, MARGIN);
+    if(idx.length === 0) return structuredClone(atoms);
 
-    // Replicate the original atoms
-    for(let i=0; i < natoms; ++i) {
-
-        const dir = direction[i];
-
-        if(dir === 0) continue;
-
-        const k = 3*i;
-
-        switch(dir & (X_ANY|Y_ANY|Z_ANY)) {
-
-        case X_ANY:
-            fc.push(dir & X_MIN ? 1 : 0, fc[k+1], fc[k+2]);
-            idx.push(i);
-            break;
-
-        case Y_ANY:
-            fc.push(fc[k], dir & Y_MIN ? 1 : 0, fc[k+2]);
-            idx.push(i);
-            break;
-
-        case Z_ANY:
-            fc.push(fc[k], fc[k+1], dir & Z_MIN ? 1 : 0);
-            idx.push(i);
-            break;
-
-        case X_ANY|Y_ANY:
-            if((dir & (X_MIN|Y_MIN)) !== (X_MIN|Y_MIN)) {
-                fc.push(0, 0, fc[k+2]);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Y_MIN)) !== (X_MAX|Y_MIN)) {
-                fc.push(1, 0, fc[k+2]);
-                idx.push(i);
-            }
-            if((dir & (X_MIN|Y_MAX)) !== (X_MIN|Y_MAX)) {
-                fc.push(0, 1, fc[k+2]);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Y_MAX)) !== (X_MAX|Y_MAX)) {
-                fc.push(1, 1, fc[k+2]);
-                idx.push(i);
-            }
-            break;
-
-        case X_ANY|Z_ANY:
-            if((dir & (X_MIN|Z_MIN)) !== (X_MIN|Z_MIN)) {
-                fc.push(0, fc[k+1], 0);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Z_MIN)) !== (X_MAX|Z_MIN)) {
-                fc.push(1, fc[k+1], 0);
-                idx.push(i);
-            }
-            if((dir & (X_MIN|Z_MAX)) !== (X_MIN|Z_MAX)) {
-                fc.push(0, fc[k+1], 1);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Z_MAX)) !== (X_MAX|Z_MAX)) {
-                fc.push(1, fc[k+1], 1);
-                idx.push(i);
-            }
-            break;
-
-        case Y_ANY|Z_ANY:
-            if((dir & (Y_MIN|Z_MIN)) !== (Y_MIN|Z_MIN)) {
-                fc.push(fc[k], 0, 0);
-                idx.push(i);
-            }
-            if((dir & (Y_MAX|Z_MIN)) !== (Y_MAX|Z_MIN)) {
-                fc.push(fc[k], 1, 0);
-                idx.push(i);
-            }
-            if((dir & (Y_MIN|Z_MAX)) !== (Y_MIN|Z_MAX)) {
-                fc.push(fc[k], 0, 1);
-                idx.push(i);
-            }
-            if((dir & (Y_MAX|Z_MAX)) !== (Y_MAX|Z_MAX)) {
-                fc.push(fc[k], 1, 1);
-                idx.push(i);
-            }
-            break;
-
-        case X_ANY|Y_ANY|Z_ANY:
-            if((dir & (X_MIN|Y_MIN|Z_MIN)) !== (X_MIN|Y_MIN|Z_MIN)) {
-                fc.push(0, 0, 0);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Y_MIN|Z_MIN)) !== (X_MAX|Y_MIN|Z_MIN)) {
-                fc.push(1, 0, 0);
-                idx.push(i);
-            }
-            if((dir & (X_MIN|Y_MAX|Z_MIN)) !== (X_MIN|Y_MAX|Z_MIN)) {
-                fc.push(0, 1, 0);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Y_MAX|Z_MIN)) !== (X_MAX|Y_MAX|Z_MIN)) {
-                fc.push(1, 1, 0);
-                idx.push(i);
-            }
-            if((dir & (X_MIN|Y_MIN|Z_MAX)) !== (X_MIN|Y_MIN|Z_MAX)) {
-                fc.push(0, 0, 1);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Y_MIN|Z_MAX)) !== (X_MAX|Y_MIN|Z_MAX)) {
-                fc.push(1, 0, 1);
-                idx.push(i);
-            }
-            if((dir & (X_MIN|Y_MAX|Z_MAX)) !== (X_MIN|Y_MAX|Z_MAX)) {
-                fc.push(0, 1, 1);
-                idx.push(i);
-            }
-            if((dir & (X_MAX|Y_MAX|Z_MAX)) !== (X_MAX|Y_MAX|Z_MAX)) {
-                fc.push(1, 1, 1);
-                idx.push(i);
-            }
-            break;
-        }
-    }
     // Finish building the structure
     const nOutAtoms = fc.length / 3;
     const outAtoms: PrototypeAtomsData = {
