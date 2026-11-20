@@ -23,7 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {computed, ref} from "vue";
-import {VisXYContainer, VisLine, VisAxis, VisScatter, VisCrosshair, VisTooltip} from "@unovis/vue";
+import {VisXYContainer, VisLine, VisAxis, VisScatter} from "@unovis/vue";
 import {closeWindow, requestData, sendToNode} from "@/services/RoutesClient";
 import {handleSpecialKeys} from "@/services/HandleSpecialKeys";
 import {theme} from "@/services/ReceiveTheme";
@@ -46,8 +46,9 @@ interface DataRecord {
 
 const points = ref<DataRecord[]>([]);
 const scatter = ref<DataRecord[]>([]);
+const peaks = ref<DataRecord[]>([]);
 const forceUpdate = ref(true);
-const showLabels = ref(false);
+const peakLabels = ref<"none" | "hkl" | "peaks">("none");
 const lineSmooth = ref(true);
 const range = ref([0, 90]);
 const showGrid = ref(true);
@@ -76,12 +77,18 @@ requestData(windowPath, (params: CtrlParams) => {
         points.value.push({x: lineX[i], y: lineY[i]});
     }
     scatter.value.length = 0;
+    peaks.value.length = 0;
     len = labelX.length;
     for(let i=0; i < len; ++i) {
         scatter.value.push({
             x: labelX[i],
             y: labelY[i],
             label: labelText[i]
+        });
+        peaks.value.push({
+            x: labelX[i],
+            y: labelY[i],
+            label: `[${labelX[i].toFixed(2)}, ${labelY[i].toFixed(2)}]`
         });
     }
 
@@ -121,15 +128,6 @@ const savePeaks = (): void => {
 
 const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 
-/**
- * String to be visualized in the tooltip
- *
- * @param d - Data at the point
- */
-const template = (d: DataRecord): string =>
-`<table><tr><td>2θ:</td><td style="text-align:right">${d.x.toFixed(2)}</td></tr>
-<tr><td>Int.:</td><td style="text-align:right">${d.y.toFixed(2)}</td></tr></table>`;
-
 // Below there are settings (like labelColor) that seems redundant,
 // but they make the screenshot works
 </script>
@@ -141,7 +139,10 @@ const template = (d: DataRecord): string =>
                   :xDomain="range" :yDomain="[0, 100]" :duration="0"
                   :scaleByDomain="true" class="layout-main chart-container">
     <VisLine :key="forceUpdate" :data="points" :x="xp" :y="yp" :curveType/>
-    <VisScatter v-if="showLabels" :data="scatter" :x="xp" :y="yp"
+    <VisScatter v-if="peakLabels==='hkl'" :data="scatter" :x="xp" :y="yp"
+                color="red" :size="4"
+                :label="lp" labelColor="red" labelPosition="right" />
+    <VisScatter v-else-if="peakLabels==='peaks'" :data="peaks" :x="xp" :y="yp"
                 color="red" :size="4"
                 :label="lp" labelColor="red" labelPosition="right" />
     <VisAxis type="x" label="2θ (degrees)" :gridLine="showGrid"
@@ -150,13 +151,15 @@ const template = (d: DataRecord): string =>
     <VisAxis type="y" label="Intensity (a. u.)" :gridLine="showGrid"
               labelColor="#6C778C" :labelFontSize="24"
               tickTextColor="#6C778C"/>
-    <VisTooltip />
-    <VisCrosshair :data="points" :x="xp" :y="yp" :template />
   </VisXYContainer>
   <v-container class="layout-buttons">
-    <v-switch v-model="showLabels" label="Show HKL"/>
+    <v-btn-toggle v-model="peakLabels" mandatory class="mr-2">
+      <v-btn value="none">None</v-btn>
+      <v-btn value="hkl">Show HKL</v-btn>
+      <v-btn value="peaks">Show Peaks</v-btn>
+    </v-btn-toggle>
     <v-switch v-model="showGrid" label="Show grid"/>
-    <v-btn @click="savePeaks">Save peaks</v-btn>
+    <v-btn class="ml-1" @click="savePeaks">Save peaks</v-btn>
     <v-btn @click="savePoints">Save points</v-btn>
     <v-btn @click="makeImage">Save image</v-btn>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>

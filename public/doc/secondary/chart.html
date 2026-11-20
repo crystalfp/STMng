@@ -16,14 +16,22 @@
 
 </head><body>
 <h1>STMng — X-Ray diffraction chart</h1>
-<p>This window shows the diffraction spectra and the <i>hkl</i> plus multiplicity peak values for the current structure.</p>
-<p>Hovering the chart show a tooltip with the 2θ and Intensity values in that point.</p>
+<p>This window shows the diffraction spectra, the peaks coordinates and the <i>hkl</i> plus multiplicity peaks values for the current structure.</p>
 
 <table class="params">
 <tr>
-	<td class="c1">Show HKL</td>
-	<td class="c2">toggle</td>
-	<td class="c3">When set, display near the peaks on the chart the corresponding <i>hkl</i> value with the relative multiplicity. Note that, to have the points coincident to the spectra peaks, the peak width should be zero.</td>
+	<td class="c1">Peaks labels</td>
+	<td class="c2">radio buttons</td>
+	<td class="c3">Selects the information to be shown on each peak.
+  <dl>
+  <dt>None</dt>
+  <dd>No label shown.</dd>
+  <dt>Show HKL</dt>
+  <dd>Display near the peaks on the chart the corresponding <i>hkl</i> value with the relative multiplicity. Note that, to have the points coincident to the spectra peaks, the peak width should be zero.</dd>
+  <dt>Show peaks</dt>
+  <dd>Display near the peaks on the chart the corresponding 2θ and intensity value. Note that, to have the points coincident to the spectra peaks, the peak width should be zero.</dd>
+  </dl>
+  </td>
 </tr>
 <tr>
 	<td class="c1">Show grid</td>
@@ -43,7 +51,7 @@
 <tr>
 	<td class="c1">Save image</td>
 	<td class="c2">button</td>
-	<td class="c3">Export the chart as a PNG image. Note that the image is exactly what is on screen. So, for example, to obtain an image with white background simply deselect the “Dark theme” in the View menu.</td>
+	<td class="c3">Export the chart as a PNG image. Note that the image is exactly what is on screen. So, to obtain an image with white background, deselect the “Dark theme” in the View menu.</td>
 </tr>
 <tr>
 	<td class="c1">Close</td>
