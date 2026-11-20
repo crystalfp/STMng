@@ -45,7 +45,7 @@
     "delaunator": "^5.1.0",
     "electron-log": "^5.4.4",
     "mathjs": "^15.2.0",
-    "mediabunny": "^1.66.1",
+    "mediabunny": "^1.66.2",
     "pinia": "^4.1.0",
     "three": "^0.187.0",
     "three-viewport-gizmo": "^2.2.0",
