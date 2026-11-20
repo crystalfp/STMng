@@ -176,25 +176,7 @@ export class ComputeSymmetries extends NodeCore {
 			applyInputSymmetries: this.applyInputSymmetries
 		});
 
-		this.outputStructure = this.computeSymmetries();
-
-		if(this.outputStructure) {
-			removeDuplicates(this.outputStructure);
-			this.sendCellParameters();
-			this.toNextNode(this.outputStructure);
-		}
-		else {
-			this.displaySymmetries("");
-			return;
-		}
-
-		this.pointGroup = this.computePointGroup ? this.pointGroupAnalyzer.analyze(
-				this.outputStructure,
-				this.positionTolerance,
-				this.eigenvalueTolerance
-			) : "";
-
-		this.displaySymmetries(this.pointGroup, this.outputStructure.crystal.spaceGroup);
+		this.outputResults();
 	}
 
 	// > Load/save status
@@ -663,6 +645,14 @@ export class ComputeSymmetries extends NodeCore {
 		this.fillTolerance = params.fillTolerance as number ?? -5;
         this.standardizeOnly = params.standardizeOnly as boolean ?? false;
         this.createPrimitiveCell = params.createPrimitiveCell as boolean ?? false;
+
+		this.outputResults();
+	}
+
+	/**
+	 * Unified repeated code
+	 */
+	private outputResults(): void {
 
 		this.outputStructure = this.computeSymmetries();
 

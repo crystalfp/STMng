@@ -24,8 +24,9 @@
  */
 import {measuringMethods} from "./DistanceMethods";
 import {MDS} from "../modules/NativeFunctions";
-import type {FingerprintsAccumulator} from "./Accumulator";
 import {TSNE} from "./TSNE";
+import {fixTriangleInequalityViolations} from "../modules/FixTriangleInequality";
+import type {FingerprintsAccumulator} from "./Accumulator";
 
 /**
  * Matrix of distances between fingerprints
@@ -177,70 +178,6 @@ export class DistanceMatrix {
 }
 
 /**
- * Manage delta values for triangle inequality test
- */
-export class Delta {
-
-    private readonly delta: number[];
-    private readonly nMinus1;
-	private readonly nTimesNMinus1Divided2;
-
-    /**
-     * Build the correction matrix to fix the triangle inequality
-     *
-     * @param n - Side of the matrix
-     */
-	constructor(n: number) {
-
-        this.nMinus1 = n-1;
-		this.nTimesNMinus1Divided2 = (n*(n-1))/2;
-		const sz = n*this.nTimesNMinus1Divided2;
-		this.delta = Array<number>(sz).fill(0);
-	}
-
-    /**
-     * Get one element of the delta matrix
-     *
-     * @param i - First index for the delta parameters matrix
-     * @param j - Second index for the delta parameters matrix
-     * @param k - Third index for the delta parameters matrix
-     * @returns Value in the matrix at (i, j, k)
-     */
-	get(i: number, j: number, k: number): number {
-
-        return this.delta[this.deltaIdx(i, j, k)];
-	}
-
-    /**
-     * Decrement a matrix element
-     *
-     * @param i - First index for the delta parameters matrix
-     * @param j - Second index for the delta parameters matrix
-     * @param k - Third index for the delta parameters matrix
-     * @param value - Value to be subtracted from the matrix element
-     */
-	decr(i: number, j: number, k: number, value: number): void {
-
-        this.delta[this.deltaIdx(i, j, k)] -= value;
-	}
-
-    /**
-     * Compute the index in the linearized delta matrix
-     *
-     * @param i - First index for the delta parameters matrix
-     * @param j - Second index for the delta parameters matrix
-     * @param k - Third index for the delta parameters matrix
-     * @returns Index in the linearized array that stores the delta matrix
-     */
-	private deltaIdx(i: number, j: number, k: number): number {
-
-		const start = j * this.nMinus1 - ((j - 1) * j) / 2;
-
-		return i * this.nTimesNMinus1Divided2 + start + k - j - 1;
-	}
-}
-
-/**
  * Result of computing all distances between the fingerprints
  * @notExported
  */
@@ -316,7 +253,7 @@ export class Distances {
 
         if(fixTriangleInequality) {
 
-            const sts = this.fixTriangleInequalityViolations();
+            const sts = fixTriangleInequalityViolations(this.distances);
 
             switch(sts) {
                 case 0:  endMessage = "Fix: no change"; break;
@@ -334,100 +271,6 @@ export class Distances {
         this.cachedProjectedPoints = false;
 
         return {countDistances, endMessage};
-    }
-
-    /**
-     * Count number of violations of the triangular inequality
-     *
-     * @param matrixSide - Distance matrix side
-     * @returns - Number of violations of the AC \< AB+BC inequality
-     */
-    private countTriangleInequalityViolations(matrixSide: number): number {
-
-        let violated = 0;
-
-        for(let i=0; i < matrixSide-1; ++i) {
-            for(let j=i+1; j < matrixSide; ++j) {
-                for(let k=j+1; k < matrixSide; ++k) {
-
-                    const dij = this.distances.get(i, j);
-                    const djk = this.distances.get(j, k);
-                    const dki = this.distances.get(k, i);
-                    if(dij > (djk+dki)) ++violated;
-                }
-            }
-        }
-
-        return violated;
-    }
-
-    /**
-     * Fix triangular inequality violations
-     *
-     * @param maxIterations - Maximum number of corrective iterations
-     * @returns 0 if everything is OK;
-     *          1 if had to fix triangular inequalities;
-     *         -1 if maxIterations exceeded
-     */
-    private fixTriangleInequalityViolations(maxIterations=10): number {
-
-        // Check if fixing needed
-        const n = this.distances.matrixSize();
-
-        let violated = this.countTriangleInequalityViolations(n);
-	    if(violated === 0) return 0; // Fixing not needed
-
-	    // Allocate the correction matrix
-        const delta = new Delta(n);
-
-        // While the matrix is not fixed, apply the algorithm
-        do {
-            for(let i=0; i < n-1; ++i) {
-                for(let j=i+1; j < n; ++j) {
-                    for(let k=j+1; k < n; ++k) {
-                        for(let t=0; t < 3; ++t) {
-
-                            /* eslint-disable @stylistic/max-statements-per-line */
-                            let ii, jj, kk;
-                            switch(t) {
-                                case 2:  ii = k; jj = i; kk = j; break;
-                                case 1:  ii = j; jj = k; kk = i; break;
-                                default: ii = i; jj = j; kk = k; break; // Was case 0:
-                            }
-                            /* eslint-enable @stylistic/max-statements-per-line */
-
-                            const oDij = this.distances.get(ii, jj);
-
-                            const d1 = delta.get(i, j, k);
-                            this.distances.add(ii, jj,  d1);
-                            this.distances.add(jj, kk, -d1);
-                            this.distances.add(kk, ii, -d1);
-
-                            const d2 = this.distances.get(ii, jj) -
-                                       this.distances.get(jj, kk) -
-                                       this.distances.get(kk, ii);
-
-                            if(d2 > 0) {
-                                this.distances.add(ii, jj, -d2/3);
-                                this.distances.add(jj, kk,  d2);
-                                this.distances.add(kk, ii,  d2);
-                            }
-                            delta.decr(i, j, k, this.distances.get(ii, jj) - oDij);
-                        }
-                    }
-                }
-            }
-
-            // Check if violations still present
-            violated = this.countTriangleInequalityViolations(n);
-
-            // Update the number of iterations
-            --maxIterations;
-        }
-        while(violated > 0 && maxIterations > 0);
-
-        // Check if the max number of iterations has been exceeded
-        return violated > 0 ? -1 : 1;
     }
 
     /**

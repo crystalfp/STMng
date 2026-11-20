@@ -23,7 +23,7 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 import {measuringMethods} from "../fingerprint/DistanceMethods";
-import {Delta} from "../fingerprint/Distances";
+import {fixTriangleInequalityViolations} from "../modules/FixTriangleInequality";
 import type {StructureSetsAccumulator} from "./Accumulator";
 import type {StructureReduced} from "../fingerprint/Accumulator";
 
@@ -123,102 +123,6 @@ export class DistanceMatrix {
 		this.distanceMatrix[row][column-row] += value;
     }
 }
-
-/**
- * Count number of violations of the triangular inequality
- *
- * @param distances - Distance matrix
- * @returns - Number of violations of the AC \< AB+BC inequality
- */
-const countTriangleInequalityViolations = (distances: DistanceMatrix): number => {
-
-	let violated = 0;
-	const matrixSide = distances.matrixSize();
-
-	for(let i=0; i < matrixSide-1; ++i) {
-		for(let j=i+1; j < matrixSide; ++j) {
-			for(let k=j+1; k < matrixSide; ++k) {
-
-				const dij = distances.get(i, j);
-				const djk = distances.get(j, k);
-				const dki = distances.get(k, i);
-				if(dij > (djk+dki)) ++violated;
-			}
-		}
-	}
-
-	return violated;
-};
-
-/**
- * Fix triangular inequality violations
- *
- * @param distances - Distance matrix
- * @param maxIterations - Maximum number of corrective iterations
- * @returns 0 if everything is OK;
- *          1 if had to fix triangular inequalities;
- *         -1 if maxIterations exceeded
- */
-const fixTriangleInequalityViolations = (distances: DistanceMatrix, maxIterations=10): number => {
-
-	// Check if fixing needed
-	const n = distances.matrixSize();
-
-	let violated = countTriangleInequalityViolations(distances);
-	if(violated === 0) return 0; // Fixing not needed
-
-	// Allocate the correction matrix
-	const delta = new Delta(n);
-
-	// While the matrix is not fixed, apply the algorithm
-	do {
-		for(let i=0; i < n-1; ++i) {
-			for(let j=i+1; j < n; ++j) {
-				for(let k=j+1; k < n; ++k) {
-					for(let t=0; t < 3; ++t) {
-
-						/* eslint-disable @stylistic/max-statements-per-line */
-						let ii, jj, kk;
-						switch(t) {
-							case 2:  ii = k; jj = i; kk = j; break;
-							case 1:  ii = j; jj = k; kk = i; break;
-							default: ii = i; jj = j; kk = k; break; // Was case 0:
-						}
-						/* eslint-enable @stylistic/max-statements-per-line */
-
-						const oDij = distances.get(ii, jj);
-
-						const d1 = delta.get(i, j, k);
-						distances.add(ii, jj,  d1);
-						distances.add(jj, kk, -d1);
-						distances.add(kk, ii, -d1);
-
-						const d2 = distances.get(ii, jj) -
-									distances.get(jj, kk) -
-									distances.get(kk, ii);
-
-						if(d2 > 0) {
-							distances.add(ii, jj, -d2/3);
-							distances.add(jj, kk,  d2);
-							distances.add(kk, ii,  d2);
-						}
-						delta.decr(i, j, k, distances.get(ii, jj) - oDij);
-					}
-				}
-			}
-		}
-
-		// Check if violations still present
-		violated = countTriangleInequalityViolations(distances);
-
-		// Update the number of iterations
-		--maxIterations;
-	}
-	while(violated > 0 && maxIterations > 0);
-
-	// Check if the max number of iterations has been exceeded
-	return violated > 0 ? -1 : 1;
-};
 
 /**
  * Fill the distance matrix
