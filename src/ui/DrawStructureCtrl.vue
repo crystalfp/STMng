@@ -293,6 +293,17 @@ onUnmounted(() => {
     stopWatcher3();
     stopWatcher4();
 });
+/**
+ * Reset visual parameters to default values
+ */
+const resetParameters = (): void => {
+
+    drawQuality.value = 4;
+    drawRoughness.value = 0.5;
+    drawMetalness.value = 0.6;
+    bondsRadiusMultiplier.value = 1;
+    spheresRadiusMultiplier.value = 1;
+};
 
 </script>
 
@@ -374,6 +385,7 @@ onUnmounted(() => {
                       :min="0" :max="1" :step="0.1" class="ml-2 mt-4">
       <v-label :text="`Metalness (${value.toFixed(2)})`" class="no-select" />
     </debounced-slider>
+  <block-button class="mt-4 ml-1" label="Reset parameters" @click="resetParameters"/>
   </div>
 </v-container>
 </template>
