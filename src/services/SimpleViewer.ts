@@ -27,7 +27,8 @@ import CameraControls from "camera-controls";
 import {Scene, Color, PerspectiveCamera, WebGLRenderer, DirectionalLight,
         AmbientLight, OrthographicCamera, Vector3, Vector2, type Group,
         Raycaster, Vector4, Quaternion, Matrix4, Spherical,
-        Box3, Sphere, MathUtils, Timer, type Mesh, type Object3D} from "three";
+        Box3, Sphere, MathUtils, Timer, type Object3D} from "three";
+import { clearGroupCore } from "./ViewerUtilities";
 
 /** Simple 3D viewer */
 export class SimpleViewer {
@@ -289,36 +290,8 @@ export class SimpleViewer {
 	 */
 	clearGroup(groupName: string, removeGroup=false): void {
 
-		const group = this.scene.getObjectByName(groupName);
-		if(!group) return;
+		clearGroupCore(this.scene, groupName, removeGroup);
 
-		// Meshes to be delete from the group
-		const meshes: Mesh[] = [];
-
-		// Remove meshes' parts
-		group.traverse((object) => {
-
-			if(object.type === "Group") return;
-
-			const mesh = object as Mesh;
-			if(mesh.geometry) mesh.geometry.dispose();
-			if(mesh.material) {
-				if(Array.isArray(mesh.material)) {
-					for(const material of mesh.material) material.dispose();
-				}
-				else {
-					mesh.material.dispose();
-				}
-			}
-			meshes.push(mesh);
-		});
-
-		// Clear the group
-		for(const mesh of meshes) {group.remove(mesh);}
-        group.clear();
-
-		// Remove the group itself
-		if(removeGroup) this.scene.remove(group);
 		this.isSceneModified = true;
 	}
 

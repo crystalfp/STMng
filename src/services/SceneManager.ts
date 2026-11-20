@@ -32,6 +32,7 @@ import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {getBoundingSphere, type BoundingSphere} from "./BoundingSphere";
 import type {StructureRenderInfo} from "@/types";
+import { clearGroupCore } from "./ViewerUtilities";
 
 /**
  * Routines related to the 3D scene
@@ -128,36 +129,8 @@ export class SceneManager {
 	 */
 	clearGroup(groupName: string, removeGroup=false): void {
 
-		const group = SceneManager.scene.getObjectByName(groupName);
-		if(!group) return;
+		clearGroupCore(SceneManager.scene, groupName, removeGroup);
 
-		// Meshes to be delete from the group
-		const meshes: Mesh[] = [];
-
-		// Remove meshes' parts
-		group.traverse((object) => {
-
-			if(object.type === "Group") return;
-
-			const mesh = object as Mesh;
-			if(mesh.geometry) mesh.geometry.dispose();
-			if(mesh.material) {
-				if(Array.isArray(mesh.material)) {
-					for(const material of mesh.material) material.dispose();
-				}
-				else {
-					mesh.material.dispose();
-				}
-			}
-			meshes.push(mesh);
-		});
-
-		// Clear the group
-		for(const mesh of meshes) {group.remove(mesh);}
-        group.clear();
-
-		// Remove the group itself
-		if(removeGroup) SceneManager.scene.remove(group);
 		this.sceneModified = true;
 	}
 
