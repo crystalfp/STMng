@@ -9,9 +9,6 @@ Requests:
   ☐ An option to specify an arbitrary section plane (see <https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_transform.html>)
 
 Bugs:
-  ✔ licorice → CPK, Hide labels, show labels (labels remain at the licorice distance) @done(2026-11-18 17:53)
-  ✔ Convex hull 3D: Reduce range of scale (0.5), larger label (3 decimals) for scale @done(2026-11-18 15:53)
-  ✘ Edit structure, change atom to Hs (108) everything disappear @cancelled(2026-11-18 16:06)
 
 To do:
   ☐ Check error return from main process to client
@@ -26,7 +23,6 @@ To do:
   ☐ Add color legend to orthoslice and isosurfaces
   ☐ Remove `querySelector` (use ref)
   ☐ Add color legend for the number of bonds (Bonds)
-  ☐ Add option on Diffraction chart to show the peaks (intensity & 2angle) as labels
   ☐ From aflow UID to the encyclopedia page (search does not work on the page)
 
 Performance:
@@ -80,6 +76,11 @@ Reference:
   ☐ Use a composable instead of Pinia for messages <https://dev.to/jacobandrewsky/sharing-composable-state-in-vue-apps-41l1>
 
 Archive:
+  ✔ Strange labels after cell standardization @done(2026-11-20 10:35) @project(Bugs)
+  ✔ licorice → CPK, Hide labels, show labels (labels remain at the licorice distance) @done(2026-11-18 17:53) @project(Bugs)
+  ✔ Convex hull 3D: Reduce range of scale (0.5), larger label (3 decimals) for scale @done(2026-11-18 15:53) @project(Bugs)
+  ✘ Edit structure, change atom to Hs (108) everything disappear @cancelled(2026-11-18 16:06) @project(Bugs)
+  ✔ Add option on Diffraction chart to show the peaks (intensity & 2angle) as labels @done(2026-11-20 08:48) @project(To do)
   ✔ Isosurfaces: plane (n of total) @done(2026-11-18 06:57) @project(To do)
   ✔ Unify basis vectors rendering (renderers/DrawUnitCellRenderer.ts components/ShowCrystalShape.vue) @done(2026-11-16 18:14) @project(To do)
   ✔ Use Unicode subscript for charts labels @done(2026-11-16 18:13) @project(To do)

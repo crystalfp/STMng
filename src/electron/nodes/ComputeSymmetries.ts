@@ -723,7 +723,7 @@ export class ComputeSymmetries extends NodeCore {
 			crystal: {
 				basis,
 				origin: [0, 0, 0],
-				spaceGroup: spaceGroup
+				spaceGroup
 			},
 			atoms: [],
 			bonds: [],
@@ -732,8 +732,30 @@ export class ComputeSymmetries extends NodeCore {
 		};
 
 		const natoms = atomsZ.length;
-		for(let i=0; i < natoms; ++i) {
 
+		// Skip duplicates
+		const duplicated = Array<boolean>(natoms).fill(false);
+		const TOL2 = 1e-4;
+		for(let i=0; i < natoms-1; ++i) {
+			const ax = fractionalCoordinates[3*i];
+			const ay = fractionalCoordinates[3*i+1];
+			const az = fractionalCoordinates[3*i+2];
+			for(let j=i+1; j < natoms; ++j) {
+				if(duplicated[j]) continue;
+				const dx = fractionalCoordinates[3*j] - ax;
+				if(Math.abs(dx) < TOL2) {
+					const dy = fractionalCoordinates[3*j+1] - ay;
+					if(Math.abs(dy) < TOL2) {
+						const dz = fractionalCoordinates[3*j+2] - az;
+						if(Math.abs(dz) < TOL2) {
+							duplicated[j] = true;
+						}
+					}
+				}
+			}
+		}
+		for(let i=0; i < natoms; ++i) {
+			if(duplicated[i]) continue;
 			structure.atoms.push({
 				atomZ: atomsZ[i],
 				label: labels[i],
