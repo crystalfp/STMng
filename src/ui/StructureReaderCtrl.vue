@@ -765,15 +765,17 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
                   :clearable="true" no-data-text="No prototype found" spellcheck="false"
                   @update:modelValue="startPrototypeQuery"
                   @click:clear="clearErrors"/>
-    <v-label v-if="prototypeQuery!==undefined" class="result-label bigger-result pb-1 mt-4 ml-4 mb-1" v-html="mineral" />
-    <table v-if="prototypeQuery!==undefined" class="ml-4 text-body-2">
-      <tbody>
-        <tr><td class="c1">aflow:</td><td>{{ aflowTag }}</td></tr>
-        <tr><td class="c1">strukturbericht:</td>
-            <td v-html="strukturbericht.replace(/_([^_]+)$/, '<sub>$1</sub>')"/></tr>
-        <tr><td class="c1">pearson:</td><td>{{ pearson }}</td></tr>
-      </tbody>
-    </table>
+    <v-label v-if="prototypeQuery!==undefined"
+             class="result-label bigger-result pb-1 mt-4 ml-4 mb-1"
+             v-html="mineral" />
+    <div v-if="prototypeQuery!==undefined" class="ml-4">
+        <div class="mt-3 no-select">aflow:</div>
+        <div class="result">{{ aflowTag }}</div>
+        <div class="mt-2 no-select">strukturbericht:</div>
+        <div class="result" v-html="strukturbericht ? strukturbericht.replace(/_([^_]+)$/, '<sub>$1</sub>') : '&nbsp;'" />
+        <div class="mt-2 no-select">pearson:</div>
+        <div class="result">{{ pearson }}</div>
+    </div>
   </v-container>
   <v-container v-else-if="showCollection" class="pa-0">
     <v-autocomplete v-model="collectionQuery" label="Collection query"
@@ -883,16 +885,9 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
   bottom: -0.5rem;
 }
 
-td :deep(sub) {
-  position: relative;
-  bottom: -0.2rem;
-  font-size: 90%;
-}
-
-.c1 {
-  width: 7.4rem;
-  user-select: none;
-  padding-bottom: 2px;
+.result {
+  color: #00C853 !important;
+  opacity: 1 !important;
 }
 
 </style>
