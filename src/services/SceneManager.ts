@@ -31,8 +31,8 @@ import {watchEffect} from "vue";
 import {useConfigStore} from "@/stores/configStore";
 import {useControlStore} from "@/stores/controlStore";
 import {getBoundingSphere, type BoundingSphere} from "./BoundingSphere";
+import {clearGroupCore} from "./ViewerUtilities";
 import type {StructureRenderInfo} from "@/types";
-import { clearGroupCore } from "./ViewerUtilities";
 
 /**
  * Routines related to the 3D scene

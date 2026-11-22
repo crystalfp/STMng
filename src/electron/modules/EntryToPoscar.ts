@@ -26,7 +26,10 @@ import {getAtomicSymbol} from "./AtomData";
 import {invertBasis} from "./Helpers";
 import type {BasisType} from "@/types";
 
-/** Essential info from the various accumulator entries */
+/**
+ * Essential info from the various accumulator entries
+ * @notExported
+ */
 interface SetEntry {
 
 	/** Unit cell basis vectors */

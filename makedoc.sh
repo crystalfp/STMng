@@ -31,8 +31,7 @@ node_modules/.bin/typedoc \
 --validation.notDocumented \
 --suppressCommentWarningsInDeclarationFiles \
 --plugin typedoc-plugin-vue \
---plugin typedoc-plugin-missing-exports \
---placeInternalsInOwningModule \
+--plugin @zamiell/typedoc-plugin-not-exported \
 --validation.notDocumented \
 --suppressCommentWarningsInDeclarationFiles \
 --disableGit \
@@ -43,6 +42,8 @@ node_modules/.bin/typedoc \
 --exclude "troika-three-text.d.ts" \
 `/bin/find src -name "*.ts" -type f | grep -v "vite-env" | grep -v "cpp/spglib" | grep -v KDtree | grep -v .rollup.cache` | grep -v node_modules
 fi
+#--plugin typedoc-plugin-missing-exports \
+#--placeInternalsInOwningModule \
 
 
 # if [ $c = "s" -o $c = "a" ]

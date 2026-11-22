@@ -33,7 +33,6 @@ exposeElectronAPI();
 
 /**
  * The load event containing the requested location
- * @notExported
  */
 interface DOMContentLoadedEvent {
     target: {

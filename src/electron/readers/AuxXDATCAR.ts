@@ -32,7 +32,6 @@ const numbers = /\d+/u;
 
 /**
  * Line read type
- * @notExported
  */
 const LineType = {
     header:    0,

@@ -33,7 +33,6 @@ const spaces = /\s+/u;
 
 /**
  * Line read type
- * @notExported
  */
 const LineType = {
     item:   0,
@@ -47,7 +46,6 @@ const LineType = {
 
 /**
  * Types of unit cells
- * @notExported
  */
 const BoxType = {
     unknown: 0,

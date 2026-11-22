@@ -35,7 +35,6 @@ const digits = /\d+/u;
 
 /**
  * Line read type
- * @notExported
  */
 const LineType = {
     comment: 0,

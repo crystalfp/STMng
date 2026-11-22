@@ -34,7 +34,6 @@ const spaces = /\s+/u;
 
 /**
  * Line read type
- * @notExported
  */
 const LineType = {
     comment1: 0,

@@ -123,7 +123,10 @@ interface SimilarStructuresEntry {
 	distance: number;
 }
 
-/** Return type of getStructure */
+/**
+ * Return type of getStructure
+ * @notExported
+ */
 type CollectionsStructure = CollectionsEntry & {structure: Structure};
 
 /**

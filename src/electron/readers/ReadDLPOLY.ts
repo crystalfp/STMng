@@ -32,7 +32,6 @@ const spaces = /\s+/u;
 
 /**
  * Line read type
- * @notExported
  */
 const LineType = {
     header:  0,

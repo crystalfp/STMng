@@ -23,9 +23,32 @@
  * along with STMng. If not, see https://gnu.org/licenses/ .
  */
 
+/**
+ * Needed methods for the input distance matrix
+ * @notExported
+ */
 abstract class DistanceMatrixBase {
+    /**
+     * Return the matrix side
+     *
+     * @returns Matrix side dimension
+     */
 	abstract matrixSize(): number;
+    /**
+     * Access the matrix values
+     *
+     * @param row - Row matrix index
+     * @param column - Column matrix index
+     * @returns - Value from the matrix
+     */
 	abstract get(row: number, column: number): number;
+    /**
+     * Add a value to a matrix element
+     *
+     * @param row - Row matrix index
+     * @param column - Column matrix index
+     * @param value - Value to be added to the matrix element
+     */
 	abstract add(row: number, column: number, value: number): void;
 }
 

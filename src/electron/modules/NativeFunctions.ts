@@ -107,6 +107,22 @@ interface SeitzRotationsOutput {
  * @notExported
  */
 interface NativeModule {
+	/**
+	 * Find and apply symmetries
+	 *
+	 * @param basis - Cell basis vectors
+	 * @param spaceGroup - Input space group
+	 * @param atomsZ - List of atom types
+	 * @param fractionalCoordinates - Atoms fractional coordinates
+	 * @param applyInputSymmetries - Apply symmetries from input
+	 * @param enableFindSymmetries - Find symmetries
+	 * @param standardizeCell - If the cell should be standardized
+	 * @param standardizeOnly - Don't find symmetries, standardize only the cell
+	 * @param createPrimitiveCell - Create a primitive cell instead of a conventional one
+	 * @param symprecStandardize - Tolerance for cell standardization
+	 * @param symprecDataset - Tolerance for finding symmetries
+	 * @returns The new cell, atoms positions and symmetry symbols
+	 */
 	findAndApplySymmetries: (basis: Float64Array,
 							 spaceGroup: string,
 							 atomsZ: Int32Array,
@@ -119,10 +135,32 @@ interface NativeModule {
 							 symprecStandardize: number,
 							 symprecDataset: number) => FindAndApplySymmetriesOutput;
 
+	/**
+	 * Convert space group number and variation from a Quantum Espresso
+	 * format file into the corresponding code
+	 *
+	 * @param spaceGroupNumber - Space group number
+	 * @param variation - Space group variation
+	 * @returns The converted space group and the conversion status
+	 */
 	convertSpaceGroupNumber: (spaceGroupNumber: number, variation: number) => ConvertSpaceGroupNumberOutput;
 
+	/**
+	 * Compute Multidimensional Scaling (MDS)
+	 *
+	 * @param distancesVector - Distances vector (upper triangular of NxN symmetrical distances matrix)
+	 * @param pointsCount - Number of points (N), that is, the side of the distance matrix
+	 * @returns Arrays of points coordinates in the 2D and 3D output space
+	 */
 	MDS: (distancesVector: Float64Array, pointsCount: number) => MDS2D3DOutput;
 
+	/**
+	 * Get the rotation matrices for a given space group
+	 *
+	 * @param spaceGroup - The space group string
+	 * @returns The list of matrices and the status
+	 * 			(on error it contains the error string)
+	 */
 	getSeitzRotations: (spaceGroup: string) => SeitzRotationsOutput;
 }
 
