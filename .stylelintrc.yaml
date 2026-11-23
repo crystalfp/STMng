@@ -1,8 +1,11 @@
+plugins:
+  - "@stylistic/stylelint-plugin"
 
 extends:
   - stylelint-config-standard
   - stylelint-config-standard-vue
   - stylelint-config-recommended-vue
+  - "@stylistic/stylelint-plugin/recommended"
 
 overrides:
 - files:
@@ -36,9 +39,19 @@ rules:
   selector-pseudo-class-no-unknown:
   - true
   - ignorePseudoClasses:
-      - deep
-      - slotted
-      - global
+    - deep
+    - slotted
+    - global
   shorthand-property-no-redundant-values: null
   selector-class-pattern: null
   comment-empty-line-before: null
+  "@stylistic/linebreaks": null
+  "@stylistic/indentation": 2
+  "@stylistic/color-hex-case": upper
+  "@stylistic/named-grid-areas-alignment":
+    - true
+    - alignColumns: true
+  "@stylistic/declaration-block-single-line-max-declarations": null
+  "@stylistic/block-opening-brace-space-after": null
+  "@stylistic/block-opening-brace-newline-after": null
+  "@stylistic/block-closing-brace-newline-before": null
