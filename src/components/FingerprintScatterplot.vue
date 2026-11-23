@@ -1015,11 +1015,18 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
   height: 100vh;
 }
 
-.side-w {grid-area: aa;}
+.side-w {
+  grid-area: aa;
+}
 
-.side-n {grid-area: bb; padding-top: 20px;}
+.side-n {
+  grid-area: bb;
+  padding-top: 20px;
+}
 
-.side-s {grid-area: cc;}
+.side-s {
+  grid-area: cc;
+}
 
 .scatterplot-viewer {
   overflow: hidden;
@@ -1064,16 +1071,26 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
   height: 270px;
 }
 
-.tg td {overflow: hidden; padding: 10px 5px;}
-.tg .td-top {text-align: right; vertical-align: top;}
-.tg .td-bottom {text-align: right; vertical-align: bottom;}
+.tg td {
+  overflow: hidden;
+  padding: 10px 5px;
+}
+
+.tg .td-top {
+  text-align: right;
+  vertical-align: top;
+}
+
+.tg .td-bottom {
+  text-align: right;
+  vertical-align: bottom;
+}
 
 .two-buttons {
   display: grid;
   gap: 0 10px;
   grid-auto-flow: row;
-  grid-template:
-    "aa bb" 1fr / 1fr 1fr;
+  grid-template: "aa bb" 1fr / 1fr 1fr;
 }
 
 .left { grid-area: aa; }
