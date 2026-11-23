@@ -471,7 +471,6 @@ const annotationLabels3 = computed<AnnotationItem[]>(() => {
 
 
 <style scoped>
-
 .hull-viewer {
   background-color: #90CEEC;
 

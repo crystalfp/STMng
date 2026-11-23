@@ -131,7 +131,6 @@ onUnmounted(() => {
 
 
 <style scoped>
-
 .slider-with-stepper :deep(.v-slider__label) {
   width: v-bind(labelWidth);
   user-select: none;

@@ -95,7 +95,6 @@ const format = (value: number): string => {
 
 
 <style scoped>
-
 .means-container {
   overflow-y: auto;
   width: 100vw;
@@ -114,18 +113,18 @@ th {
 }
 
 .right {
-  text-align: right
+  text-align: right;
 }
 
 .w-1 {
-  width: 1rem
+  width: 1rem;
 }
 
 .w-2 {
-  width: 2rem
+  width: 2rem;
 }
 
 .w-4 {
-  width: 4rem
+  width: 4rem;
 }
 </style>

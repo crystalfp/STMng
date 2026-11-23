@@ -524,7 +524,7 @@ const disabled = computed(() => (theme.value === "light" ? "#1010104D" : "#FFFFF
   max-width: 3000px !important;
   gap: 10px;
   padding-right: 10px !important;
-  width: 100%
+  width: 100%;
 }
 
 .sub-tt {grid-area: tt;}

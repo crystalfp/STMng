@@ -355,38 +355,38 @@ onUnmounted(() => {
 
 <style scoped>
 .green {
-  color: #00C300
+  color: #00C300;
 }
 
 .red {
-  color: #FF0000
+  color: #FF0000;
 }
 
 .blue {
-  color: #4263FF
+  color: #4263FF;
 }
 
 .right {
-  text-align: right
+  text-align: right;
 }
 
 .w-0-5 {
-  width: 0.5rem
+  width: 0.5rem;
 }
 
 .w-1 {
-  width: 1rem
+  width: 1rem;
 }
 
 .w-2 {
-  width: 2rem
+  width: 2rem;
 }
 
 .w-3 {
-  width: 3rem
+  width: 3rem;
 }
 
 .w-9 {
-  width: 9rem
+  width: 9rem;
 }
 </style>

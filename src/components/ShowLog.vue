@@ -84,7 +84,7 @@ const copyToClipboard = async (): Promise<void> => {
     <v-textarea ref="txt" :model-value="text" readonly auto-grow hide-details
                   variant="solo" flat width="100%" class="pl-2" />
   </div>
-  <v-container class="layout-buttons" style="border-top: 1px solid #b0b0b0;">
+  <v-container class="layout-buttons" style="border-top: 1px solid #B0B0B0;">
     <v-btn @click="showConfirm=true">Clear log</v-btn>
     <v-btn :disabled="!copyText" @click="copyToClipboard">Copy to clipboard</v-btn>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>

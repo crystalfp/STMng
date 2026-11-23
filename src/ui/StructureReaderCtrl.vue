@@ -877,7 +877,7 @@ const styleVisibility = computed<Record<string, string>>(() => ({visibility: spe
 
 <style scoped>
 .ts :deep(label) {
- margin-right: 4px;
+  margin-right: 4px;
 }
 
 :deep(sub) {

@@ -771,7 +771,7 @@ const border = computed(() => (theme.value === "light" ? "#E0DCDF" : "#3C3C3C"))
     </template>
   </v-data-table>
   <div v-if="showTableVar" class="tc1">
-    <table style="width:100%">
+    <table style="width: 100%;">
       <thead>
         <tr>
           <th class="tds1">Step</th>
@@ -782,7 +782,7 @@ const border = computed(() => (theme.value === "light" ? "#E0DCDF" : "#3C3C3C"))
     </table>
   </div>
   <div v-if="showTableVar" class="tc">
-    <table style="width:100%">
+    <table style="width: 100%;">
       <tbody>
         <tr v-for="t of tableVar" :key="t.id" class="tr">
           <td v-if="t.step === ''" colspan="3" class="tdp">

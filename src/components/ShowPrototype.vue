@@ -347,7 +347,7 @@ const centerView = (): void => {
 <template>
 <v-app :theme class="layout-app">
     <div class="layout-main prototype-viewer" />
-    <v-container class="layout-buttons" style="justify-content: space-between">
+    <v-container class="layout-buttons" style="justify-content: space-between;">
       <v-label v-html="prototypeName"/>
       <div class="d-flex ga-2 justify-end">
         <v-btn @click="centerView">Center</v-btn>
@@ -359,7 +359,6 @@ const centerView = (): void => {
 
 
 <style scoped>
-
 :deep(sub) {
   position: relative;
   bottom: -0.5rem;

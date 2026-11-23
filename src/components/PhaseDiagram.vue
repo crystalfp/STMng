@@ -502,7 +502,6 @@ const contrast = computed(() => (theme.value === "light" ? "#000" : "#FFF"));
 
 
 <style scoped>
-
 :deep(sub) {
   position: relative;
   bottom: -0.2rem;

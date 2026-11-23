@@ -226,7 +226,7 @@ const selectResult = (fileId: number): void => {
   <v-container v-if="showLegend" class="pb-0">
     <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
       <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
-      <span style="width: 5.5rem; margin-right: 3px">{{ n.range }}</span>{{ n.label }}
+      <span style="width: 5.5rem; margin-right: 3px;">{{ n.range }}</span>{{ n.label }}
     </div>
   </v-container>
 

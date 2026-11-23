@@ -36,8 +36,8 @@ html {
 
 :root {
   --container-height: calc(100vh - 121px);
-  --scrollbar-track: light-dark(#e6e6e6, #202020);
-  --scrollbar-thumb: light-dark(#b0b0b0, #3e3e3e);
+  --scrollbar-track: light-dark(#E6E6E6, #202020);
+  --scrollbar-thumb: light-dark(#B0B0B0, #3E3E3E);
   --separator-color: rgb(var(--v-theme-secondary));
 }
 
@@ -151,7 +151,7 @@ html {
 /* > Layout for secondary windows (see FingerprintExport.vue) */
 .layout-app {
   display: flex;
-  height: 100vh
+  height: 100vh;
 }
 
 .layout-main {

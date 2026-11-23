@@ -269,7 +269,6 @@ const showBinCountSlider = computed(() => ["eh", "dh"].includes(chartType.value)
 
 
 <style scoped>
-
 .fp-chart-buttons {
   flex-direction: column;
   display: flex;

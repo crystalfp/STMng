@@ -42,9 +42,7 @@ const {labelWidth = "2rem"} = defineProps<{
 
 
 <style scoped>
-
 :deep(.v-slider__label) {
   width: v-bind(labelWidth);
 }
-
 </style>

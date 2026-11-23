@@ -587,7 +587,6 @@ const changeVisibility = (): void => {
 
 
 <style scoped>
-
 .hull3d-portal {
   display: flex;
   flex-direction: column;
@@ -601,7 +600,7 @@ const changeVisibility = (): void => {
   top: 0;
   right: 0;
   z-index: 800;
-  background-color: #7e7e7e46;
+  background-color: #7E7E7E46;
   overflow: hidden auto;
   padding: 7px 10px 0 7px !important;
   color: #202020;

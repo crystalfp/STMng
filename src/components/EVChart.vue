@@ -214,7 +214,7 @@ const triggers = {
       <v-btn value="distance">Distance</v-btn>
     </v-btn-toggle>
     <v-switch v-model="showLegend" :disabled="pointColoring === 'none'" label="Show legend"/>
-    <div style="width:200px">
+    <div style="width: 200px;">
       <select-colormap v-model="colormapName" class="mt-n1 ml-4"/>
     </div>
     <v-btn v-focus @click="closeWindow(windowPath)">Close</v-btn>
@@ -224,16 +224,11 @@ const triggers = {
 
 
 <style scoped>
-
 :deep(.rd) {
   text-align: right;
 }
 
 .ev-viewer {
- /* overflow: hidden;
-  width: 100vw;
-   flex: 2;
-  padding: 0; */
   background-color: #90CEEC;
 
   --vis-axis-tick-color: black;

@@ -990,12 +990,12 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
                               v-model:raw="showPointRadius" label-width="8rem"
                               :label="`Point radius (${showPointRadius})`"
                               :min="3" :max="20" :step="1" />
-        <v-btn :disabled="selectedPoints.size === 0" style="width: 6.5rem"
+        <v-btn :disabled="selectedPoints.size === 0" style="width: 6.5rem;"
                @click="resetSelected">Deselect</v-btn>
       </div>
       <div class="buttons-line mt-2 ml-2 mb-n4">
         <v-switch v-model="showLegend" label="Show legend"/>
-        <v-btn v-focus class="mr-2 mb-4" style="width: 6.5rem"
+        <v-btn v-focus class="mr-2 mb-4" style="width: 6.5rem;"
                @click="closeWindow(windowPath)">Close</v-btn>
       </div>
     </div>
@@ -1005,7 +1005,6 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
 
 
 <style scoped>
-
 .scatterplot-grid {
   display: grid;
   gap: 0;
@@ -1018,7 +1017,7 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
 
 .side-w {grid-area: aa;}
 
-.side-n {grid-area: bb; padding-top: 20px}
+.side-n {grid-area: bb; padding-top: 20px;}
 
 .side-s {grid-area: cc;}
 
@@ -1044,7 +1043,7 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
   max-width: 3000px !important;
   gap: 10px;
   padding-right: 20px !important;
-  width: 100%
+  width: 100%;
 }
 
 .legend {
@@ -1052,7 +1051,7 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
   bottom: 138px;
   right: 18px;
   z-index: 800;
-  background-color: #7e7e7e46;
+  background-color: #7E7E7E46;
   width: 220px;
   height: 220px;
   overflow: hidden auto;
@@ -1065,9 +1064,9 @@ const borderColor = computed(() => ({border: `2px solid ${fgColor}`}));
   height: 270px;
 }
 
-.tg td {overflow:hidden; padding:10px 5px;}
-.tg .td-top {text-align:right;vertical-align:top}
-.tg .td-bottom {text-align:right;vertical-align:bottom}
+.tg td {overflow: hidden; padding: 10px 5px;}
+.tg .td-top {text-align: right; vertical-align: top;}
+.tg .td-bottom {text-align: right; vertical-align: bottom;}
 
 .two-buttons {
   display: grid;

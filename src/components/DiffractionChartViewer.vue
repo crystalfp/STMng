@@ -169,12 +169,11 @@ const curveType = computed(() => (lineSmooth.value ? "basis" : "step"));
 
 
 <style scoped>
-
 .chart-container {
   --vis-axis-tick-color: #6C778C;
   --vis-axis-grid-color: #6C778C;
   --vis-axis-grid-line-dasharray: 1 3;
-  --vis-axis-domain-line-dasharray: 'none';
+  --vis-axis-domain-line-dasharray: "none";
 }
 
 </style>

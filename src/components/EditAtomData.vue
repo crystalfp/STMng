@@ -459,8 +459,7 @@ const exportData = (): void => {
   display: grid;
   gap: 0 5px;
   grid-auto-flow: row;
-  grid-template:
-    "ls rt" 780px / 1fr 0.3fr;
+  grid-template: "ls rt" 780px / 1fr 0.3fr;
   width: 100%;
   height: 800px;
   padding: 10px;
@@ -494,6 +493,6 @@ const exportData = (): void => {
 .type {
   width: 100%;
   text-align: center;
-  margin-top: 5px
+  margin-top: 5px;
 }
 </style>

@@ -72,10 +72,10 @@ const showOrigin = props.origin !== undefined;
 
 <style scoped>
 .right {
-  text-align: right
+  text-align: right;
 }
 
 .w-4 {
-  width: 4rem
+  width: 4rem;
 }
 </style>

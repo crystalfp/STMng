@@ -98,7 +98,6 @@ const finalValue = computed(() => {
 
 
 <style scoped>
-
 .show-symmetry {
   overflow-wrap: break-word;
   white-space: break-spaces;

@@ -1014,6 +1014,6 @@ const border = computed(() => (theme.value === "light" ? "#808080" : "#B3B3B3"))
 }
 
 .v-card-item__content {
-    text-align: center;
+  text-align: center;
 }
 </style>

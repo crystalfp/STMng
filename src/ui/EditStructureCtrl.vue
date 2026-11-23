@@ -316,7 +316,7 @@ const confirmAction = (): void => {
   <v-label class="separator-title first-title">{{ selectTitle }}</v-label>
   <v-container class="py-0 pl-1 pr-2">
     <v-table class="pa-1">
-      <tr><td style="width: 35%">Atom type:</td>
+      <tr><td class="c1">Atom type:</td>
           <td><v-select v-model="editedAtom.atomZ" :items="atomTypes"
                         item-title="title" item-value="value"/></td></tr>
       <tr><td>Label:</td>
@@ -329,7 +329,7 @@ const confirmAction = (): void => {
     <v-switch v-model="editedAtom.useFractional" label="Use fractional coords" class="my-2"
               @update:model-value="changedUseFractional"/>
     <v-table v-if="editedAtom.useFractional" class="pa-1">
-      <tr><td style="width: 35%">fa:</td>
+      <tr><td class="c1">fa:</td>
           <td><v-number-input v-model="editedAtom.fx" :min="0" :max="1" :step="0.001"
                               :precision="3" hide-details/></td></tr>
       <tr><td>fb:</td>
@@ -340,7 +340,7 @@ const confirmAction = (): void => {
                               :precision="3" hide-details/></td></tr>
     </v-table>
     <v-table v-else class="pa-1">
-      <tr><td style="width: 35%">x:</td>
+      <tr><td class="c1">x:</td>
           <td><v-number-input v-model="editedAtom.x" :min="-100" :max="100" :step="0.001"
                               :precision="3" hide-details/></td></tr>
       <tr><td>y:</td>
@@ -372,3 +372,9 @@ const confirmAction = (): void => {
   </v-dialog>
 </v-container>
 </template>
+
+<style scoped>
+.c1 {
+  width: 35%;
+}
+</style>

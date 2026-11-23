@@ -287,7 +287,6 @@ const renderPoints = (): void => {
 
 
 <style scoped>
-
 .landscape-buttons {
   display: grid;
   gap: 5px 10px;

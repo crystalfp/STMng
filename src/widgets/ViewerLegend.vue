@@ -108,11 +108,10 @@ const highlight = computed(() => (theme.value === "light" ? "#202020" : "#e6e6e6
 
 
 <style scoped>
-
 .legend {
   position: absolute;
   z-index: 800;
-  background-color: #7e7e7e46;
+  background-color: #7E7E7E46;
   overflow: hidden auto;
   padding: 0 !important;
   color: v-bind(highlight);
@@ -135,9 +134,9 @@ const highlight = computed(() => (theme.value === "light" ? "#202020" : "#e6e6e6
 
 .side-ll {grid-area: ll;}
 
-.side-rt {grid-area: rt; text-align:right; vertical-align:top;}
+.side-rt {grid-area: rt; text-align: right; vertical-align: top;}
 
-.side-rb {grid-area: rb; text-align:right; vertical-align:bottom;}
+.side-rb {grid-area: rb; text-align: right; vertical-align: bottom;}
 
 .side-bb {grid-area: bb; text-align: center;}
 

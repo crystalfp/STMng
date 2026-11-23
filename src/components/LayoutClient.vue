@@ -187,7 +187,6 @@ const gutter = computed(() => (theme.value === "light" ? "#b0b0b0" : "#3e3e3e"))
 
 
 <style scoped>
-
 .app-top {
   height: 100vh;
 }
