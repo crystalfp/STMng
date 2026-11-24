@@ -593,6 +593,7 @@
     "typescript/prefer-readonly": "error",
     "typescript/prefer-ts-expect-error": "error",
     "typescript/strict-void-return": "error",
+    "typescript/no-unsafe-class-instance-assignment": "off",
 
     // *** Eslint comments ***
     "@eslint-community/eslint-comments/no-unused-disable": "warn",

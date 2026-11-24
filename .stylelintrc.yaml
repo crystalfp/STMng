@@ -55,3 +55,4 @@ rules:
   "@stylistic/block-opening-brace-space-after": null
   "@stylistic/block-opening-brace-newline-after": null
   "@stylistic/block-closing-brace-newline-before": null
+  "@stylistic/declaration-block-semicolon-newline-after": null
