@@ -130,15 +130,33 @@ const highlight = computed(() => (theme.value === "light" ? "#202020" : "#e6e6e6
   padding: 5px 10px;
   overflow: hidden;
 }
-.side-tt {grid-area: tt; text-align: center; margin-bottom: 5px;}
 
-.side-ll {grid-area: ll;}
+.side-tt {
+  grid-area: tt;
+  text-align: center;
+  margin-bottom: 5px;
+}
 
-.side-rt {grid-area: rt; text-align: right; vertical-align: top;}
+.side-ll {
+  grid-area: ll;
+}
 
-.side-rb {grid-area: rb; text-align: right; vertical-align: bottom;}
+.side-rt {
+  grid-area: rt;
+  text-align: right;
+  vertical-align: top;
+}
 
-.side-bb {grid-area: bb; text-align: center;}
+.side-rb {
+  grid-area: rb;
+  text-align: right;
+  vertical-align: bottom;
+}
+
+.side-bb {
+  grid-area: bb;
+  text-align: center;
+}
 
 .dark {
   color: black;
