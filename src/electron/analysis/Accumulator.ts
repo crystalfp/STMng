@@ -335,15 +335,6 @@ export class StructureSetsAccumulator {
 	}
 
 	/**
-	 * Check if structures have energies
-	 *
-	 * @returns True if structures have energies
-	 */
-	static hasEnergies(): boolean {
-		return true;
-	}
-
-	/**
 	 * Get structure entry at a given step
 	 *
 	 * @param step - Entry step

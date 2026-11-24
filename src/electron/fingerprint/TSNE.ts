@@ -73,10 +73,11 @@ export class TSNE {
 		this.params = {...defaults, ...opt};
 	}
 
+	// NOTE unused
 	// Utility function
-	private static assert(condition: boolean, message="Assertion failed"): void {
-		if(!condition) throw Error(message);
-	}
+	// private static assert(condition: boolean, message="Assertion failed"): void {
+	// 	if(!condition) throw Error(message);
+	// }
 
 	// Utility that creates contiguous vector of zeros of size n
 	private static zeros(n: number): number[] {
@@ -120,108 +121,110 @@ export class TSNE {
 		return x;
 	}
 
+	// NOTE unused
 	// compute L2 distance between two vectors
-	private static L2(x1: number[], x2: number[]): number {
-		const D = x1.length;
-		let d = 0;
-		for(let i=0; i<D; ++i) {
-			const x1i = x1[i];
-			const x2i = x2[i];
-			d += (x1i-x2i)*(x1i-x2i);
-		}
-		return d;
-	}
+	// private static L2(x1: number[], x2: number[]): number {
+	// 	const D = x1.length;
+	// 	let d = 0;
+	// 	for(let i=0; i<D; ++i) {
+	// 		const x1i = x1[i];
+	// 		const x2i = x2[i];
+	// 		d += (x1i-x2i)*(x1i-x2i);
+	// 	}
+	// 	return d;
+	// }
 
 	// compute pairwise distance in all vectors in X
-	private static xtod(X: number[][]): number[] {
-		const N = X.length;
-		const dist = TSNE.zeros(N * N); // allocate contiguous array
-		for(let i=0; i<N-1; i++) {
-			for(let j=i+1; j<N; j++) {
-				const d = TSNE.L2(X[i], X[j]);
-				dist[i*N+j] = d;
-				dist[j*N+i] = d;
-			}
-		}
-		return dist;
-	}
+	// private static xtod(X: number[][]): number[] {
+	// 	const N = X.length;
+	// 	const dist = TSNE.zeros(N * N); // allocate contiguous array
+	// 	for(let i=0; i<N-1; i++) {
+	// 		for(let j=i+1; j<N; j++) {
+	// 			const d = TSNE.L2(X[i], X[j]);
+	// 			dist[i*N+j] = d;
+	// 			dist[j*N+i] = d;
+	// 		}
+	// 	}
+	// 	return dist;
+	// }
 
+	// NOTE unused
 	// compute (p_{i|j} + p_{j|i})/(2n)
-	private static d2p(D: number[], perplexity: number, tol: number): number[] {
+	// private static d2p(D: number[], perplexity: number, tol: number): number[] {
 
-		const Nf = Math.sqrt(D.length); // this better be an integer
-		const N = Math.floor(Nf);
-		TSNE.assert(N === Nf, "D should have square number of elements.");
-		const Htarget = Math.log(perplexity); // target entropy of distribution
-		const P = TSNE.zeros(N * N); // temporary probability matrix
+	// 	const Nf = Math.sqrt(D.length); // this better be an integer
+	// 	const N = Math.floor(Nf);
+	// 	TSNE.assert(N === Nf, "D should have square number of elements.");
+	// 	const Htarget = Math.log(perplexity); // target entropy of distribution
+	// 	const P = TSNE.zeros(N * N); // temporary probability matrix
 
-		const prow = TSNE.zeros(N); // a temporary storage compartment
-		for(let i=0; i<N; i++) {
+	// 	const prow = TSNE.zeros(N); // a temporary storage compartment
+	// 	for(let i=0; i<N; i++) {
 
-			let betamin = -Infinity;
-			let betamax = Infinity;
-			let beta = 1; // initial value of precision
-			let done = false;
-			const maxtries = 50;
+	// 		let betamin = -Infinity;
+	// 		let betamax = Infinity;
+	// 		let beta = 1; // initial value of precision
+	// 		let done = false;
+	// 		const maxtries = 50;
 
-			// perform binary search to find a suitable precision beta
-			// so that the entropy of the distribution is appropriate
-			let countIterations = 0;
-			while(!done) {
+	// 		// perform binary search to find a suitable precision beta
+	// 		// so that the entropy of the distribution is appropriate
+	// 		let countIterations = 0;
+	// 		while(!done) {
 
-				// compute entropy and kernel row with beta precision
-				let psum = 0.0;
-				for(let j=0; j<N; j++) {
-					let pj = Math.exp(-D[i*N+j]*beta);
-					if(i === j) pj = 0; // we don't care about diagonals
-					prow[j] = pj;
-					psum += pj;
-				}
+	// 			// compute entropy and kernel row with beta precision
+	// 			let psum = 0.0;
+	// 			for(let j=0; j<N; j++) {
+	// 				let pj = Math.exp(-D[i*N+j]*beta);
+	// 				if(i === j) pj = 0; // we don't care about diagonals
+	// 				prow[j] = pj;
+	// 				psum += pj;
+	// 			}
 
-				// normalize p and compute entropy
-				let Hhere = 0.0;
-				for(let j=0; j<N; j++) {
-					const pj = psum === 0 ? 0 : prow[j] / psum;
-					prow[j] = pj;
-					if(pj > 1e-7) Hhere -= pj * Math.log(pj);
-				}
+	// 			// normalize p and compute entropy
+	// 			let Hhere = 0.0;
+	// 			for(let j=0; j<N; j++) {
+	// 				const pj = psum === 0 ? 0 : prow[j] / psum;
+	// 				prow[j] = pj;
+	// 				if(pj > 1e-7) Hhere -= pj * Math.log(pj);
+	// 			}
 
-				// adjust beta based on result
-				if(Hhere > Htarget) {
-					// entropy was too high (distribution too diffuse)
-					// so we need to increase the precision for more peaky distribution
-					betamin = beta; // move up the bounds
-					beta = betamax === Infinity ? beta * 2 : (beta + betamax) / 2;
-				}
-				else {
-					// converse case. make distribution less peaky
-					betamax = beta;
-					beta = betamin === -Infinity ? beta / 2 : (beta + betamin) / 2;
-				}
+	// 			// adjust beta based on result
+	// 			if(Hhere > Htarget) {
+	// 				// entropy was too high (distribution too diffuse)
+	// 				// so we need to increase the precision for more peaky distribution
+	// 				betamin = beta; // move up the bounds
+	// 				beta = betamax === Infinity ? beta * 2 : (beta + betamax) / 2;
+	// 			}
+	// 			else {
+	// 				// converse case. make distribution less peaky
+	// 				betamax = beta;
+	// 				beta = betamin === -Infinity ? beta / 2 : (beta + betamin) / 2;
+	// 			}
 
-				// stopping conditions: too many tries or got a good precision
-				countIterations++;
-				if(Math.abs(Hhere - Htarget) < tol || countIterations >= maxtries) done = true;
-			}
+	// 			// stopping conditions: too many tries or got a good precision
+	// 			countIterations++;
+	// 			if(Math.abs(Hhere - Htarget) < tol || countIterations >= maxtries) done = true;
+	// 		}
 
-			// console.log('data point ' + i + ' gets precision ' + beta + ' after ' +
-			// num + ' binary search steps.');
-			// copy over the final prow to P at row i
-			for(let j=0; j<N; j++) P[i*N+j] = prow[j];
+	// 		// console.log('data point ' + i + ' gets precision ' + beta + ' after ' +
+	// 		// num + ' binary search steps.');
+	// 		// copy over the final prow to P at row i
+	// 		for(let j=0; j<N; j++) P[i*N+j] = prow[j];
 
-		} // end loop over examples i
+	// 	} // end loop over examples i
 
-		// symmetrize P and normalize it to sum to 1 over all ij
-		const Pout = TSNE.zeros(N * N);
-		const N2 = N*2;
-		for(let i=0; i<N; i++) {
-			for(let j=0; j<N; j++) {
-				Pout[i*N+j] = Math.max((P[i*N+j] + P[j*N+i])/N2, 1e-100);
-			}
-		}
+	// 	// symmetrize P and normalize it to sum to 1 over all ij
+	// 	const Pout = TSNE.zeros(N * N);
+	// 	const N2 = N*2;
+	// 	for(let i=0; i<N; i++) {
+	// 		for(let j=0; j<N; j++) {
+	// 			Pout[i*N+j] = Math.max((P[i*N+j] + P[j*N+i])/N2, 1e-100);
+	// 		}
+	// 	}
 
-		return Pout;
-	}
+	// 	return Pout;
+	// }
 
 	private static d2p2(N: number, getDists: (i: number, j: number) => number,
 						perplexity: number, tol: number): number[] {
@@ -304,45 +307,47 @@ export class TSNE {
 		return x < 0 ? -1 : 0;
 	}
 
+	// NOTE unused
 	/**
 	 * Creates matrix P from input points using gaussian kernel
 	 *
 	 * @param X - Set of high-dimensional points
 	 */
-    initDataRaw(X: number[][]): void {
+    // initDataRaw(X: number[][]): void {
 
-		const N = X.length;
-		const D = X[0].length;
-		TSNE.assert(N > 0, " X is empty? You must have some data!");
-		TSNE.assert(D > 0, " X[0] is empty? Where is the data?");
-		const dists = TSNE.xtod(X); // convert X to distances using gaussian kernel
-		this.P = TSNE.d2p(dists, this.params.perplexity, 1e-4); // attach to object
-		this.N = N; // back up the size of the dataset
-		this.initSolution(); // refresh this
-    }
+	// 	const N = X.length;
+	// 	const D = X[0].length;
+	// 	TSNE.assert(N > 0, " X is empty? You must have some data!");
+	// 	TSNE.assert(D > 0, " X[0] is empty? Where is the data?");
+	// 	const dists = TSNE.xtod(X); // convert X to distances using gaussian kernel
+	// 	this.P = TSNE.d2p(dists, this.params.perplexity, 1e-4); // attach to object
+	// 	this.N = N; // back up the size of the dataset
+	// 	this.initSolution(); // refresh this
+    // }
 
+	// NOTE unused
 	/**
 	 * This function takes a given distance matrix and creates matrix P from them
 	 *
 	 * @param D - Square and symmetric distance matrix
 	 */
-    initDataDist(D: number[][]): void {
+    // initDataDist(D: number[][]): void {
 
-		const N = D.length;
-		TSNE.assert(N > 0, " X is empty? You must have some data!");
-		// convert D to a (fast) typed array version
-		const dists = TSNE.zeros(N * N); // allocate contiguous array
-		for(let i=0; i<N-1; i++) {
-			for(let j=i+1; j<N; j++) {
-				const d = D[i][j];
-				dists[i*N+j] = d;
-				dists[j*N+i] = d;
-			}
-		}
-		this.P = TSNE.d2p(dists, this.params.perplexity, 1e-4);
-		this.N = N;
-		this.initSolution(); // refresh this
-    }
+	// 	const N = D.length;
+	// 	TSNE.assert(N > 0, " X is empty? You must have some data!");
+	// 	// convert D to a (fast) typed array version
+	// 	const dists = TSNE.zeros(N * N); // allocate contiguous array
+	// 	for(let i=0; i<N-1; i++) {
+	// 		for(let j=i+1; j<N; j++) {
+	// 			const d = D[i][j];
+	// 			dists[i*N+j] = d;
+	// 			dists[j*N+i] = d;
+	// 		}
+	// 	}
+	// 	this.P = TSNE.d2p(dists, this.params.perplexity, 1e-4);
+	// 	this.N = N;
+	// 	this.initSolution(); // refresh this
+    // }
 
 	/**
 	 * This function compute distances and creates matrix P from them
@@ -366,14 +371,15 @@ export class TSNE {
       this.iter = 0;
     }
 
+	// NOTE unused
 	/**
 	 * Return the current solution
 	 *
 	 * @returns Array of solution points [N, dims]
 	 */
-    getSolution(): number[][] {
-      	return this.Y;
-    }
+    // private getSolution(): number[][] {
+    //   	return this.Y;
+    // }
 
 	/**
 	 * Return the current solution with coordinates normalized between 0 and 1
