@@ -19,12 +19,14 @@
     "node-addon-api",
     "typedoc",
     "typedoc-plugin-vue",
-    "typedoc-plugin-missing-exports",
+    "@zamiell/typedoc-plugin-not-exported",
     "eslint-plugin-eslint-comments",
     "@rollup/plugin-node-resolve",
     "@golar/vue",
     "rolldown",
-    "@eslint/config-inspector"
+    "@eslint/config-inspector",
+    "fallow",
+    "fallow-type-aware"
   ],
   "tags": ["-knipIgnore"]
 }
