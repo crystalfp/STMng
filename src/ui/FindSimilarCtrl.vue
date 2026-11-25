@@ -44,7 +44,11 @@ const {id, label} = defineProps<{
 // > Persistent state that is saved in the project file
 const state = reactive({
     enabled: false,
+    useFingerprint: true,
     numberMatches: 3,
+    lengthTolerance: 0.2,
+    siteTolerance: 0.3,
+    angleTolerance: 5
 });
 
 const spaceGroup = ref("");
@@ -91,14 +95,32 @@ resetNodeAlert();
 askNode(id, "init")
     .then((params) => {
         state.enabled = params.enableMatcher as boolean ?? false;
+        state.useFingerprint = params.useFingerprint as boolean ?? true;
         state.numberMatches = params.numberMatches as number ?? 3;
-
+        state.lengthTolerance = params.lengthTolerance as number ?? 0.2;
+        state.siteTolerance = params.siteTolerance as number ?? 0.3;
+        state.angleTolerance = params.angleTolerance as number ?? 5;
         results.length = 0;
     })
     .catch((error: Error) => {
         showNodeAlert(`Error from UI init for "${label}": ${error.message}`,
                       "matchers");
     });
+
+/**
+ * Reset parameters to default values
+ */
+const resetParams = (): void => {
+
+    Object.assign(state, {
+        lengthTolerance: 0.2,
+        siteTolerance: 0.3,
+        angleTolerance: 5,
+        noThreshold: false,
+        threshold: 0.01,
+        numberMatches: 3,
+    });
+};
 
 /** Receive input info from main */
 receiveFromNode(id, "load-info", (params) => {
@@ -186,7 +208,8 @@ const selectResult = (fileId: number): void => {
 
 <template>
 <v-container class="container">
-  <v-switch v-model="state.enabled" label="Enable matching" class="mt-4 ml-1" />
+  <v-switch v-model="state.enabled" label="Enable matching" class="mt-2 ml-1" />
+  <v-switch v-model="state.useFingerprint" label="Use fingerprint distances" class="mt-n2 ml-1" />
   <v-switch v-model="showDetails" label="Show input details" class="mt-n2 ml-1 mb-0"
             @update:model-value="showDetailsChanged"/>
   <v-container v-if="showDetails" class="pl-1 pt-2 pb-0">
@@ -237,6 +260,21 @@ const selectResult = (fileId: number): void => {
                       :min="1" :max="8" :step="1" class="mb-2 mt-2">
       <v-label :text="`Collection neighbors (${value})`" class="no-select" />
     </debounced-slider>
+    <v-container v-if="!state.useFingerprint" class="pa-0">
+      <debounced-slider v-slot="{value}" v-model="state.lengthTolerance"
+                        :min="0.05" :max="0.4" :step="0.05" class="mb-2 mt-2">
+        <v-label :text="`Fractional length tolerance (${value.toFixed(2)})`" class="no-select" />
+      </debounced-slider>
+      <debounced-slider v-slot="{value}" v-model="state.siteTolerance"
+                        :min="0.05" :max="0.6" :step="0.05" class="mb-2 mt-2">
+        <v-label :text="`Site tolerance (${value.toFixed(2)})`" class="no-select" />
+      </debounced-slider>
+      <debounced-slider v-slot="{value}" v-model="state.angleTolerance"
+                          :min="0.5" :max="10" :step="0.5" class="mb-0 mt-2">
+        <v-label :text="`Angle tolerance (${value.toFixed(1)})`" class="no-select" />
+      </debounced-slider>
+    </v-container>
+    <block-button class="mt-5 mb-n2" label="Reset parameters" @click="resetParams" />
   </v-container>
   <throttled-button label="Show matches" class="mt-2"
                     :disabled="results.length === 0"

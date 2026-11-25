@@ -33,6 +33,8 @@ import {getStructure, collectionsGetNearestStructures, getMetadata} from "../mod
 import {fingerprintingOganovValle} from "../fingerprint/OganovValleFingerprint";
 import type {Structure, ChannelDefinition, CtrlParams, Atom, Crystal,
 			 PrototypeAtomsData, FingerprintingParameters} from "@/types";
+import {PymatgenMatcher} from "../match/PymatgenMatcher";
+import {structureToSNL} from "../match/ConvertStructure";
 
 export class FindSimilar extends NodeCore {
 
@@ -49,7 +51,11 @@ export class FindSimilar extends NodeCore {
 	// Mirror of the UI reactive state
 	private readonly state = {
 		enabled: false,
+		useFingerprint: true,
 		numberMatches: 3,
+		lengthTolerance: 0.2,
+		siteTolerance: 0.3,
+		angleTolerance: 5
 	};
 
 	private readonly channels: ChannelDefinition[] = [
@@ -83,7 +89,11 @@ export class FindSimilar extends NodeCore {
 	private initializeState(params: CtrlParams): void {
 
    	    this.state.enabled = params.enabled as boolean ?? false;
-        this.state.numberMatches = params.numberMatches as number ?? 1;
+        this.state.useFingerprint = params.useFingerprint as boolean ?? true;
+        this.state.numberMatches = params.numberMatches as number ?? 3;
+        this.state.lengthTolerance = params.lengthTolerance as number ?? 0.2;
+        this.state.siteTolerance = params.siteTolerance as number ?? 0.3;
+        this.state.angleTolerance = params.angleTolerance as number ?? 5;
 	}
 
 	loadStatus(params: CtrlParams): void {
@@ -215,42 +225,86 @@ export class FindSimilar extends NodeCore {
 
 		this.formula = FindSimilar.getChemicalFormula(this.structure, duplicates);
 
-		// Compute the input structure fingerprint
-		const fp = FindSimilar.computeFingerprint(atoms, crystal, duplicates);
+		if(this.state.useFingerprint) {
 
-		// Find similar
-		const results = collectionsGetNearestStructures(fp, this.state.numberMatches);
+			// Compute the input structure fingerprint
+			const fp = FindSimilar.computeFingerprint(atoms, crystal, duplicates);
 
-		// Prepare the data for the client
-		this.idCollections.length = 0;
-		this.titleCollections.length = 0;
-		this.distances.length = 0;
-		this.colors.length = 0;
-		this.isPrototype.length = 0;
-		this.aflow.length = 0;
+			// Find similar
+			const results = collectionsGetNearestStructures(fp, this.state.numberMatches);
 
-		for(const {title, id, distance} of results) {
+			// Prepare the data for the client
+			this.idCollections.length = 0;
+			this.titleCollections.length = 0;
+			this.distances.length = 0;
+			this.colors.length = 0;
+			this.isPrototype.length = 0;
+			this.aflow.length = 0;
 
-			const entry = getMetadata(id);
-			if(!entry) continue;
+			for(const {title, id, distance} of results) {
 
-			this.titleCollections.push(title);
-			this.idCollections.push(id);
-			this.distances.push(distance);
-			this.colors.push(FindSimilar.getBand(distance));
+				const entry = getMetadata(id);
+				if(!entry) continue;
 
-			this.aflow.push(entry.proto ? entry.aflow ?? "" : "");
-			this.isPrototype.push(entry.proto ? 1 : 0);
+				this.titleCollections.push(title);
+				this.idCollections.push(id);
+				this.distances.push(distance);
+				this.colors.push(FindSimilar.getBand(distance));
+
+				this.aflow.push(entry.proto ? entry.aflow ?? "" : "");
+				this.isPrototype.push(entry.proto ? 1 : 0);
+			}
+
+			sendToClient(this.id, "results", {
+				idCollections: this.idCollections,
+				titleCollections: this.titleCollections,
+				distances: this.distances,
+				isPrototype: this.isPrototype,
+				aflow: this.aflow,
+				colors: this.colors
+			});
 		}
+		else {
 
-		sendToClient(this.id, "results", {
-			idCollections: this.idCollections,
-			titleCollections: this.titleCollections,
-			distances: this.distances,
-			isPrototype: this.isPrototype,
-			aflow: this.aflow,
-			colors: this.colors
-		});
+			const result: CtrlParams = {
+				idCollections: [],
+				titleCollections: [],
+				distances: [],
+				colors: [],
+				isPrototype: [],
+				aflow: [],
+			};
+
+			// Use pymatgen method
+			const matcher = new PymatgenMatcher(this.state.lengthTolerance,
+												this.state.siteTolerance,
+												this.state.angleTolerance);
+
+			// Convert STMng Structure to Pymatgen SNL
+			const snl = structureToSNL(this.structure, duplicates);
+			if(!snl) {
+				sendToClient(this.id, "results", result);
+				return;
+			}
+			const idx = matcher.getPrototypes(snl);
+			if(idx.length === 0) {
+				sendToClient(this.id, "results", result);
+				return;
+			}
+
+			for(const id of idx) {
+				const entry = getMetadata(id);
+				if(!entry) continue;
+
+				(result.idCollections as number[]).push(id);
+				(result.titleCollections as string[]).push(entry.title);
+				(result.distances as number[]).push(-1);
+				(result.colors as string[]).push(FindSimilar.getBand(0));
+				(result.isPrototype as number[]).push(entry.proto ? 1 : 0);
+				(result.aflow as string[]).push(entry.proto ? entry.aflow ?? "" : "");
+			}
+			sendToClient(this.id, "results", result);
+		}
 	}
 
 	/**
@@ -338,7 +392,11 @@ export class FindSimilar extends NodeCore {
 
 		return {
 			enabled: this.state.enabled,
+			useFingerprint: this.state.useFingerprint,
         	numberMatches: this.state.numberMatches,
+			lengthTolerance: this.state.lengthTolerance,
+			siteTolerance: this.state.siteTolerance,
+			angleTolerance: this.state.angleTolerance
 		};
 	}
 
