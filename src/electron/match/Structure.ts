@@ -478,18 +478,6 @@ export const getPrimitiveStructure = (structure: SNL, tolerance = 0.25,
                 if(!constrainLatt || (Array.isArray(constrainLatt) && constrainLatt.length === 0)) {
                     return primitive;
                 }
-                /*
-                // Check lattice constraints
-                if(Array.isArray(constrainLatt)) {
-                    // Implementation would need lattice parameter extraction logic
-                    return primitive;
-                }
-                else {
-                    const keys = Object.keys(constrainLatt);
-                    // Would need to implement lattice parameter comparison
-                    return primitive;
-                }
-                */
             }
         }
     }

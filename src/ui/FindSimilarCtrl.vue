@@ -64,16 +64,16 @@ let waiting = false;
  * @notExported
  */
 interface ResultEntry {
-	/** Unique structure identifier */
-	idx: number;
-	/** User facing structure title */
-	title: string;
+    /** Unique structure identifier */
+    idx: number;
+    /** User facing structure title */
+    title: string;
     /** True if from prototype db else from collection */
     isPrototype: boolean;
     /** Aflow UID if this is a prototype, otherwise empty string */
     aflow: string;
-	/** Distance from the given structure  */
-	distance: number;
+    /** Distance from the given structure  */
+    distance: number;
     /** Color for the grouped distances */
     color: string;
 }
@@ -234,19 +234,24 @@ const selectResult = (fileId: number): void => {
       <v-container v-for="entry of results" :key="entry.idx" v-ripple
                   class="mb-3 py-1 pl-2 mr-n1 border-thin rounded-lg cursor-pointer"
                   @click="selectResult(entry.idx)">
-        <v-label class="result-label pb-1 bigger-result cursor-pointer" v-html="entry.title" /><br>
+        <v-label class="result-label pb-2 bigger-result cursor-pointer" v-html="entry.title" />
         <v-container v-if="entry.isPrototype" class="pa-0">
           <v-label class="bigger-result cursor-pointer">
                    {{ `aflow: ${entry.aflow}` }}</v-label><br>
         </v-container>
-        <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
-        <v-label class="bigger-result cursor-pointer" :style="{color: entry.color}">
-            {{ entry.distance.toFixed(4) }}</v-label>
+        <v-container v-show="entry.distance >= 0" class="pa-0">
+          <v-label class="bigger-result cursor-pointer mr-1">distance:</v-label>
+          <v-label class="bigger-result cursor-pointer"
+                  :style="{color: entry.color}">
+              {{ entry.distance.toFixed(4) }}
+          </v-label>
+        </v-container>
       </v-container>
   </v-container>
 
-  <v-switch v-model="showLegend" label="Show color legend" class="mt-n2 ml-1 mb-n1" />
-  <v-container v-if="showLegend" class="pb-0">
+  <v-switch v-if="state.useFingerprint" v-model="showLegend"
+            label="Show color legend" class="mt-n2 ml-1 mb-n1" />
+  <v-container v-if="showLegend && state.useFingerprint" class="pb-0">
     <div v-for="n of colorRanges" :key="n.color" class="d-flex mb-1">
       <span :style="{backgroundColor: n.color}" class="mr-3">&emsp;</span>
       <span style="width: 5.5rem; margin-right: 3px;">{{ n.range }}</span>{{ n.label }}

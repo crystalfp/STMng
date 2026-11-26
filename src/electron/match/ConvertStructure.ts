@@ -67,8 +67,8 @@ export const structureToSNL = (structure: Structure,
 		const cz = position[2] - origin[2];
 
 		const abc = [cx*inverse[0] + cy*inverse[3] + cz*inverse[6],
-						cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
-						cx*inverse[2] + cy*inverse[5] + cz*inverse[8]];
+					 cx*inverse[1] + cy*inverse[4] + cz*inverse[7],
+					 cx*inverse[2] + cy*inverse[5] + cz*inverse[8]];
 
 		sites.push({
 			abc,
@@ -86,6 +86,13 @@ export const structureToSNL = (structure: Structure,
 	};
 };
 
+/**
+ * Read and convert structure
+ *
+ * @param fd - Data file descriptor
+ * @param offset - Offset from where to start reading
+ * @returns SNL formatted structure at the given offset
+ */
 export const dataToSNL = (fd: number, offset: number): SNL => {
 
 	// Number of atoms

@@ -71,6 +71,7 @@ export class PymatgenMatcher {
 
 		const fd = openSync(`${this.dbPrefix}.dat`, "r");
 
+		cachedData.length = 0;
 		for(const entry of cachedIndex) {
 			const snl = dataToSNL(fd, entry[1]);
 			cachedData.push(snl);
@@ -128,10 +129,14 @@ export class PymatgenMatcher {
 
 		let prototypes = PymatgenMatcher.matchPrototype(sm, primitiveStructure);
         while(prototypes.length > 1) {
-            sm.ltol *= 0.8;
+
+			sm.ltol *= 0.8;
             sm.stol *= 0.8;
             sm.angleTol *= 0.8;
-            prototypes = PymatgenMatcher.matchPrototype(sm, primitiveStructure);
+            const prototypes1 = PymatgenMatcher.matchPrototype(sm, primitiveStructure);
+
+			if(prototypes1.length === 0) break;
+			prototypes = prototypes1;
             if(sm.ltol < 0.01) break;
 		}
 

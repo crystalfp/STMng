@@ -26,7 +26,15 @@
 
 <p>The “Collection” structures are accessible as a <a href="structure-reader.html">Structure reader</a> special collection.</p>
 
-<p>For both sets the match is done using the Oganov Valle fingerprints (see the <a href="./compute-fingerprints.html">Compute fingerprints</a> node) and the results are ordered by increasing cosine distance between fingerprints. Note that to compute the fingerprints all the atomic species are changed to hydrogen.</p>
+<p>For this node, both collections are merged into one.</p>
+
+<p>To find similar structures to the loaded one, two methods are available:</p>
+<dl>
+	<dt>Fingerprinting</dt>
+	<dd>The match is done using the Oganov Valle fingerprints (see the <a href="./compute-fingerprints.html">Compute fingerprints</a> node) and the results are ordered by increasing cosine distance between fingerprints. Note that to compute the fingerprints all the atomic species are changed to hydrogen.</dd>
+	<dt>Pymatgen</dt>
+	<dd>The matcher code is ported from the <a href="https://pymatgen.org/">Pymatgen</a> library’s <a href="https://pymatgen.org/pymatgen.analysis.prototypes.html#pymatgen.analysis.prototypes.matcher.AflowPrototypeMatcher">AflowPrototypeMatcher</a> class.</dd>
+</dl>
 </div>
 
 <h2>Controls</h2>
@@ -50,12 +58,12 @@
 <tr>
 	<td class="c1">Show color legend</td>
 	<td class="c2">toggle</td>
-	<td class="c3">Show the color legend for the distances. See below the color legend.</td>
+	<td class="c3">Show the color legend for the distances. See below the color legend. This control is visible only when the “Fingerprinting” method is selected.</td>
 </tr>
 <tr>
 	<td class="c1">Matcher parameters</td>
 	<td class="c2">button</td>
-	<td class="c3">Toggle the visibility of the section where the parameters for the matcher could be adjusted.</td>
+	<td class="c3">Toggle the visibility of the section where the parameters for the matchers could be adjusted.</td>
 </tr>
 <tr>
 	<td class="c1">Show matches</td>
@@ -69,7 +77,27 @@
 <tr>
 	<td class="c1">Collection neighbors</td>
 	<td class="c2">slider</td>
-	<td class="c3">Number of groups of distances for the structures returned from the collection. The groups are ordered by increasing cosine distance.</td>
+	<td class="c3">Number of similar structures returned from the collection. The entries are ordered by increasing cosine distance for the “Fingerprinting” method and are the first matched for the “Pymatgen” method.</td>
+</tr>
+<tr>
+	<td class="c1">Fractional length tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the unit cell sides for the “Pymatgen” structure matcher.</td>
+</tr>
+<tr>
+	<td class="c1">Site tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the fractional atoms’ positions for the “Pymatgen” structure matcher.</td>
+</tr>
+<tr>
+	<td class="c1">Angle tolerance</td>
+	<td class="c2">slider</td>
+	<td class="c3">Tolerance for the lattice angles for the “Pymatgen” structure matcher.</td>
+</tr>
+<tr>
+	<td class="c1">Reset parameters</td>
+	<td class="c2">button</td>
+	<td class="c3">Reset parameters to their default values.</td>
 </tr>
 </table>
 
@@ -82,17 +110,18 @@
 </tr>
 </table>
 
-<p>The color legend for the distances is:</p>
-<ul style="list-style-type:none">
-<li><span style="background-color: #FF1700;" class="b">&emsp;</span>
-    questionable relatives (distance over 0.15)</li>
-<li><span style="background-color: #FFC200;" class="b">&emsp;</span>
-    distant relatives (distance: 0.12 - 0.15)</li>
-<li><span style="background-color: #D5FF00;" class="b">&emsp;</span>
-    related structures (distance: 0.04 - 0.12)</li>
-<li><span style="background-color: #00FF00;" class="b">&emsp;</span>
-    identical structures (distance up to 0.04)</li>
-</ul>
+<p>The color legend for the “Fingerprinting” distances is:</p>
+
+<table style="margin-left: 2rem">
+	<tr><td style="width: 1.5rem"><span style="background-color: #FF1700;" class="b">&emsp;</span></td>
+	    <td style="width: 11rem">questionable relatives</td><td>distance over 0.15</td></tr>
+	<tr><td><span style="background-color: #FFC200;" class="b">&emsp;</span></td>
+		<td>distant relatives</td><td>distance: 0.12 – 0.15</td></tr>
+	<tr><td><span style="background-color: #D5FF00;" class="b">&emsp;</span></td>
+		<td>related structures</td><td>distance: 0.04 – 0.12</td></tr>
+	<tr><td><span style="background-color: #00FF00;" class="b">&emsp;</span></td>
+		<td>identical structures</td><td>distance up to 0.04</td></tr>
+</table>
 
 <h2>Credits</h2>
 
@@ -106,6 +135,7 @@
 </ul>
 </p>
 <p>The files in the Collection have been collected from various sources and provided by Prof. Artem Oganov.</p>
+<p>The “Pymatgen” matcher code is ported from the <a href="https://pymatgen.org/">Pymatgen</a> library’s <a href="https://pymatgen.org/pymatgen.analysis.prototypes.html#pymatgen.analysis.prototypes.matcher.AflowPrototypeMatcher">AflowPrototypeMatcher</a> class.</p>
 
 <p class="back-btn"><a href="../index.html" title="Return to STMng documentation" class="back">Back to index</a></p>
 
