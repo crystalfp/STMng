@@ -207,7 +207,7 @@
     "unicorn/no-array-sort": "error",
     "unicorn/no-await-expression-member": "error",
     "unicorn/no-await-in-promise-methods": "error",
-    "unicorn/no-console-spaces": "error",
+    "unicorn/no-console-spaces": "warn",
     "unicorn/no-document-cookie": "error",
     "unicorn/no-empty-file": "error",
     "unicorn/no-hex-escape": "error",
@@ -367,7 +367,6 @@
         "catch": {"after": false},
         "while": {"after": false},
         "for": {"after": false},
-        "await": {"after": true},
     }}],
     "@stylistic/lines-between-class-members": ["warn", "always", { "exceptAfterSingleLine": true }],
     "@stylistic/max-statements-per-line": ["warn", {"max": 2}],
@@ -698,7 +697,6 @@
     "sonarjs/no-useless-increment": "error",
     "sonarjs/no-globals-shadowing": "error",
     "sonarjs/no-undefined-assignment": "off",
-    "sonarjs/no-empty-test-file": "error",
     "sonarjs/no-ignored-return": "error",
     "sonarjs/no-wildcard-import": "off",
     "sonarjs/arguments-order": "error",
@@ -877,6 +875,7 @@
     "sonarjs/dynamically-constructed-templates": "error",
     "sonarjs/no-session-cookies-on-static-assets": "error",
     "sonarjs/dompurify-unsafe-config": "error",
+    "sonarjs/no-empty-test-file": "off",
 
     // *** Regexp ***
     "regexp/confusing-quantifier": "warn",
